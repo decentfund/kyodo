@@ -1,11 +1,16 @@
 pragma solidity ^0.4.24;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-
+import "openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
 
 contract KyodoDAO is Ownable {
   mapping(string => address) aliases;
   mapping(address => bool) public whitelist;
+  MintableToken public Token;
+
+  constructor(address _token) public {
+    Token = MintableToken(_token);
+  }
 
   function setAlias(
     string _value
@@ -14,6 +19,7 @@ contract KyodoDAO is Ownable {
     external
   {
     aliases[_value] = msg.sender;
+    MintableToken(Token).mint(msg.sender, 100000);
   }
 
   function getAlias(

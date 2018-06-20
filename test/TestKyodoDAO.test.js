@@ -7,19 +7,22 @@ require('chai')
   .should();
 
 const KyodoDAO = artifacts.require('KyodoDAO');
+const MintableToken = artifacts.require('MintableToken');
 
-contract('KyodoDAO', function(accounts) {
+contract('KyodoDAO', function([owner, anotherAccount]) {
+  beforeEach(async function() {
+    this.token = await MintableToken.new({ from: owner });
+    this.kyodo = await KyodoDAO.new(this.token.address);
+    await this.token.transferOwnership(this.kyodo.address);
+  });
   describe('sets alias', function() {
-    beforeEach(async function() {
-      this.kyodo = await KyodoDAO.new();
-    });
     describe('add alias', function() {
       it('reverts for unwhitelisted', async function() {
         await assertRevert(this.kyodo.setAlias('aaa'));
       });
       describe('finishes successfully for whitelisted and get', function() {
         beforeEach(async function() {
-          await this.kyodo.addToWhitelist(accounts[0]);
+          await this.kyodo.addToWhitelist(owner);
           await this.kyodo.setAlias('aaa');
         });
         it('empty address', async function() {
@@ -28,9 +31,26 @@ contract('KyodoDAO', function(accounts) {
         });
         it('proper alias', async function() {
           const alias = await this.kyodo.getAlias('aaa');
-          assert.equal(alias, accounts[0]);
+          assert.equal(alias, owner);
         });
       });
+    });
+  });
+  describe('initial distribution', function() {
+    beforeEach(async function() {
+      await this.kyodo.addManyToWhitelist([owner, anotherAccount]);
+      await this.kyodo.setAlias('aaa');
+    });
+    it('happen on start called by owner', async function() {
+      let totalSupply = await this.token.totalSupply();
+      assert.equal(totalSupply, 100000);
+      const userBalance = await this.token.balanceOf(owner);
+      assert.equal(userBalance, 100000);
+      await this.kyodo.setAlias('bbb', { from: anotherAccount });
+      totalSupply = await this.token.totalSupply();
+      assert.equal(totalSupply, 200000);
+      const user2Balance = await this.token.balanceOf(anotherAccount);
+      assert.equal(user2Balance, 100000);
     });
   });
 });
