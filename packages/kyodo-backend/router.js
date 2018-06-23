@@ -25,8 +25,20 @@ router
   .get("/colony", (req, res) => {
     getColonies(req, res);
   })
-  .post("/client", (req, res) => {
-    createTask(req, res);
+  .post("/tip", (req, res) => {
+    sendTip(req, res);
+  })
+  .get("/tips", (req, res) => {
+    getAllTips(req, res);
+  })
+  .post("/domain", (req, res) => {
+    addDomain(req, res);
+  })
+  .get("/domain", (req, res) => {
+    getDomainById(req, res);
+  })
+  .get("/domains", (req, res) => {
+    getAllDomains(req, res);
   });
 
 module.exports = router;
