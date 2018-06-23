@@ -46,6 +46,7 @@ class App extends Component {
   handleSaveNickName = name => {
     const {
       kyodoContract,
+      decentToken,
       web3: {
         eth: {
           accounts: [account],
@@ -55,7 +56,13 @@ class App extends Component {
     kyodoContract
       .setAlias(name, { from: account })
       .then(() => kyodoContract.getAlias.call(account))
-      .then(nickname => this.setState({ nickname }));
+      .then(nickname => this.setState({ nickname }))
+      .then(() => decentToken.balanceOf.call(account))
+      .then(balance =>
+        this.setState({
+          currentUserBalance: balance.toNumber(),
+        }),
+      );
   };
 
   instantiateContract() {
@@ -80,7 +87,7 @@ class App extends Component {
     this.state.web3.eth.getAccounts(async (error, accounts) => {
       const tokenContract = await decentToken.deployed();
       const totalSupply = await tokenContract.totalSupply();
-      const currentUserBalance = await tokenContract.balanceOf(0x0);
+      const currentUserBalance = await tokenContract.balanceOf(accounts[0]);
       const tokenName = await tokenContract.name();
       const tokenSymbol = await tokenContract.symbol();
 
