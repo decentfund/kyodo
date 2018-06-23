@@ -19,6 +19,15 @@ contract KyodoDAO is Ownable {
     Token = MintableToken(_token);
   }
 
+  /// @dev Returns list of whitelistedAddresses.
+  /// @return List of whitelisted addresses.
+  function getWhitelistedAddresses()
+    public
+    returns (address[])
+  {
+    return whitelistedAddresses;
+  }
+
   function setAlias(
     string _value
   )
