@@ -16,20 +16,28 @@ exports.createTask = async (req, res) => {
   let colonyClient = await getColonyInstanceFromId(76);
   let hash = await generateIpfsHash(req.body);
   await colonyClient.createTask.send({ specificationHash: hash });
+  let taskCount = await colonyClient.getTaskCount.call();
+  let newTask = await getTaskFromChain(taskCount.count);
 
   let task = new Task({
-    taskId: req.body.taskId,
+    taskId: taskCount.count,
     taskTitle: req.body.taskTitle,
-    specificationHash: hash
+    specificationHash: hash,
+    finalized: newTask.finalized,
+    cancelled: newTask.cancelled,
+    dateCreated: new Date(),
+    dueDate: new Date(req.body.dueDate),
+    potId: newTask.potId,
+    domainId: newTask.potId
+    // id: newTask.id,
+    // skillId: newTask.skillId
   });
 
   task.save((err, task) => {
     if (err) return console.error(err);
   });
-  await getTaskFromChain(2);
-  res.end(
-    `{"success" : Added ${task} and ${hash} Successfully, "status" : 200}`
-  );
+  // await getTaskFromChain();
+  res.end(`{"success" : Added and ${hash} Successfully, "status" : 200}`);
 };
 
 exports.modifyTask = (req, res) => {
