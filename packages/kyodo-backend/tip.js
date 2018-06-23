@@ -2,6 +2,8 @@ const { Tip } = require("./db.js");
 
 exports.sendTip = async (req, res) => {
   // TODO: colonyClient integration
+  // transfer.send({ destinationAddress, amount }, options)
+  // transferFrom.send({ sourceAddress, destinationAddress, amount }, options)
 
   let tip = new Tip({
     from: req.body.from,
