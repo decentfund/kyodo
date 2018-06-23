@@ -20,6 +20,12 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
       it('reverts for unwhitelisted', async function() {
         await assertRevert(this.kyodo.setAlias('aaa'));
       });
+      it('reverts for existing nick', async function() {
+        await this.kyodo.addToWhitelist(owner);
+        this.kyodo.setAlias('aaa');
+        this.kyodo.setAlias('bbb');
+        await assertRevert(this.kyodo.setAlias('aaa'));
+      });
       describe('finishes successfully for whitelisted and get', function() {
         beforeEach(async function() {
           await this.kyodo.addToWhitelist(owner);

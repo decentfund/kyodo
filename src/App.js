@@ -2,12 +2,15 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Helloworld from './Helloworld.js';
+import Nickname from './Nickname';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
 import getWeb3 from './utils/getWeb3';
 
 class App extends Component {
-  state = {};
+  state = {
+    whitelistedAddresses: [],
+  };
 
   componentWillMount() {
     getWeb3
@@ -40,6 +43,21 @@ class App extends Component {
     this.setState({ address: e.target.value });
   };
 
+  handleSaveNickName = name => {
+    const {
+      kyodoContract,
+      web3: {
+        eth: {
+          accounts: [account],
+        },
+      },
+    } = this.state;
+    kyodoContract
+      .setAlias(name, { from: account })
+      .then(() => kyodoContract.getAlias.call(account))
+      .then(nickname => this.setState({ nickname }));
+  };
+
   instantiateContract() {
     /*
      * SMART CONTRACT EXAMPLE
@@ -70,6 +88,9 @@ class App extends Component {
       const whitelistedAddresses = await kyodoContract.getWhitelistedAddresses.call();
       const owner = await kyodoContract.owner.call();
 
+      const nick = await kyodoContract.getAlias.call(accounts[0]);
+      console.log(nick);
+
       this.setState({
         totalSupply: totalSupply.toNumber(),
         currentUserBalance: currentUserBalance.toNumber(),
@@ -78,6 +99,7 @@ class App extends Component {
         whitelistedAddresses,
         kyodoContract,
         owner,
+        nickname: nick,
       });
       // decentToken
       // .deployed()
@@ -107,7 +129,13 @@ class App extends Component {
       tokenName,
       tokenSymbol,
       totalSupply,
+      whitelistedAddresses,
     } = this.state;
+    const userAddress =
+      this.state.web3 &&
+      this.state.web3.eth &&
+      this.state.web3.eth.accounts &&
+      this.state.web3.eth.accounts[0];
     return (
       <div className="App">
         <header className="App-header">
@@ -122,10 +150,9 @@ class App extends Component {
         <div>
           {totalSupply} {tokenSymbol}
         </div>
-        {this.state.whitelistedAddresses &&
-          this.state.whitelistedAddresses.map(address => (
-            <div key={address}>{address}</div>
-          ))}
+        {whitelistedAddresses.map(address => (
+          <div key={address}>{address}</div>
+        ))}
         {this.state.web3 &&
         this.state.web3.eth &&
         this.state.web3.eth.accounts &&
@@ -138,6 +165,13 @@ class App extends Component {
             />
             <button onClick={this.addToWhitelist}>Add to whitelist</button>
           </div>
+        ) : null}
+        {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
+          <Nickname
+            address={userAddress}
+            nickname={this.state.nickname}
+            onSaveNickname={this.handleSaveNickName}
+          />
         ) : null}
       </div>
     );
