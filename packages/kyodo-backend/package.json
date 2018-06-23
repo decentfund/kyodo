@@ -27,6 +27,7 @@
     "@colony/colony-js-contract-loader-http": "^1.4.1",
     "body-parser": "^1.18.3",
     "buffer": "^5.1.0",
+    "eth-dagger": "^0.0.1",
     "ethers": "^3.0.22",
     "express": "^4.16.3",
     "ipfs": "^0.29.3",
