@@ -2,17 +2,21 @@ const express = require("express");
 
 const { createColony, getColonies } = require("./colony");
 const { createTask, modifyTask, getTasks } = require("./task.js");
+const { sendTip, getAllTips } = require("./tip.js");
+const { addDomain, getAllDomains, getDomainById } = require("./domain.js");
+
+const { shitter } = require("./shitter.js");
 
 const router = express.Router();
 
 router
   .post("/shitter", (req, res) => {
-    createTask(req, res);
+    shitter(req, res);
   })
   .post("/task", (req, res) => {
-    modifyTask(req, res);
+    createTask(req, res);
   })
-  .get("/task", (req, res) => {
+  .get("/tasks", (req, res) => {
     getTasks(req, res);
   })
   .post("/colony", (req, res) => {

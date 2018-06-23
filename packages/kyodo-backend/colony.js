@@ -1,5 +1,6 @@
 const { Colony } = require("./db.js");
 const { initiateNetwork } = require("./network.js");
+const { getCurrentBlock } = require("./utils/getCurrentBlock");
 
 exports.createColony = async (req, res) => {
   const tokenAddress = await networkClient.createToken({
@@ -18,13 +19,15 @@ exports.createColony = async (req, res) => {
   const colonyClient = await networkClient.getColonyClient(colonyId);
   const metaColonyClient = await networkClient.getMetaColonyClient();
   console.log("Meta Colony address: " + metaColonyClient.contract.address);
+  const currentBlock = await getCurrentBlock();
 
   const colony = new Colony({
     colonyId: colonyId,
     colonyAddress: colonyAddress,
     tokenAddress: tokenAddress,
     tokenName: req.body.tokenName,
-    tokenSymbol: req.body.tokenSymbol
+    tokenSymbol: req.body.tokenSymbol,
+    creationBlockNumber: currentBlock
   });
 
   colony.save((err, colony) => {
