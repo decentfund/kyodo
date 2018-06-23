@@ -68,6 +68,7 @@ class App extends Component {
 
       const kyodoContract = await kyodoDAO.deployed();
       const whitelistedAddresses = await kyodoContract.getWhitelistedAddresses.call();
+      const owner = await kyodoContract.owner.call();
 
       this.setState({
         totalSupply: totalSupply.toNumber(),
@@ -76,6 +77,7 @@ class App extends Component {
         tokenSymbol,
         whitelistedAddresses,
         kyodoContract,
+        owner,
       });
       // decentToken
       // .deployed()
@@ -99,11 +101,12 @@ class App extends Component {
   }
   render() {
     const {
-      totalSupply,
+      address,
       currentUserBalance,
+      owner,
       tokenName,
       tokenSymbol,
-      address,
+      totalSupply,
     } = this.state;
     return (
       <div className="App">
@@ -123,12 +126,19 @@ class App extends Component {
           this.state.whitelistedAddresses.map(address => (
             <div key={address}>{address}</div>
           ))}
-        <input
-          type="text"
-          value={address}
-          onChange={this.handleAddressChange}
-        />
-        <button onClick={this.addToWhitelist}>Add to whitelist</button>
+        {this.state.web3 &&
+        this.state.web3.eth &&
+        this.state.web3.eth.accounts &&
+        owner === this.state.web3.eth.accounts[0] ? (
+          <div>
+            <input
+              type="text"
+              value={address}
+              onChange={this.handleAddressChange}
+            />
+            <button onClick={this.addToWhitelist}>Add to whitelist</button>
+          </div>
+        ) : null}
       </div>
     );
   }
