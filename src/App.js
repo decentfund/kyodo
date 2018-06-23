@@ -3,9 +3,12 @@ import logo from './logo.svg';
 import './App.css';
 import Helloworld from './Helloworld.js';
 import DecentToken from '../build/contracts/DecentToken.json';
+import KyodoDAO from '../build/contracts/KyodoDAO.json';
 import getWeb3 from './utils/getWeb3';
 
 class App extends Component {
+  state = {};
+
   componentWillMount() {
     getWeb3
       .then(results => {
@@ -20,6 +23,23 @@ class App extends Component {
         console.log('Error finding web3.');
       });
   }
+
+  addToWhitelist = () => {
+    const { kyodoContract } = this.state;
+    kyodoContract
+      .addToWhitelist(this.state.address, {
+        from: this.state.web3.eth.accounts[0],
+      })
+      .then(() => kyodoContract.getWhitelistedAddresses.call())
+      .then(whitelistedAddresses => {
+        this.setState({ whitelistedAddresses, address: '' });
+      });
+  };
+
+  handleAddressChange = e => {
+    this.setState({ address: e.target.value });
+  };
+
   instantiateContract() {
     /*
      * SMART CONTRACT EXAMPLE
@@ -30,8 +50,10 @@ class App extends Component {
 
     const contract = require('truffle-contract');
     const decentToken = contract(DecentToken);
-    console.log(decentToken);
     decentToken.setProvider(this.state.web3.currentProvider);
+
+    const kyodoDAO = contract(KyodoDAO);
+    kyodoDAO.setProvider(this.state.web3.currentProvider);
 
     // Declaring this for later so we can chain functions on SimpleStorage.
     // var simpleStorageInstance;
@@ -44,11 +66,16 @@ class App extends Component {
       const tokenName = await tokenContract.name();
       const tokenSymbol = await tokenContract.symbol();
 
+      const kyodoContract = await kyodoDAO.deployed();
+      const whitelistedAddresses = await kyodoContract.getWhitelistedAddresses.call();
+
       this.setState({
         totalSupply: totalSupply.toNumber(),
         currentUserBalance: currentUserBalance.toNumber(),
         tokenName,
         tokenSymbol,
+        whitelistedAddresses,
+        kyodoContract,
       });
       // decentToken
       // .deployed()
@@ -71,8 +98,13 @@ class App extends Component {
     });
   }
   render() {
-    const { totalSupply, currentUserBalance, tokenName, tokenSymbol } =
-      this.state || {};
+    const {
+      totalSupply,
+      currentUserBalance,
+      tokenName,
+      tokenSymbol,
+      address,
+    } = this.state;
     return (
       <div className="App">
         <header className="App-header">
@@ -87,6 +119,16 @@ class App extends Component {
         <div>
           {totalSupply} {tokenSymbol}
         </div>
+        {this.state.whitelistedAddresses &&
+          this.state.whitelistedAddresses.map(address => (
+            <div key={address}>{address}</div>
+          ))}
+        <input
+          type="text"
+          value={address}
+          onChange={this.handleAddressChange}
+        />
+        <button onClick={this.addToWhitelist}>Add to whitelist</button>
       </div>
     );
   }
