@@ -2,8 +2,11 @@ pragma solidity ^0.4.24;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
+import "./strings.sol";
 
 contract KyodoDAO is Ownable {
+  using strings for *;
+
   // Defines Member type
   struct Member {
     string alias;
@@ -19,8 +22,8 @@ contract KyodoDAO is Ownable {
     Token = MintableToken(_token);
   }
 
-  /// @dev Returns list of whitelistedAddresses.
-  /// @return List of whitelisted addresses.
+  // @dev Returns list of whitelistedAddresses.
+  // @return List of whitelisted addresses.
   function getWhitelistedAddresses()
     public
     returns (address[])
@@ -28,13 +31,23 @@ contract KyodoDAO is Ownable {
     return whitelistedAddresses;
   }
 
+  function nickNameNotExist(string _value)
+    public
+    returns (bool)
+  {
+    for (uint i=0; i < usedAliases.length; i++) {
+      if (usedAliases[i].toSlice().contains(_value.toSlice())) return false;
+    }
+    return true;
+  }
+
   function setAlias(
     string _value
   )
     isWhitelisted(msg.sender)
-    // TODO: Is not present in whitelisted
     external
   {
+    require(nickNameNotExist(_value));
     whitelist[msg.sender].alias = _value;
     usedAliases.push(_value);
     MintableToken(Token).mint(msg.sender, 100000);
