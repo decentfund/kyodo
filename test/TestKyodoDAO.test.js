@@ -26,11 +26,13 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
           await this.kyodo.setAlias('aaa');
         });
         it('empty address', async function() {
-          const alias = await this.kyodo.getAlias({ from: anotherAccount });
+          const alias = await this.kyodo.getAlias(anotherAccount, {
+            from: anotherAccount,
+          });
           assert.equal(alias, '');
         });
         it('proper alias', async function() {
-          const alias = await this.kyodo.getAlias();
+          const alias = await this.kyodo.getAlias(owner);
           assert.equal(alias, 'aaa');
         });
       });
