@@ -40,9 +40,9 @@ contract KyodoDAO is Ownable {
     MintableToken(Token).mint(msg.sender, 100000);
   }
 
-  function getAlias() public view returns (string)
+  function getAlias(address _addr) public view returns (string)
   {
-    return whitelist[msg.sender].alias;
+    return whitelist[_addr].alias;
   }
 
     /**
@@ -53,11 +53,29 @@ contract KyodoDAO is Ownable {
     _;
   }
 
+    /**
+   * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
+   */
+  modifier isNotWhitelisted(address _beneficiary) {
+    require(!whitelist[_beneficiary].whitelisted);
+    _;
+  }
+
+  modifier notNull(address _address) {
+    require(_address != 0);
+    _;
+  }
+
   /**
    * @dev Adds single address to whitelist.
    * @param _beneficiary Address to be added to the whitelist
    */
-  function addToWhitelist(address _beneficiary) external onlyOwner {
+  function addToWhitelist(address _beneficiary)
+    external 
+    isNotWhitelisted(_beneficiary)
+    notNull(_beneficiary)
+    onlyOwner
+  {
     whitelist[_beneficiary].whitelisted = true;
     whitelistedAddresses.push(_beneficiary);
   }
