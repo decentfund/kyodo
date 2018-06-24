@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import Helloworld from './Helloworld.js';
 import Nickname from './Nickname';
+import UserAlias from './components/UserAlias';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
 import getWeb3 from './utils/getWeb3';
@@ -145,6 +146,7 @@ class App extends Component {
       this.state.web3.eth.accounts[0];
     return (
       <div className="App">
+        <UserAlias href="/user">{userAddress}</UserAlias>
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
