@@ -3,6 +3,7 @@ const { initiateNetwork } = require("./network.js");
 const { getCurrentBlock } = require("./utils/getCurrentBlock");
 
 exports.createColony = async (req, res) => {
+  let networkClient = await initiateNetwork();
   const tokenAddress = await networkClient.createToken({
     name: req.body.tokenName,
     symbol: req.body.tokenSymbol
@@ -22,12 +23,14 @@ exports.createColony = async (req, res) => {
   const currentBlock = await getCurrentBlock();
 
   const colony = new Colony({
+    colonyName: req.body.colonyName,
     colonyId: colonyId,
     colonyAddress: colonyAddress,
     tokenAddress: tokenAddress,
     tokenName: req.body.tokenName,
     tokenSymbol: req.body.tokenSymbol,
-    creationBlockNumber: currentBlock
+    creationBlockNumber: currentBlock,
+    creationDate: Date.now()
   });
 
   colony.save((err, colony) => {
