@@ -7,7 +7,7 @@ exports.addUser = async (req, res) => {
   const user = new User({
     address: req.body.address,
     alias: req.body.alias,
-    tokenBalance: req.body.tokenBalance,
+    balance: req.body.balance,
     domains: req.body.domains,
     tasks: req.body.tasks,
     dateCreated: Date.now()

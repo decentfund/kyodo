@@ -6,13 +6,16 @@ const { sendTip, getAllTips } = require("./tip.js");
 const { addDomain, getAllDomains, getDomainById } = require("./domain.js");
 const { addUser, getAllUsers } = require("./user.js");
 
-const { shitter } = require("./shitter.js");
+const { initiateNewPeriod, getAllPeriods } = require("./period.js");
 
 const router = express.Router();
 
 router
   .post("/shitter", (req, res) => {
-    shitter(req, res);
+    initiateNewPeriod(req, res);
+  })
+  .get("/shitter", (req, res) => {
+    getAllPeriods(req, res);
   })
   .post("/task", (req, res) => {
     createTask(req, res);

@@ -2,7 +2,7 @@ const { Tip } = require("./db.js");
 const {
   changeUserBalance,
   currentPeriod,
-  getUsebByAddressInPeriod
+  getUserByAddressInPeriod
 } = require("./period.js");
 
 exports.sendTip = async (req, res) => {
@@ -11,18 +11,28 @@ exports.sendTip = async (req, res) => {
   // transferFrom.send({ sourceAddress, destinationAddress, amount }, options)
 
   let tipAmount = req.body.amount;
-  let sender = getUsebByAddressInPeriod(req.body.from);
-  let balance = sender.balance;
-
-  if (!this.checkBalance(balance, tipAmount)) {
-    res.status(400).res.send("Inssuficient funds for the tip");
+  if (tipAmount <= 0) {
+    res.status(400).send("Seriously?!");
+    return "No money no honey, sorry";
   }
 
-  changeUserBalance(sender, tipAmount);
+  let sender = await getUserByAddressInPeriod(req.body.from);
+  let receiver = await getUserByAddressInPeriod(req.body.to);
+  let senderAddress = sender[0].address;
+  let senderBalance = sender[0].balance;
+  let receiverAddress = receiver[0].address;
+
+  if (!this.checkBalance(senderBalance, tipAmount)) {
+    res.status(400).send("Inssuficient funds for the tip");
+    return "No money no honey, sorry";
+  }
+
+  await changeUserBalance(senderAddress, tipAmount);
+  await changeUserBalance(receiverAddress, -tipAmount);
 
   let tip = new Tip({
-    from: sender,
-    to: req.body.to,
+    from: senderAddress,
+    to: receiverAddress,
     amount: tipAmount,
     taskId: req.body.taskId,
     domainId: req.body.domainId,
@@ -34,17 +44,19 @@ exports.sendTip = async (req, res) => {
   tip.save((err, tip) => {
     if (err) return console.error(err);
   });
-  res.end(
-    `{"success" : Added ${tip} and ${hash} Successfully, "status" : 200}`
-  );
+  res
+    .status(200)
+    .send(
+      `User ${senderAddress} Successfully tipped user ${receiverAddress} with ${tipAmount} `
+    );
 };
 
 exports.getAllTips = async (req, res) => {
   let tips = await Tip.find((err, tips) => {
     if (err) return console.error(err);
-    console.log(tips);
     res.send(`ALL AVAILABLE TASKS: ${tips}`);
   });
+  return tips;
 };
 
 exports.checkBalance = (balance, amount) => {

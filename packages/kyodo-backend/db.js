@@ -48,7 +48,7 @@ const tipSchema = new mongoose.Schema({
 const userSchema = new mongoose.Schema({
   address: String,
   nickname: String,
-  tokenBalance: Number,
+  balance: Number,
   domains: Array,
   tasks: Array,
   dateCreated: Date
