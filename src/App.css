@@ -7,10 +7,6 @@ body {
   font-family: "Roboto Mono", monospace;
 }
 
-.App {
-  text-align: center;
-}
-
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 80px;
