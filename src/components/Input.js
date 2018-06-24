@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { FramedDiv } from '../styles/common';
 
 const StyledContainer = FramedDiv.extend`
-  max-width: 350px;
+  width: ${props => props.width};
 `;
 
 const StyledInput = styled.input`
@@ -32,10 +32,10 @@ const StyledLabel = styled.label`
   margin-top: 7px;
 `;
 
-const Input = ({ label, value }) => (
-  <StyledContainer>
+const Input = ({ label, width, ...props }) => (
+  <StyledContainer width={width}>
     <StyledLabel>{label}</StyledLabel>
-    <StyledInput type="input" value={value} />
+    <StyledInput type="input" {...props} />
   </StyledContainer>
 );
 
