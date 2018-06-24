@@ -4,6 +4,7 @@ const { createColony, getColonies } = require("./colony");
 const { createTask, modifyTask, getTasks } = require("./task.js");
 const { sendTip, getAllTips } = require("./tip.js");
 const { addDomain, getAllDomains, getDomainById } = require("./domain.js");
+const { addUser, getAllUsers } = require("./user.js");
 
 const { shitter } = require("./shitter.js");
 
@@ -39,6 +40,12 @@ router
   })
   .get("/domains", (req, res) => {
     getAllDomains(req, res);
+  })
+  .post("/user", (req, res) => {
+    addUser(req, res);
+  })
+  .get("/users", (req, res) => {
+    getAllUsers(req, res);
   });
 
 module.exports = router;
