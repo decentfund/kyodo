@@ -17,11 +17,14 @@ const taskSchema = new mongoose.Schema({
 });
 
 const colonySchema = new mongoose.Schema({
+  colonyName: String,
   colonyId: String,
   colonyAddress: String,
   tokenAddress: String,
   tokenName: String,
-  tokenSymbol: String
+  tokenSymbol: String,
+  creationBlockNumber: Number,
+  creationDate: Date
 });
 
 const domainSchema = new mongoose.Schema({
@@ -37,6 +40,7 @@ const tipSchema = new mongoose.Schema({
   amount: Number,
   taskId: Number,
   domainId: Number,
+  potId: Number,
   dateCreated: Date,
   periodId: Number
 });
@@ -51,9 +55,10 @@ const userSchema = new mongoose.Schema({
 });
 
 const periodSchema = new mongoose.Schema({
+  title: String,
   address: String,
   periodId: Number,
-  tipBalance: Number
+  balance: Number
 });
 
 const Task = mongoose.model("Task", taskSchema);
