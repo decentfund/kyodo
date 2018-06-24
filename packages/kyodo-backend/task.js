@@ -25,7 +25,7 @@ exports.createTask = async (req, res) => {
     specificationHash: hash,
     finalized: newTask.finalized,
     cancelled: newTask.cancelled,
-    dateCreated: new Date(),
+    dateCreated: Date.now(),
     dueDate: new Date(req.body.dueDate),
     potId: newTask.potId,
     domainId: newTask.potId
@@ -38,6 +38,10 @@ exports.createTask = async (req, res) => {
   });
   // await getTaskFromChain();
   res.end(`{"success" : Added and ${hash} Successfully, "status" : 200}`);
+};
+
+exports.getTaskById = async (req, res) => {
+  await Task.find({ id: req.body.address });
 };
 
 exports.modifyTask = (req, res) => {
