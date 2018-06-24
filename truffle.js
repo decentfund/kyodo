@@ -4,6 +4,7 @@ require('babel-register')({
 require('babel-polyfill');
 
 module.exports = {
+  migrations_directory: './migrations',
   networks: {
     development: {
       host: '127.0.0.1',
