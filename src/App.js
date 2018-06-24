@@ -3,6 +3,7 @@ import { injectGlobal } from 'styled-components';
 import Helloworld from './Helloworld.js';
 import Nickname from './Nickname';
 import UserAlias from './components/UserAlias';
+import Members from './components/Members';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
 import getWeb3 from './utils/getWeb3';
@@ -13,6 +14,11 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Roboto Mono", monospace;
+}
+
+button {
+  font-family: "Roboto Mono", monospace;
+  font-size: 16px;
 }
 `;
 
@@ -46,10 +52,6 @@ class App extends Component {
       .then(whitelistedAddresses => {
         this.setState({ whitelistedAddresses, address: '' });
       });
-  };
-
-  handleAddressChange = e => {
-    this.setState({ address: e.target.value });
   };
 
   handleSaveNickName = name => {
@@ -163,22 +165,16 @@ class App extends Component {
         <div>
           {totalSupply} {tokenSymbol}
         </div>
-        {whitelistedAddresses.map(address => (
-          <div key={address}>{address}</div>
-        ))}
-        {this.state.web3 &&
-        this.state.web3.eth &&
-        this.state.web3.eth.accounts &&
-        owner === this.state.web3.eth.accounts[0] ? (
-          <div>
-            <input
-              type="text"
-              value={address}
-              onChange={this.handleAddressChange}
-            />
-            <button onClick={this.addToWhitelist}>Add to whitelist</button>
-          </div>
-        ) : null}
+        <Members
+          canAdd={
+            this.state.web3 &&
+            this.state.web3.eth &&
+            this.state.web3.eth.accounts &&
+            owner === this.state.web3.eth.accounts[0]
+          }
+          address={address}
+          whitelistedAddresses={whitelistedAddresses}
+        />
         {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
           <Nickname
             address={userAddress}
