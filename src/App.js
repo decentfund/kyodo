@@ -1,12 +1,14 @@
-import React, { Component } from 'react';
-import { injectGlobal } from 'styled-components';
-import Helloworld from './Helloworld.js';
-import Nickname from './Nickname';
-import UserAlias from './components/UserAlias';
-import Members from './components/Members';
-import DecentToken from '../build/contracts/DecentToken.json';
-import KyodoDAO from '../build/contracts/KyodoDAO.json';
-import getWeb3 from './utils/getWeb3';
+import React, { Component } from "react";
+import { injectGlobal } from "styled-components";
+import Helloworld from "./Helloworld.js";
+import Nickname from "./Nickname";
+import UserAlias from "./components/UserAlias";
+import Header from "./components/Header";
+
+import Members from "./components/Members";
+import DecentToken from "../build/contracts/DecentToken.json";
+import KyodoDAO from "../build/contracts/KyodoDAO.json";
+import getWeb3 from "./utils/getWeb3";
 
 injectGlobal`
 html,
@@ -24,21 +26,21 @@ button {
 
 class App extends Component {
   state = {
-    whitelistedAddresses: [],
+    whitelistedAddresses: []
   };
 
   componentWillMount() {
     getWeb3
       .then(results => {
         this.setState({
-          web3: results.web3,
+          web3: results.web3
         });
 
         // Instantiate contract once web3 provided.
         this.instantiateContract();
       })
       .catch(() => {
-        console.log('Error finding web3.');
+        console.log("Error finding web3.");
       });
   }
 
@@ -46,11 +48,11 @@ class App extends Component {
     const { kyodoContract } = this.state;
     kyodoContract
       .addToWhitelist(this.state.address, {
-        from: this.state.web3.eth.accounts[0],
+        from: this.state.web3.eth.accounts[0]
       })
       .then(() => kyodoContract.getWhitelistedAddresses.call())
       .then(whitelistedAddresses => {
-        this.setState({ whitelistedAddresses, address: '' });
+        this.setState({ whitelistedAddresses, address: "" });
       });
   };
 
@@ -60,9 +62,9 @@ class App extends Component {
       decentToken,
       web3: {
         eth: {
-          accounts: [account],
-        },
-      },
+          accounts: [account]
+        }
+      }
     } = this.state;
     kyodoContract
       .setAlias(name, { from: account })
@@ -71,8 +73,8 @@ class App extends Component {
       .then(() => decentToken.balanceOf.call(account))
       .then(balance =>
         this.setState({
-          currentUserBalance: balance.toNumber(),
-        }),
+          currentUserBalance: balance.toNumber()
+        })
       );
   };
 
@@ -84,7 +86,7 @@ class App extends Component {
      * state management library, but for convenience I've placed them here.
      */
 
-    const contract = require('truffle-contract');
+    const contract = require("truffle-contract");
     const decentToken = contract(DecentToken);
     decentToken.setProvider(this.state.web3.currentProvider);
 
@@ -117,7 +119,7 @@ class App extends Component {
         whitelistedAddresses,
         kyodoContract,
         owner,
-        nickname: nick,
+        nickname: nick
       });
       // decentToken
       // .deployed()
@@ -147,7 +149,7 @@ class App extends Component {
       tokenName,
       tokenSymbol,
       totalSupply,
-      whitelistedAddresses,
+      whitelistedAddresses
     } = this.state;
     const userAddress =
       this.state.web3 &&
@@ -156,6 +158,7 @@ class App extends Component {
       this.state.web3.eth.accounts[0];
     return (
       <div className="App">
+        <Header userAddress={userAddress} />
         <UserAlias href="/user">{userAddress}</UserAlias>
         <Helloworld />
         <div>
