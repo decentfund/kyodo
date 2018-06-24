@@ -1,12 +1,20 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { injectGlobal } from 'styled-components';
 import Helloworld from './Helloworld.js';
 import Nickname from './Nickname';
 import UserAlias from './components/UserAlias';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
 import getWeb3 from './utils/getWeb3';
+
+injectGlobal`
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto Mono", monospace;
+}
+`;
 
 class App extends Component {
   state = {
@@ -147,10 +155,6 @@ class App extends Component {
     return (
       <div className="App">
         <UserAlias href="/user">{userAddress}</UserAlias>
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
         <Helloworld />
         <div>
           {currentUserBalance} {tokenSymbol}
