@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { ContractData } from 'drizzle-react-components';
 import { injectGlobal } from 'styled-components';
 import Helloworld from './Helloworld.js';
 import Nickname from './Nickname';
@@ -125,15 +126,7 @@ class App extends Component {
     });
   }
   render() {
-    const {
-      address,
-      currentUserBalance,
-      owner,
-      tokenName,
-      tokenSymbol,
-      totalSupply,
-      whitelistedAddresses,
-    } = this.state;
+    const { address, owner, tokenName, whitelistedAddresses } = this.state;
     const {
       accounts: { 0: userAddress },
     } = this.props;
@@ -142,11 +135,21 @@ class App extends Component {
         <Header userAddress={userAddress} />
         <Helloworld />
         <div>
-          {currentUserBalance} {tokenSymbol}
+          <ContractData
+            contract="DecentToken"
+            method="totalSupply"
+            methodArgs={[{ from: this.props.accounts[0] }]}
+          />{' '}
+          <ContractData contract="DecentToken" method="symbol" />
         </div>
         <div>Total supply of {tokenName}:</div>
         <div>
-          {totalSupply} {tokenSymbol}
+          <ContractData
+            contract="DecentToken"
+            method="totalSupply"
+            methodArgs={[{ from: this.props.accounts[0] }]}
+          />{' '}
+          <ContractData contract="DecentToken" method="symbol" />
         </div>
         <Members
           canAdd={owner === userAddress}
@@ -167,6 +170,9 @@ class App extends Component {
 
 const mapStateToProps = state => ({
   accounts: state.accounts,
+  KyodoDAO: state.contracts.KyodoDAO,
+  DecentToken: state.contracts.DecentToken,
+  drizzleStatus: state.drizzleStatus,
 });
 
 export default drizzleConnect(App, mapStateToProps);
