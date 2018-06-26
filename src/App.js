@@ -6,6 +6,7 @@ import Nickname from './Nickname';
 import Header from './components/Header';
 import Members from './components/Members';
 import UserBalance from './components/UserBalance';
+import FundStatistics from './components/FundStatistics';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
 import { loadRate } from './actions';
@@ -139,15 +140,7 @@ class App extends Component {
       <div className="App">
         <Header userAddress={userAddress} />
         <Helloworld />
-        <div>
-          <ContractData
-            contract="DecentToken"
-            method="totalSupply"
-            methodArgs={[{ from: this.props.accounts[0] }]}
-          />{' '}
-          <ContractData contract="DecentToken" method="symbol" />
-        </div>
-        <div>Total supply of {tokenName}:</div>
+        <FundStatistics />
         <div>
           <UserBalance
             contractName="DecentToken"
