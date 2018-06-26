@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ContractData } from 'drizzle-react-components';
+import { drizzleConnect } from 'drizzle-react';
 import { injectGlobal } from 'styled-components';
 import Helloworld from './Helloworld.js';
 import Nickname from './Nickname';
@@ -8,7 +8,7 @@ import Members from './components/Members';
 import UserBalance from './components/UserBalance';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
-import { drizzleConnect } from 'drizzle-react';
+import { loadRate } from './actions';
 
 injectGlobal`
 html,
@@ -28,6 +28,10 @@ class App extends Component {
   state = {
     whitelistedAddresses: [],
   };
+
+  componentDidMount() {
+    this.props.loadRate('ETH');
+  }
 
   addToWhitelist = () => {
     const { kyodoContract } = this.state;
@@ -174,4 +178,4 @@ const mapStateToProps = state => ({
   drizzleStatus: state.drizzleStatus,
 });
 
-export default drizzleConnect(App, mapStateToProps);
+export default drizzleConnect(App, mapStateToProps, { loadRate });
