@@ -19,6 +19,12 @@ const rate = (
   }
 };
 
+export const getRate = (state, from, to) => {
+  if (!state[from] || !state[to]) return 0;
+
+  return state[from] / state[to];
+};
+
 const reducer = combineReducers({
   routing: routerReducer,
   rate,
