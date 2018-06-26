@@ -3,17 +3,18 @@ import { takeEvery } from 'redux-saga';
 import { all, fork, call, put } from 'redux-saga/effects';
 import { drizzleSagas } from 'drizzle';
 import { LOAD_RATE_REQUEST, LOAD_RATE_SUCCESS } from './constants';
+import { BASE_CURRENCY } from './reducer';
 
-function* loadRate() {
+function* loadRate({ currency }) {
   try {
-    const rateURI =
-      'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=EUR';
+    const rateURI = `https://min-api.cryptocompare.com/data/price?fsym=${currency}&tsyms=${BASE_CURRENCY}`;
     const eventLoad = yield call(axios.get, rateURI);
-    const rate = eventLoad.data['EUR'];
+    const rate = eventLoad.data[BASE_CURRENCY];
 
     yield put({
       type: LOAD_RATE_SUCCESS,
       rate,
+      currency,
     });
   } catch (e) {}
 }
