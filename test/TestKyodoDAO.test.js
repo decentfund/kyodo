@@ -61,4 +61,15 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
       assert.equal(user2Balance, 100000);
     });
   });
+  describe('returns proper members count', function() {
+    it('for 2 whitelisted addresses', async function() {
+      await this.kyodo.addManyToWhitelist([owner, anotherAccount]);
+      const colonyMembers = await this.kyodo.getMembersCount();
+      assert.equal(colonyMembers, 2);
+    });
+    it('for empty whitelist', async function() {
+      const colonyMembers = await this.kyodo.getMembersCount();
+      assert.equal(colonyMembers, 0);
+    });
+  });
 });
