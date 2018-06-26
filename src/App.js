@@ -5,6 +5,7 @@ import Helloworld from './Helloworld.js';
 import Nickname from './Nickname';
 import Header from './components/Header';
 import Members from './components/Members';
+import UserBalance from './components/UserBalance';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
 import { drizzleConnect } from 'drizzle-react';
@@ -144,12 +145,10 @@ class App extends Component {
         </div>
         <div>Total supply of {tokenName}:</div>
         <div>
-          <ContractData
-            contract="DecentToken"
-            method="totalSupply"
-            methodArgs={[{ from: this.props.accounts[0] }]}
-          />{' '}
-          <ContractData contract="DecentToken" method="symbol" />
+          <UserBalance
+            contractName="DecentToken"
+            account={this.props.accounts[0]}
+          />
         </div>
         <Members
           canAdd={owner === userAddress}
