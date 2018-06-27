@@ -5,7 +5,9 @@
   "main": "app.js",
   "scripts": {
     "test": "test",
-    "start": "./node_modules/.bin/nodemon app.js"
+    "start": "./node_modules/.bin/nodemon app.js",
+    "precise-commits": "precise-commits",
+    "precommit": "npm run precise-commits"
   },
   "repository": {
     "type": "git",
@@ -37,6 +39,9 @@
     "web3": "^1.0.0-beta.34"
   },
   "devDependencies": {
-    "nodemon": "^1.17.5"
+    "husky": "^0.14.3",
+    "nodemon": "^1.17.5",
+    "precise-commits": "^1.0.2",
+    "prettier": "^1.13.6"
   }
 }
