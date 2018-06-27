@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { drizzleConnect } from 'drizzle-react';
-import { injectGlobal } from 'styled-components';
+import styled, { injectGlobal } from 'styled-components';
 import Helloworld from './Helloworld.js';
 import Nickname from './Nickname';
 import Header from './components/Header';
 import Members from './components/Members';
 import UserBalance from './components/UserBalance';
+import PeriodProgress from './components/PeriodProgress';
 import FundStatistics from './components/FundStatistics';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
@@ -23,6 +24,12 @@ button {
   font-family: "Roboto Mono", monospace;
   font-size: 16px;
 }
+`;
+
+const StyledMainInfoContainer = styled.div`
+  display: block;
+  padding: 0 40px;
+  max-width: 665px;
 `;
 
 class App extends Component {
@@ -139,26 +146,29 @@ class App extends Component {
     return (
       <div className="App">
         <Header userAddress={userAddress} />
-        <Helloworld />
-        <FundStatistics />
-        <div>
-          <UserBalance
-            contractName="DecentToken"
-            account={this.props.accounts[0]}
+        <StyledMainInfoContainer>
+          <PeriodProgress />
+          <Helloworld />
+          <FundStatistics />
+          <div>
+            <UserBalance
+              contractName="DecentToken"
+              account={this.props.accounts[0]}
+            />
+          </div>
+          <Members
+            canAdd={owner === userAddress}
+            address={address}
+            whitelistedAddresses={whitelistedAddresses}
           />
-        </div>
-        <Members
-          canAdd={owner === userAddress}
-          address={address}
-          whitelistedAddresses={whitelistedAddresses}
-        />
-        {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
-          <Nickname
-            address={userAddress}
-            nickname={this.state.nickname}
-            onSaveNickname={this.handleSaveNickName}
-          />
-        ) : null}
+          {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
+            <Nickname
+              address={userAddress}
+              nickname={this.state.nickname}
+              onSaveNickname={this.handleSaveNickName}
+            />
+          ) : null}
+        </StyledMainInfoContainer>
       </div>
     );
   }
