@@ -3,7 +3,7 @@ import { ContractData } from 'drizzle-react-components';
 import { drizzleConnect } from 'drizzle-react';
 import StatisticsLabel from './StatisticsLabel';
 import { formatEth, formatEur } from '../helpers/format';
-import { getRate } from '../reducer';
+import { getRate } from '../reducers';
 
 const FundStatistics = ({ balance, balanceEur }) => (
   <div>
@@ -26,7 +26,7 @@ const mapStateToProps = state => {
   const balance = 0.5;
   return {
     balance,
-    balanceEur: balance * getRate(state.rate, 'ETH', 'EUR'),
+    balanceEur: balance * getRate(state, 'ETH', 'EUR'),
   };
 };
 

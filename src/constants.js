@@ -1,2 +1,4 @@
+export const BASE_CURRENCY = 'EUR';
+
 export const LOAD_RATE_REQUEST = 'LOAD_RATE_REQUEST';
 export const LOAD_RATE_SUCCESS = 'LOAD_RATE_SUCCESS';
