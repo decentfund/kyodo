@@ -13,7 +13,7 @@ const FundStatistics = ({ balance, balanceEur }) => (
     <StatisticsLabel label="CAP">
       {formatEth(balance)} {formatEur(balanceEur)}
     </StatisticsLabel>
-    <StatisticsLabel label="1DF">
+    <StatisticsLabel label="1 ◯">
       {formatEth(0)} {formatEur(0)}
     </StatisticsLabel>
     <StatisticsLabel label="FUND">
