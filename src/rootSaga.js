@@ -3,7 +3,7 @@ import { takeEvery } from 'redux-saga';
 import { all, fork, call, put } from 'redux-saga/effects';
 import { drizzleSagas } from 'drizzle';
 import { LOAD_RATE_REQUEST, LOAD_RATE_SUCCESS } from './constants';
-import { BASE_CURRENCY } from './reducer';
+import { BASE_CURRENCY } from './constants';
 
 function* loadRate({ currency }) {
   try {
