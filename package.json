@@ -70,7 +70,9 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "scripts/test.sh"
+    "truffle:test": "scripts/test.sh",
+    "jest": "jest",
+    "jest:watch": "jest --watch"
   },
   "devDependencies": {
     "babel-polyfill": "^6.26.0",
