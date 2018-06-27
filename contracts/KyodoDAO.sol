@@ -31,6 +31,12 @@ contract KyodoDAO is Ownable {
     return whitelistedAddresses;
   }
 
+  function getMembersCount() public view returns (uint)
+  {
+    return whitelistedAddresses.length;
+  }
+
+
   function nickNameNotExist(string _value)
     public
     returns (bool)

@@ -1,14 +1,15 @@
-import React, { Component } from "react";
-import { injectGlobal } from "styled-components";
-import Helloworld from "./Helloworld.js";
-import Nickname from "./Nickname";
-import UserAlias from "./components/UserAlias";
-import Header from "./components/Header";
-
-import Members from "./components/Members";
-import DecentToken from "../build/contracts/DecentToken.json";
-import KyodoDAO from "../build/contracts/KyodoDAO.json";
-import getWeb3 from "./utils/getWeb3";
+import React, { Component } from 'react';
+import { drizzleConnect } from 'drizzle-react';
+import { injectGlobal } from 'styled-components';
+import Helloworld from './Helloworld.js';
+import Nickname from './Nickname';
+import Header from './components/Header';
+import Members from './components/Members';
+import UserBalance from './components/UserBalance';
+import FundStatistics from './components/FundStatistics';
+import DecentToken from '../build/contracts/DecentToken.json';
+import KyodoDAO from '../build/contracts/KyodoDAO.json';
+import { loadRate } from './actions';
 
 injectGlobal`
 html,
@@ -26,33 +27,22 @@ button {
 
 class App extends Component {
   state = {
-    whitelistedAddresses: []
+    whitelistedAddresses: [],
   };
 
-  componentWillMount() {
-    getWeb3
-      .then(results => {
-        this.setState({
-          web3: results.web3
-        });
-
-        // Instantiate contract once web3 provided.
-        this.instantiateContract();
-      })
-      .catch(() => {
-        console.log("Error finding web3.");
-      });
+  componentDidMount() {
+    this.props.loadRate('ETH');
   }
 
   addToWhitelist = () => {
     const { kyodoContract } = this.state;
     kyodoContract
       .addToWhitelist(this.state.address, {
-        from: this.state.web3.eth.accounts[0]
+        from: this.state.web3.eth.accounts[0],
       })
       .then(() => kyodoContract.getWhitelistedAddresses.call())
       .then(whitelistedAddresses => {
-        this.setState({ whitelistedAddresses, address: "" });
+        this.setState({ whitelistedAddresses, address: '' });
       });
   };
 
@@ -62,9 +52,9 @@ class App extends Component {
       decentToken,
       web3: {
         eth: {
-          accounts: [account]
-        }
-      }
+          accounts: [account],
+        },
+      },
     } = this.state;
     kyodoContract
       .setAlias(name, { from: account })
@@ -73,8 +63,8 @@ class App extends Component {
       .then(() => decentToken.balanceOf.call(account))
       .then(balance =>
         this.setState({
-          currentUserBalance: balance.toNumber()
-        })
+          currentUserBalance: balance.toNumber(),
+        }),
       );
   };
 
@@ -86,7 +76,7 @@ class App extends Component {
      * state management library, but for convenience I've placed them here.
      */
 
-    const contract = require("truffle-contract");
+    const contract = require('truffle-contract');
     const decentToken = contract(DecentToken);
     decentToken.setProvider(this.state.web3.currentProvider);
 
@@ -119,7 +109,7 @@ class App extends Component {
         whitelistedAddresses,
         kyodoContract,
         owner,
-        nickname: nick
+        nickname: nick,
       });
       // decentToken
       // .deployed()
@@ -142,39 +132,23 @@ class App extends Component {
     });
   }
   render() {
+    const { address, owner, tokenName, whitelistedAddresses } = this.state;
     const {
-      address,
-      currentUserBalance,
-      owner,
-      tokenName,
-      tokenSymbol,
-      totalSupply,
-      whitelistedAddresses
-    } = this.state;
-    const userAddress =
-      this.state.web3 &&
-      this.state.web3.eth &&
-      this.state.web3.eth.accounts &&
-      this.state.web3.eth.accounts[0];
+      accounts: { 0: userAddress },
+    } = this.props;
     return (
       <div className="App">
         <Header userAddress={userAddress} />
-        <UserAlias href="/user">{userAddress}</UserAlias>
         <Helloworld />
+        <FundStatistics />
         <div>
-          {currentUserBalance} {tokenSymbol}
-        </div>
-        <div>Total supply of {tokenName}:</div>
-        <div>
-          {totalSupply} {tokenSymbol}
+          <UserBalance
+            contractName="DecentToken"
+            account={this.props.accounts[0]}
+          />
         </div>
         <Members
-          canAdd={
-            this.state.web3 &&
-            this.state.web3.eth &&
-            this.state.web3.eth.accounts &&
-            owner === this.state.web3.eth.accounts[0]
-          }
+          canAdd={owner === userAddress}
           address={address}
           whitelistedAddresses={whitelistedAddresses}
         />
@@ -190,4 +164,11 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = state => ({
+  accounts: state.accounts,
+  KyodoDAO: state.contracts.KyodoDAO,
+  DecentToken: state.contracts.DecentToken,
+  drizzleStatus: state.drizzleStatus,
+});
+
+export default drizzleConnect(App, mapStateToProps, { loadRate });
