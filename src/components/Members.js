@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Input from './Input';
 import WhitelistedAddress from './WhitelistedAddress';
 import FormButton from './FormButton';
+import { isValidAddress } from '../helpers';
 
 const StyledHeader = styled.header`
   font-size: 24px;
@@ -48,7 +49,7 @@ class Members extends Component {
               />
             </StyledInputContainer>
             <FormButton
-              disabled={this.state.address.length === 0}
+              disabled={address.length === 0 || !isValidAddress(address)}
               onClick={this.addToWhitelist}
             >
               Add
