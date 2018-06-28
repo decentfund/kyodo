@@ -29,22 +29,7 @@ class Members extends Component {
 
   render() {
     const { address } = this.state;
-    const { canAdd } = this.props;
-    // const { whitelistedAddresses, canAdd } = this.props;
-    const whitelistedAddresses = [
-      {
-        value: '0xf74757e788a81350210ef041a79a18e478903559',
-        alias: 'lena_p',
-      },
-      {
-        value: '0×cECbdAA3F5b649fAE34654637a3A856f4E2311ab',
-        alias: '',
-      },
-      {
-        value: '0×06012c8cf97Bead5deAe237070f9587f8B7a266e',
-        alias: 'poluelene_polunatasha',
-      },
-    ];
+    const { canAdd, whitelistedAddresses } = this.props;
     return (
       <div>
         <StyledHeader>Colony Members</StyledHeader>

@@ -10,7 +10,7 @@ import UserBalance from './components/UserBalance';
 import FundStatistics from './components/FundStatistics';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
-import { getContract, getOwner } from './reducers';
+import { getContract, getOwner, getWhitelistedAddresses } from './reducers';
 import { loadRate } from './actions';
 
 injectGlobal`
@@ -140,13 +140,16 @@ class App extends Component {
     });
   }
   render() {
-    const { address, tokenName, whitelistedAddresses } = this.state;
+    const { address, tokenName } = this.state;
     const {
       accounts: { 0: userAddress },
       owner,
+      whitelistedAddresses = [],
     } = this.props;
     if (this.props.drizzleStatus.initialized) {
       this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
+      console.log(this.drizzle.contracts.KyodoDAO.methods);
+      this.drizzle.contracts.KyodoDAO.methods.getWhitelistedAddresses.cacheCall();
     }
 
     return (
@@ -183,6 +186,7 @@ const mapStateToProps = state => ({
   DecentToken: state.contracts.DecentToken,
   drizzleStatus: state.drizzleStatus,
   owner: getOwner(getContract('KyodoDAO')(state)),
+  whitelistedAddresses: getWhitelistedAddresses(getContract('KyodoDAO')(state)),
 });
 
 App.contextTypes = {
