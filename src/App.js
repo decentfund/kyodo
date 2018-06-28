@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import { injectGlobal } from 'styled-components';
 import Helloworld from './Helloworld.js';
@@ -9,6 +10,7 @@ import UserBalance from './components/UserBalance';
 import FundStatistics from './components/FundStatistics';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
+import { getContract, getOwner } from './reducers';
 import { loadRate } from './actions';
 
 injectGlobal`
@@ -29,6 +31,12 @@ class App extends Component {
   state = {
     whitelistedAddresses: [],
   };
+
+  constructor(props, context) {
+    super(props);
+
+    this.drizzle = context.drizzle;
+  }
 
   componentDidMount() {
     this.props.loadRate('ETH');
@@ -132,10 +140,15 @@ class App extends Component {
     });
   }
   render() {
-    const { address, owner, tokenName, whitelistedAddresses } = this.state;
+    const { address, tokenName, whitelistedAddresses } = this.state;
     const {
       accounts: { 0: userAddress },
+      owner,
     } = this.props;
+    if (this.props.drizzleStatus.initialized) {
+      this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
+    }
+
     return (
       <div className="App">
         <Header userAddress={userAddress} />
@@ -169,6 +182,11 @@ const mapStateToProps = state => ({
   KyodoDAO: state.contracts.KyodoDAO,
   DecentToken: state.contracts.DecentToken,
   drizzleStatus: state.drizzleStatus,
+  owner: getOwner(getContract('KyodoDAO')(state)),
 });
+
+App.contextTypes = {
+  drizzle: PropTypes.object,
+};
 
 export default drizzleConnect(App, mapStateToProps, { loadRate });

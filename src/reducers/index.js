@@ -15,6 +15,8 @@ export const getTotalSupply = getFromContract('totalSupply["0x0"].value', 0);
 
 export const getSymbol = getFromContract('symbol["0x0"].value', '');
 
+export const getOwner = getFromContract('owner["0x0"].value');
+
 export const getFundBaseBalance = state => {
   const fundBalance = 0.5; // ETH
   const baseCurrencyRate = fromRates.getRate(state.rates, 'ETH', BASE_CURRENCY);
