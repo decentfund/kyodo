@@ -19,6 +19,7 @@ export const getOwner = getFromContract('owner["0x0"].value');
 
 export const getWhitelistedAddresses = getFromContract(
   'getWhitelistedAddresses["0x0"].value',
+  [],
 );
 
 export const getFundBaseBalance = state => {

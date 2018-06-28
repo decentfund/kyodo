@@ -144,11 +144,10 @@ class App extends Component {
     const {
       accounts: { 0: userAddress },
       owner,
-      whitelistedAddresses = [],
+      whitelistedAddresses,
     } = this.props;
     if (this.props.drizzleStatus.initialized) {
       this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
-      console.log(this.drizzle.contracts.KyodoDAO.methods);
       this.drizzle.contracts.KyodoDAO.methods.getWhitelistedAddresses.cacheCall();
     }
 
@@ -186,7 +185,9 @@ const mapStateToProps = state => ({
   DecentToken: state.contracts.DecentToken,
   drizzleStatus: state.drizzleStatus,
   owner: getOwner(getContract('KyodoDAO')(state)),
-  whitelistedAddresses: getWhitelistedAddresses(getContract('KyodoDAO')(state)),
+  whitelistedAddresses: getWhitelistedAddresses(
+    getContract('KyodoDAO')(state),
+  ).map(address => ({ value: address })),
 });
 
 App.contextTypes = {
