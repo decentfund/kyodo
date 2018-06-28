@@ -25,6 +25,19 @@ button {
   font-family: "Roboto Mono", monospace;
   font-size: 16px;
 }
+
+/* Mozilla based browsers */
+::-moz-selection {
+   background-color: #f5f905;
+   color: #000;
+}
+
+/* Works in Safari */
+::selection {
+   background-color: #f5f905;
+   color: #000;
+}
+
 `;
 
 class App extends Component {
