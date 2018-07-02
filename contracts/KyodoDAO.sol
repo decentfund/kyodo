@@ -24,10 +24,7 @@ contract KyodoDAO is Ownable {
 
   // @dev Returns list of whitelistedAddresses.
   // @return List of whitelisted addresses.
-  function getWhitelistedAddresses()
-    public
-    returns (address[])
-  {
+  function getWhitelistedAddresses() public view returns (address[]) {
     return whitelistedAddresses;
   }
 

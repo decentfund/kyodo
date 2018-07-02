@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
 import Input from './Input';
 import WhitelistedAddress from './WhitelistedAddress';
 import FormButton from './FormButton';
+import { isValidAddress } from '../helpers';
 
 const StyledHeader = styled.header`
   font-size: 24px;
@@ -23,28 +26,31 @@ const StyledInputContainer = styled.div`
 class Members extends Component {
   state = { address: '' };
 
+  constructor(props, context) {
+    super(props);
+
+    this.drizzle = context.drizzle;
+  }
+
   handleAddressChange = e => {
     this.setState({ address: e.target.value });
   };
 
+  handleAddToWhitelist = () => {
+    const { userAddress } = this.props;
+    var state = this.drizzle.store.getState();
+
+    if (state.drizzleStatus.initialized) {
+      // Unable to use cacheSend function due to external function drizzle smartcontract handling
+      this.drizzle.contracts.KyodoDAO.methods
+        .addToWhitelist(this.state.address)
+        .send({ from: userAddress });
+    }
+  };
+
   render() {
     const { address } = this.state;
-    const { canAdd } = this.props;
-    // const { whitelistedAddresses, canAdd } = this.props;
-    const whitelistedAddresses = [
-      {
-        value: '0xf74757e788a81350210ef041a79a18e478903559',
-        alias: 'lena_p',
-      },
-      {
-        value: '0×cECbdAA3F5b649fAE34654637a3A856f4E2311ab',
-        alias: '',
-      },
-      {
-        value: '0×06012c8cf97Bead5deAe237070f9587f8B7a266e',
-        alias: 'poluelene_polunatasha',
-      },
-    ];
+    const { canAdd, whitelistedAddresses } = this.props;
     return (
       <div>
         <StyledHeader>Colony Members</StyledHeader>
@@ -63,8 +69,8 @@ class Members extends Component {
               />
             </StyledInputContainer>
             <FormButton
-              disabled={this.state.address.length === 0}
-              onClick={this.addToWhitelist}
+              disabled={address.length === 0 || !isValidAddress(address)}
+              onClick={this.handleAddToWhitelist}
             >
               Add
             </FormButton>
@@ -75,4 +81,12 @@ class Members extends Component {
   }
 }
 
-export default Members;
+Members.contextTypes = {
+  drizzle: PropTypes.object,
+};
+
+const mapStateToProps = state => ({
+  userAddress: state.accounts[0],
+});
+
+export default drizzleConnect(Members, mapStateToProps);

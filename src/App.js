@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled, { injectGlobal } from 'styled-components';
 import Helloworld from './Helloworld.js';
@@ -10,6 +11,7 @@ import PeriodProgress from './components/PeriodProgress';
 import FundStatistics from './components/FundStatistics';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
+import { getContract, getOwner, getWhitelistedAddresses } from './reducers';
 import { loadRate } from './actions';
 
 injectGlobal`
@@ -24,6 +26,19 @@ button {
   font-family: "Roboto Mono", monospace;
   font-size: 16px;
 }
+
+/* Mozilla based browsers */
+::-moz-selection {
+   background-color: #f5f905;
+   color: #000;
+}
+
+/* Works in Safari */
+::selection {
+   background-color: #f5f905;
+   color: #000;
+}
+
 `;
 
 const StyledMainInfoContainer = styled.div`
@@ -36,6 +51,12 @@ class App extends Component {
   state = {
     whitelistedAddresses: [],
   };
+
+  constructor(props, context) {
+    super(props);
+
+    this.drizzle = context.drizzle;
+  }
 
   componentDidMount() {
     this.props.loadRate('ETH');
@@ -139,10 +160,17 @@ class App extends Component {
     });
   }
   render() {
-    const { address, owner, tokenName, whitelistedAddresses } = this.state;
+    const { address, tokenName } = this.state;
     const {
       accounts: { 0: userAddress },
+      owner,
+      whitelistedAddresses,
     } = this.props;
+    if (this.props.drizzleStatus.initialized) {
+      this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
+      this.drizzle.contracts.KyodoDAO.methods.getWhitelistedAddresses.cacheCall();
+    }
+
     return (
       <div className="App">
         <Header userAddress={userAddress} />
@@ -179,6 +207,14 @@ const mapStateToProps = state => ({
   KyodoDAO: state.contracts.KyodoDAO,
   DecentToken: state.contracts.DecentToken,
   drizzleStatus: state.drizzleStatus,
+  owner: getOwner(getContract('KyodoDAO')(state)),
+  whitelistedAddresses: getWhitelistedAddresses(
+    getContract('KyodoDAO')(state),
+  ).map(address => ({ value: address })),
 });
+
+App.contextTypes = {
+  drizzle: PropTypes.object,
+};
 
 export default drizzleConnect(App, mapStateToProps, { loadRate });
