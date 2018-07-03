@@ -17,6 +17,8 @@ contract KyodoDAO is Ownable {
   mapping(address => Member) public whitelist;
   address[] whitelistedAddresses;
   MintableToken public Token;
+  uint256 public currentPeriodStartTime;
+  uint public periodDaysLength;
 
   constructor(address _token) public {
     Token = MintableToken(_token);
@@ -42,6 +44,18 @@ contract KyodoDAO is Ownable {
       if (usedAliases[i].toSlice().contains(_value.toSlice())) return false;
     }
     return true;
+  }
+
+  // TODO: multisig function
+  function startNewPeriod() public onlyOwner returns (uint256) {
+    currentPeriodStartTime = now;
+    return currentPeriodStartTime;
+  }
+
+  // TODO: multisig function
+  function setPeriodDaysLength(uint8 daysLength) public onlyOwner returns (uint) {
+    periodDaysLength = daysLength;
+    return periodDaysLength;
   }
 
   function setAlias(
@@ -86,12 +100,7 @@ contract KyodoDAO is Ownable {
    * @dev Adds single address to whitelist.
    * @param _beneficiary Address to be added to the whitelist
    */
-  function addToWhitelist(address _beneficiary)
-    external 
-    isNotWhitelisted(_beneficiary)
-    notNull(_beneficiary)
-    onlyOwner
-  {
+  function addToWhitelist(address _beneficiary) external isNotWhitelisted(_beneficiary) notNull(_beneficiary) onlyOwner {
     whitelist[_beneficiary].whitelisted = true;
     whitelistedAddresses.push(_beneficiary);
   }

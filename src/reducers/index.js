@@ -17,6 +17,14 @@ export const getSymbol = getFromContract('symbol["0x0"].value', '');
 
 export const getOwner = getFromContract('owner["0x0"].value');
 
+export const getCurrentPeriodStartTime = getFromContract(
+  'currentPeriodStartTime["0x0"].value',
+);
+
+export const getPeriodDaysLength = getFromContract(
+  'periodDaysLength["0x0"].value',
+);
+
 export const getWhitelistedAddresses = getFromContract(
   'getWhitelistedAddresses["0x0"].value',
   [],

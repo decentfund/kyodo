@@ -1,16 +1,24 @@
 import React, { Component } from 'react';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
-import { injectGlobal } from 'styled-components';
+import styled, { injectGlobal } from 'styled-components';
 import Helloworld from './Helloworld.js';
 import Nickname from './Nickname';
 import Header from './components/Header';
 import Members from './components/Members';
 import UserBalance from './components/UserBalance';
+import PeriodProgress from './components/PeriodProgress';
 import FundStatistics from './components/FundStatistics';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
-import { getContract, getOwner, getWhitelistedAddresses } from './reducers';
+import {
+  getContract,
+  getOwner,
+  getWhitelistedAddresses,
+  getCurrentPeriodStartTime,
+  getPeriodDaysLength,
+} from './reducers';
 import { loadRate } from './actions';
 
 injectGlobal`
@@ -38,6 +46,12 @@ button {
    color: #000;
 }
 
+`;
+
+const StyledMainInfoContainer = styled.div`
+  display: block;
+  padding: 0 40px;
+  max-width: 665px;
 `;
 
 class App extends Component {
@@ -158,35 +172,47 @@ class App extends Component {
       accounts: { 0: userAddress },
       owner,
       whitelistedAddresses,
+      currentPeriodStartTime,
+      periodDaysLength,
     } = this.props;
     if (this.props.drizzleStatus.initialized) {
       this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
       this.drizzle.contracts.KyodoDAO.methods.getWhitelistedAddresses.cacheCall();
+      this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartTime.cacheCall();
+      this.drizzle.contracts.KyodoDAO.methods.periodDaysLength.cacheCall();
     }
 
     return (
       <div className="App">
         <Header userAddress={userAddress} />
-        <Helloworld />
-        <FundStatistics />
-        <div>
-          <UserBalance
-            contractName="DecentToken"
-            account={this.props.accounts[0]}
+        <StyledMainInfoContainer>
+          <PeriodProgress
+            startTime={moment.unix(currentPeriodStartTime)}
+            endTime={moment
+              .unix(currentPeriodStartTime)
+              .add(periodDaysLength, 'days')}
           />
-        </div>
-        <Members
-          canAdd={owner === userAddress}
-          address={address}
-          whitelistedAddresses={whitelistedAddresses}
-        />
-        {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
-          <Nickname
-            address={userAddress}
-            nickname={this.state.nickname}
-            onSaveNickname={this.handleSaveNickName}
+          <Helloworld />
+          <FundStatistics />
+          <div>
+            <UserBalance
+              contractName="DecentToken"
+              account={this.props.accounts[0]}
+            />
+          </div>
+          <Members
+            canAdd={owner === userAddress}
+            address={address}
+            whitelistedAddresses={whitelistedAddresses}
           />
-        ) : null}
+          {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
+            <Nickname
+              address={userAddress}
+              nickname={this.state.nickname}
+              onSaveNickname={this.handleSaveNickName}
+            />
+          ) : null}
+        </StyledMainInfoContainer>
       </div>
     );
   }
@@ -201,6 +227,10 @@ const mapStateToProps = state => ({
   whitelistedAddresses: getWhitelistedAddresses(
     getContract('KyodoDAO')(state),
   ).map(address => ({ value: address })),
+  currentPeriodStartTime: getCurrentPeriodStartTime(
+    getContract('KyodoDAO')(state),
+  ),
+  periodDaysLength: getPeriodDaysLength(getContract('KyodoDAO')(state)),
 });
 
 App.contextTypes = {
