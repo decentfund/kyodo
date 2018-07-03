@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled, { injectGlobal } from 'styled-components';
@@ -11,7 +12,13 @@ import PeriodProgress from './components/PeriodProgress';
 import FundStatistics from './components/FundStatistics';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
-import { getContract, getOwner, getWhitelistedAddresses } from './reducers';
+import {
+  getContract,
+  getOwner,
+  getWhitelistedAddresses,
+  getCurrentPeriodStartTime,
+  getPeriodDaysLength,
+} from './reducers';
 import { loadRate } from './actions';
 
 injectGlobal`
@@ -165,17 +172,26 @@ class App extends Component {
       accounts: { 0: userAddress },
       owner,
       whitelistedAddresses,
+      currentPeriodStartTime,
+      periodDaysLength,
     } = this.props;
     if (this.props.drizzleStatus.initialized) {
       this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
       this.drizzle.contracts.KyodoDAO.methods.getWhitelistedAddresses.cacheCall();
+      this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartTime.cacheCall();
+      this.drizzle.contracts.KyodoDAO.methods.periodDaysLength.cacheCall();
     }
 
     return (
       <div className="App">
         <Header userAddress={userAddress} />
         <StyledMainInfoContainer>
-          <PeriodProgress />
+          <PeriodProgress
+            startTime={moment.unix(currentPeriodStartTime)}
+            endTime={moment
+              .unix(currentPeriodStartTime)
+              .add(periodDaysLength, 'days')}
+          />
           <Helloworld />
           <FundStatistics />
           <div>
@@ -211,6 +227,10 @@ const mapStateToProps = state => ({
   whitelistedAddresses: getWhitelistedAddresses(
     getContract('KyodoDAO')(state),
   ).map(address => ({ value: address })),
+  currentPeriodStartTime: getCurrentPeriodStartTime(
+    getContract('KyodoDAO')(state),
+  ),
+  periodDaysLength: getPeriodDaysLength(getContract('KyodoDAO')(state)),
 });
 
 App.contextTypes = {
