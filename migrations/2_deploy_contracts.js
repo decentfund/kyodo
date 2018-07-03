@@ -7,5 +7,9 @@ module.exports = (deployer, network, accounts) => {
     .then(() => deployer.deploy(KyodoDAO, DecentToken.address))
     .then(() => {
       DecentToken.at(DecentToken.address).transferOwnership(KyodoDAO.address);
+    })
+    .then(() => {
+      KyodoDAO.at(KyodoDAO.address).startNewPeriod();
+      KyodoDAO.at(KyodoDAO.address).setPeriodDaysLength(14);
     });
 };
