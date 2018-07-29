@@ -7,6 +7,7 @@ import styled, { injectGlobal } from 'styled-components';
 import Nickname from './Nickname';
 import Header from './components/Header';
 import Members from './components/Members';
+import MintTokens from './components/MintTokens';
 import UserBalance from './components/UserBalance';
 import PeriodProgress from './components/PeriodProgress';
 import FundStatistics from './components/FundStatistics';
@@ -206,6 +207,7 @@ class App extends Component {
               whitelistedAddresses={whitelistedAddresses}
             />
           ) : null}
+          {owner === userAddress ? <MintTokens /> : null}
           {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
             <Nickname
               address={userAddress}
