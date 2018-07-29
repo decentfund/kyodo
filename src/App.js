@@ -3,7 +3,7 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled, { injectGlobal } from 'styled-components';
-import Helloworld from './Helloworld.js';
+// import Helloworld from './Helloworld.js';
 import Nickname from './Nickname';
 import Header from './components/Header';
 import Members from './components/Members';
@@ -192,19 +192,20 @@ class App extends Component {
               .unix(currentPeriodStartTime)
               .add(periodDaysLength, 'days')}
           />
-          <Helloworld />
           <FundStatistics />
-          <div>
-            <UserBalance
-              contractName="DecentToken"
-              account={this.props.accounts[0]}
-            />
-          </div>
-          <Members
-            canAdd={owner === userAddress}
-            address={address}
-            whitelistedAddresses={whitelistedAddresses}
+          <UserBalance
+            contractName="DecentToken"
+            account={this.props.accounts[0]}
           />
+          <br />
+          <br />
+          {whitelistedAddresses.length > 0 || owner === userAddress ? (
+            <Members
+              canAdd={owner === userAddress}
+              address={address}
+              whitelistedAddresses={whitelistedAddresses}
+            />
+          ) : null}
           {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
             <Nickname
               address={userAddress}

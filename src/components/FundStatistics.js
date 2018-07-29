@@ -1,12 +1,19 @@
 import React from 'react';
+import styled from 'styled-components';
 import { ContractData } from 'drizzle-react-components';
 import { drizzleConnect } from 'drizzle-react';
 import StatisticsLabel from './StatisticsLabel';
 import { formatEth, formatEur } from '../helpers/format';
 import { getRate, getTotalSupply, getContract } from '../reducers';
 
+const FundStatisticsContainer = styled.div`
+  width: 160px;
+  display: inline-block;
+  padding-right: 10px;
+`;
+
 const FundStatistics = ({ balance, balanceEur, totalSupply }) => (
-  <div>
+  <FundStatisticsContainer>
     <StatisticsLabel label="SUP">
       <ContractData contract="DecentToken" method="totalSupply" /> tokens
     </StatisticsLabel>
@@ -19,7 +26,7 @@ const FundStatistics = ({ balance, balanceEur, totalSupply }) => (
     <StatisticsLabel label="FUND">
       <ContractData contract="KyodoDAO" method="getMembersCount" /> members
     </StatisticsLabel>
-  </div>
+  </FundStatisticsContainer>
 );
 
 const mapStateToProps = state => {

@@ -34,7 +34,7 @@ const PeriodProgress = ({ periodName, endTime, startTime }) => {
   const fraction = moment().diff(startTime) / endTime.diff(startTime);
 
   return (
-    <div>
+    <div style={{ marginBottom: 30 }}>
       <div style={{ marginBottom: 3 }}>
         <StyledPeriodContainer>
           <StyledPeriodLabel>current period</StyledPeriodLabel>

@@ -5,6 +5,12 @@ import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
 import { getRate, getContract } from '../reducers';
 import { formatEth, formatEur } from '../helpers/format';
+import dfToken from './dftoken.svg';
+
+const StyledUserBalance = styled.div`
+  width: 260px;
+  display: inline-block;
+`;
 
 const StyledLabel = styled.label`
   font-size: 12px;
@@ -12,6 +18,20 @@ const StyledLabel = styled.label`
 
 const StyledAmount = styled.div`
   font-size: 32px;
+`;
+
+const StyledTokenLogo = styled.img`
+  width: 66px;
+  filter: drop-shadow(-4px 4px 0px #000);
+`;
+
+const StyledTokenLogoContainer = styled.div`
+  display: inline-block;
+  margin-right: 15px;
+`;
+
+const StyledBalance = styled.div`
+  display: inline-block;
 `;
 
 class UserBalance extends Component {
@@ -31,21 +51,26 @@ class UserBalance extends Component {
     const { contractName, account, tokenPriceEUR, tokenPriceETH } = this.props;
     const balance = this.props.DecentToken.balanceOf[this.dataKey].value;
     return (
-      <div>
-        <StyledLabel>my balance</StyledLabel>
-        <StyledAmount>
-          <ContractData
-            contract={contractName}
-            method="balanceOf"
-            methodArgs={[account, { from: account }]}
-          />{' '}
-          <ContractData contract={contractName} method="symbol" />
-        </StyledAmount>
-        <div>
-          {formatEur(balance * tokenPriceEUR)}{' '}
-          {formatEth(balance * tokenPriceETH)}
-        </div>
-      </div>>
+      <StyledUserBalance>
+        <StyledTokenLogoContainer>
+          <StyledTokenLogo src={dfToken} />
+        </StyledTokenLogoContainer>
+        <StyledBalance>
+          <StyledLabel>my balance</StyledLabel>
+          <StyledAmount>
+            <ContractData
+              contract={contractName}
+              method="balanceOf"
+              methodArgs={[account]}
+            />{' '}
+            <ContractData contract={contractName} method="symbol" />
+          </StyledAmount>
+          <div>
+            {formatEur(balance * tokenPriceEUR)}{' '}
+            {formatEth(balance * tokenPriceETH)}
+          </div>
+        </StyledBalance>
+      </StyledUserBalance>
     );
   }
 }
