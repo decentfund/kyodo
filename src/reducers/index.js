@@ -42,7 +42,7 @@ export const getTokenBaseRate = contract => state => {
   const totalSupply = getTotalSupply(contract);
   if (!totalSupply) return 0;
 
-  return totalSupply / getFundBaseBalance(state);
+  return getFundBaseBalance(state) / totalSupply;
 };
 
 export const kyodoTokenContract = getContract('DecentToken');
