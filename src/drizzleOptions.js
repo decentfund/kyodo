@@ -7,6 +7,8 @@ const drizzleOptions = {
     fallback: {
       type: 'ws',
       url: 'ws://127.0.0.1:8545',
+      // url: 'ws://ropsten.infura.io/ws',
+      // change URL and Metamask server
     },
   },
   contracts: [KyodoDAO, DecentToken],

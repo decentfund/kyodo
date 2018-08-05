@@ -26,6 +26,14 @@ yarn
 ganache-cli -b 3
 ```
 
+### Create initial distribution of tokens
+
+```
+cp migrations/deploy_parameters.example.json migrations/deploy_parameters.json
+```
+
+Change `deploy_parameters.json` to reflect the initial distribution you want or leave accounts section empty.
+
 ### Compile smart-contracts:
 We implement ERC-20 token contract to bootstrap app based on OpenZeppelin ERC20 Mintable token and Ownable contracts, for working with strings we utilize strings.sol library.
 

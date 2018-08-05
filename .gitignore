@@ -1,5 +1,8 @@
-build
-package-lock.json
-yarn.lock
-yarn-error.log
+.env
+.tern-port
+/migrations/deploy_parameters.json
 /node_modules
+build
+ganache-accounts.json
+yarn-error.log
+yarn.lock

@@ -2,6 +2,9 @@ require('babel-register')({
   ignore: /node_modules\/(?!openzeppelin-solidity\/test\/helpers)/,
 });
 require('babel-polyfill');
+require('dotenv').load();
+
+const HDWalletProvider = require('truffle-hdwallet-provider');
 
 module.exports = {
   migrations_directory: './migrations',
@@ -10,6 +13,14 @@ module.exports = {
       host: 'localhost',
       port: 8545,
       network_id: '*', // Match any network id
+    },
+    ropsten: {
+      provider: () =>
+        new HDWalletProvider(
+          process.env.MNEMONIC,
+          `https://ropsten.infura.io/${process.env.INFURA_ACCESS_TOKEN}`,
+        ),
+      network_id: 3, // match any network
     },
   },
   solc: {
