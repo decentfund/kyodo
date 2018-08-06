@@ -24,7 +24,10 @@ export default (
 ) => {
   switch (action.type) {
     case LOAD_RATE_SUCCESS:
-      return { ...state, [action.currency]: action.rate };
+      return {
+        ...state,
+        ...action.rates,
+      };
     case 'GET_CONTRACT_VAR':
       if (action.name !== 'DecentToken') return state;
       if (action.variable === 'symbol') {

@@ -20,7 +20,7 @@ import {
   getCurrentPeriodStartTime,
   getPeriodDaysLength,
 } from './reducers';
-import { loadRate } from './actions';
+import { loadRate, loadMultiSigBalance } from './actions';
 
 injectGlobal`
 html,
@@ -68,6 +68,7 @@ class App extends Component {
 
   componentDidMount() {
     this.props.loadRate('ETH');
+    this.props.loadMultiSigBalance();
   }
 
   addToWhitelist = () => {
@@ -240,4 +241,7 @@ App.contextTypes = {
   drizzle: PropTypes.object,
 };
 
-export default drizzleConnect(App, mapStateToProps, { loadRate });
+export default drizzleConnect(App, mapStateToProps, {
+  loadRate,
+  loadMultiSigBalance,
+});

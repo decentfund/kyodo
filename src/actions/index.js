@@ -6,3 +6,9 @@ export function loadRate(currency) {
     currency,
   };
 }
+
+export function loadMultiSigBalance() {
+  return {
+    type: types.LOAD_MULTISIG_BALANCE_REQUEST,
+  };
+}

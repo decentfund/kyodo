@@ -4,7 +4,12 @@ import { ContractData } from 'drizzle-react-components';
 import { drizzleConnect } from 'drizzle-react';
 import StatisticsLabel from './StatisticsLabel';
 import { formatEth, formatEur } from '../helpers/format';
-import { getRate, getTotalSupply, getContract } from '../reducers';
+import {
+  getRate,
+  getTotalSupply,
+  getContract,
+  getFundBaseBalance,
+} from '../reducers';
 
 const FundStatisticsContainer = styled.div`
   width: 160px;
@@ -30,10 +35,10 @@ const FundStatistics = ({ balance, balanceEur, totalSupply }) => (
 );
 
 const mapStateToProps = state => {
-  const balance = 0.5;
+  const balanceEur = getFundBaseBalance(state);
   return {
-    balance,
-    balanceEur: balance * getRate(state, 'ETH', 'EUR'),
+    balance: balanceEur / getRate(state, 'ETH', 'EUR'),
+    balanceEur,
     totalSupply: getTotalSupply(getContract('DecentToken')(state)),
   };
 };

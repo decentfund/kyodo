@@ -18,7 +18,9 @@ module.exports = {
       provider: () =>
         new HDWalletProvider(
           process.env.MNEMONIC,
-          `https://ropsten.infura.io/${process.env.INFURA_ACCESS_TOKEN}`,
+          `https://ropsten.infura.io/${
+            process.env.REACT_APP_INFURA_ACCESS_TOKEN
+          }`,
         ),
       network_id: 3, // match any network
     },

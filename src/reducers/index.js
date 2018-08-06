@@ -3,6 +3,7 @@ import { routerReducer } from 'react-router-redux';
 import { drizzleReducers } from 'drizzle';
 import get from 'lodash/get';
 import rates, * as fromRates from './rates';
+import balances from './balances';
 import { BASE_CURRENCY } from '../constants';
 
 export const getContract = contractName => state =>
@@ -31,9 +32,17 @@ export const getWhitelistedAddresses = getFromContract(
 );
 
 export const getFundBaseBalance = state => {
-  const fundBalance = 0.5; // ETH
-  const baseCurrencyRate = fromRates.getRate(state.rates, 'ETH', BASE_CURRENCY);
-  const baseCurrencyFundBalance = fundBalance * baseCurrencyRate;
+  const baseCurrencyFundBalance = Object.keys(state.balances).reduce(
+    (prev, key) => {
+      const baseCurrencyRate = fromRates.getRate(
+        state.rates,
+        key,
+        BASE_CURRENCY,
+      );
+      return state.balances[key] * baseCurrencyRate + prev;
+    },
+    0,
+  );
 
   return baseCurrencyFundBalance;
 };
@@ -58,6 +67,7 @@ export const getRate = (state, from, to) => {
 const reducer = combineReducers({
   routing: routerReducer,
   rates,
+  balances,
   ...drizzleReducers,
 });
 
