@@ -43,7 +43,7 @@ function* loadRate({ currency }) {
 }
 
 function* watchLoadRate() {
-  yield* takeEvery(LOAD_RATE_REQUEST, loadRate);
+  yield takeEvery(LOAD_RATE_REQUEST, loadRate);
 }
 
 function* loadBalance() {
@@ -67,11 +67,13 @@ function* loadBalance() {
 }
 
 function* watchLoadBalance() {
-  yield* takeLatest(LOAD_MULTISIG_BALANCE_REQUEST, loadBalance);
+  yield takeLatest(LOAD_MULTISIG_BALANCE_REQUEST, loadBalance);
 }
 
 export default function* root() {
-  yield all(drizzleSagas.map(saga => fork(saga)));
-  yield fork(watchLoadRate);
-  yield fork(watchLoadBalance);
+  yield all([
+    ...drizzleSagas.map(saga => fork(saga)),
+    watchLoadBalance(),
+    watchLoadRate(),
+  ]);
 }
