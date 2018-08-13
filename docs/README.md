@@ -23,7 +23,7 @@ yarn
 ### Start ganache
 
 ```
-ganache-cli -b 3
+ganache-cli --gasLimit 7000000 -b 3
 ```
 
 ### Create initial distribution of tokens
@@ -38,9 +38,17 @@ Change `deploy_parameters.json` to reflect the initial distribution you want or 
 We implement ERC-20 token contract to bootstrap app based on OpenZeppelin ERC20 Mintable token and Ownable contracts, for working with strings we utilize strings.sol library.
 
 ```
-truffle compile
-truffle migrate
+truffle migrate --reset --compile-all
 ```
+
+### Start frontend app
+
+```
+yarn start
+```
+
+Don't forget to switch Metamask network to localhost:8545
+
 
 ### Testing
 
