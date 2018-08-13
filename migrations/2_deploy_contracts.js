@@ -14,8 +14,5 @@ module.exports = (deployer, network, accounts) => {
       }
       return true;
     });
-    await deployer.deploy(KyodoDAO, DecentToken.address);
-    await KyodoDAO.at(KyodoDAO.address).startNewPeriod();
-    return KyodoDAO.at(KyodoDAO.address).setPeriodDaysLength(14);
   });
 };
