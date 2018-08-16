@@ -59,3 +59,8 @@ npm run truffle:test
 // App tests
 npm run jest
 ```
+
+### Setting up arbitrary token balances
+
+If you need to specify additional token balances you can do so by creating a `balances.json` file in the root of the project.
+Tokens should be speficied in the form of `TICKER: BALANCE`, like `BTC: 1`

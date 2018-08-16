@@ -4,5 +4,6 @@
 /node_modules
 build
 ganache-accounts.json
+balances.json
 yarn-error.log
 yarn.lock
