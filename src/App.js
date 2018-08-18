@@ -11,6 +11,7 @@ import MintTokens from './components/MintTokens';
 import UserBalance from './components/UserBalance';
 import PeriodProgress from './components/PeriodProgress';
 import FundStatistics from './components/FundStatistics';
+import TotalSupplyChange from './components/TotalSupplyChange';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
 import {
@@ -177,11 +178,22 @@ class App extends Component {
       currentPeriodStartTime,
       periodDaysLength,
     } = this.props;
+    let prevBlock;
     if (this.props.drizzleStatus.initialized) {
       this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
       this.drizzle.contracts.KyodoDAO.methods.getWhitelistedAddresses.cacheCall();
       this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartTime.cacheCall();
       this.drizzle.contracts.KyodoDAO.methods.periodDaysLength.cacheCall();
+
+      this.prevBlockKey = this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartBlock.cacheCall();
+    }
+
+    if (
+      this.prevBlockKey &&
+      this.props.KyodoDAO.currentPeriodStartBlock[this.prevBlockKey]
+    ) {
+      prevBlock = this.props.KyodoDAO.currentPeriodStartBlock[this.prevBlockKey]
+        .value;
     }
 
     return (
@@ -199,7 +211,7 @@ class App extends Component {
             contractName="DecentToken"
             account={this.props.accounts[0]}
           />
-          <br />
+          {prevBlock ? <TotalSupplyChange prevBlock={prevBlock} /> : null}
           <br />
           {whitelistedAddresses.length > 0 || owner === userAddress ? (
             <Members
@@ -224,7 +236,7 @@ class App extends Component {
 
 const mapStateToProps = state => ({
   accounts: state.accounts,
-  KyodoDAO: state.contracts.KyodoDAO,
+  KyodoDAO: getContract('KyodoDAO')(state),
   DecentToken: state.contracts.DecentToken,
   drizzleStatus: state.drizzleStatus,
   owner: getOwner(getContract('KyodoDAO')(state)),

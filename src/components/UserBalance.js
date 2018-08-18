@@ -8,8 +8,9 @@ import { formatEth, formatEur } from '../helpers/format';
 import dfToken from './dftoken.svg';
 
 const StyledUserBalance = styled.div`
-  width: 260px;
   display: inline-block;
+  vertical-align: top;
+  width: 260px;
 `;
 
 const StyledLabel = styled.label`
