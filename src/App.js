@@ -11,6 +11,7 @@ import MintTokens from './components/MintTokens';
 import UserBalance from './components/UserBalance';
 import PeriodProgress from './components/PeriodProgress';
 import FundStatistics from './components/FundStatistics';
+import CurrentPeriodStatus from './components/CurrentPeriodStatus';
 import TotalSupplyChange from './components/TotalSupplyChange';
 import DecentToken from '../build/contracts/DecentToken.json';
 import KyodoDAO from '../build/contracts/KyodoDAO.json';
@@ -186,6 +187,7 @@ class App extends Component {
       this.drizzle.contracts.KyodoDAO.methods.periodDaysLength.cacheCall();
 
       this.prevBlockKey = this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartBlock.cacheCall();
+      this.tokenSymbolKey = this.drizzle.contracts.DecentToken.methods.symbol.cacheCall();
     }
 
     if (
@@ -195,6 +197,12 @@ class App extends Component {
       prevBlock = this.props.KyodoDAO.currentPeriodStartBlock[this.prevBlockKey]
         .value;
     }
+
+    const tokenSymbol =
+      this.tokenSymbolKey &&
+      this.props.DecentToken &&
+      this.props.DecentToken.symbol[this.tokenSymbolKey] &&
+      this.props.DecentToken.symbol[this.tokenSymbolKey].value;
 
     return (
       <div className="App">
@@ -206,13 +214,22 @@ class App extends Component {
               .unix(currentPeriodStartTime)
               .add(periodDaysLength, 'days')}
           />
-          <FundStatistics />
-          <UserBalance
-            contractName="DecentToken"
-            account={this.props.accounts[0]}
-          />
-          {prevBlock ? <TotalSupplyChange prevBlock={prevBlock} /> : null}
+          <div style={{ marginBottom: 50 }}>
+            <FundStatistics />
+            <UserBalance
+              contractName="DecentToken"
+              account={this.props.accounts[0]}
+            />
+            {prevBlock ? <TotalSupplyChange prevBlock={prevBlock} /> : null}
+          </div>
           <br />
+          {prevBlock ? (
+            <CurrentPeriodStatus
+              tokenSymbol={tokenSymbol}
+              prevBlock={prevBlock}
+            />
+          ) : null}
+
           {whitelistedAddresses.length > 0 || owner === userAddress ? (
             <Members
               canAdd={owner === userAddress}
@@ -237,7 +254,7 @@ class App extends Component {
 const mapStateToProps = state => ({
   accounts: state.accounts,
   KyodoDAO: getContract('KyodoDAO')(state),
-  DecentToken: state.contracts.DecentToken,
+  DecentToken: getContract('DecentToken')(state),
   drizzleStatus: state.drizzleStatus,
   owner: getOwner(getContract('KyodoDAO')(state)),
   whitelistedAddresses: getWhitelistedAddresses(

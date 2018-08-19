@@ -14,7 +14,6 @@ const StyledTotalSupplyChange = styled.div`
   padding: 3px 13px 5px;
   vertical-align: top;
   width: 172px;
-  float: right;
 `;
 
 const StyledHeader = styled.header`
