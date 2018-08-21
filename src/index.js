@@ -4,16 +4,16 @@ import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import { DrizzleProvider } from 'drizzle-react';
-import { LoadingContainer } from 'drizzle-react-components';
+import Metamask from './components/Metamask';
 import drizzleOptions from './drizzleOptions';
 
 import store from './store';
 
 ReactDOM.render(
   <DrizzleProvider options={drizzleOptions} store={store}>
-    <LoadingContainer>
+    <Metamask>
       <App />
-    </LoadingContainer>
+    </Metamask>
   </DrizzleProvider>,
   document.getElementById('root'),
 );

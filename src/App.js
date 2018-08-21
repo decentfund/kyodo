@@ -69,7 +69,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.props.loadRate('ETH');
+    this.props.loadRate(['ETH', ...Object.keys(process.env.BALANCE)]);
     this.props.loadMultiSigBalance();
   }
 
@@ -171,6 +171,7 @@ class App extends Component {
     });
   }
   render() {
+    return <div />;
     const { address, tokenName } = this.state;
     const {
       accounts: { 0: userAddress },

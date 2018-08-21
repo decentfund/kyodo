@@ -10,7 +10,7 @@ delete require.cache[require.resolve('./paths')];
 const NODE_ENV = process.env.NODE_ENV;
 if (!NODE_ENV) {
   throw new Error(
-    'The NODE_ENV environment variable is required but was not specified.'
+    'The NODE_ENV environment variable is required but was not specified.',
   );
 }
 
@@ -35,7 +35,7 @@ dotenvFiles.forEach(dotenvFile => {
     require('dotenv-expand')(
       require('dotenv').config({
         path: dotenvFile,
-      })
+      }),
     );
   }
 });
@@ -60,6 +60,11 @@ process.env.NODE_PATH = (process.env.NODE_PATH || '')
 // injected into the application via DefinePlugin in Webpack configuration.
 const REACT_APP = /^REACT_APP_/i;
 
+let kyodoBalance = {};
+if (fs.existsSync(paths.balances)) {
+  kyodoBalance = require(paths.balances);
+}
+
 function getClientEnvironment(publicUrl) {
   const raw = Object.keys(process.env)
     .filter(key => REACT_APP.test(key))
@@ -77,7 +82,8 @@ function getClientEnvironment(publicUrl) {
         // This should only be used as an escape hatch. Normally you would put
         // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: publicUrl,
-      }
+        BALANCE: kyodoBalance,
+      },
     );
   // Stringify all values so we can feed into Webpack DefinePlugin
   const stringified = {
