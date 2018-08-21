@@ -67,7 +67,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.props.loadRate('ETH');
+    this.props.loadRate(['ETH', ...Object.keys(process.env.BALANCE)]);
     this.props.loadMultiSigBalance();
   }
 
@@ -87,11 +87,7 @@ class App extends Component {
     const {
       kyodoContract,
       decentToken,
-      web3: {
-        eth: {
-          accounts: [account],
-        },
-      },
+      web3: { eth: { accounts: [account] } },
     } = this.state;
     kyodoContract
       .setAlias(name, { from: account })
@@ -169,6 +165,7 @@ class App extends Component {
     });
   }
   render() {
+    return <div />;
     const { address, tokenName } = this.state;
     const {
       accounts: { 0: userAddress },
@@ -201,21 +198,21 @@ class App extends Component {
           />
           <br />
           <br />
-          {whitelistedAddresses.length > 0 || owner === userAddress ? (
-            <Members
-              canAdd={owner === userAddress}
-              address={address}
-              whitelistedAddresses={whitelistedAddresses}
-            />
-          ) : null}
+          {whitelistedAddresses.length > 0 || owner === userAddress
+            ? <Members
+                canAdd={owner === userAddress}
+                address={address}
+                whitelistedAddresses={whitelistedAddresses}
+              />
+            : null}
           {owner === userAddress ? <MintTokens /> : null}
-          {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
-            <Nickname
-              address={userAddress}
-              nickname={this.state.nickname}
-              onSaveNickname={this.handleSaveNickName}
-            />
-          ) : null}
+          {whitelistedAddresses.indexOf(userAddress) >= 0
+            ? <Nickname
+                address={userAddress}
+                nickname={this.state.nickname}
+                onSaveNickname={this.handleSaveNickName}
+              />
+            : null}
         </StyledMainInfoContainer>
       </div>
     );
