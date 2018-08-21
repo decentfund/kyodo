@@ -1,6 +1,9 @@
-import React from "react";
-import styled from "styled-components";
-import MetamaskLogo from "./metamask-logo-color.svg";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+import { drizzleConnect } from 'drizzle-react';
+import { LoadingContainer } from 'drizzle-react-components';
+import MetamaskLogo from './metamask-logo-color.svg';
 
 const MetamaskWrapper = styled.div`
   display: flex;
@@ -26,7 +29,7 @@ const StyledLink = styled.a`
   color: #bd6fd8;
 `;
 
-const Metamask = ({}) => (
+const Metamask = () => (
   <MetamaskWrapper>
     <Title>Not without MetaMask</Title>
     <StyledLogo src={MetamaskLogo} />
@@ -35,4 +38,36 @@ const Metamask = ({}) => (
   </MetamaskWrapper>
 );
 
-export default Metamask;
+class LoadingMetamask extends Component {
+  render() {
+    if (this.props.web3.status === 'failed') {
+      if (this.props.errorComp) {
+        return <LoadingContainer {...this.props} />;
+      }
+      return <Metamask />;
+    }
+
+    if (
+      this.props.web3.status === 'initialized' &&
+      Object.keys(this.props.accounts).length === 0
+    ) {
+      return <Metamask />;
+    }
+
+    return <LoadingContainer {...this.props} />;
+  }
+}
+
+LoadingMetamask.contextTypes = {
+  drizzle: PropTypes.object,
+};
+
+const mapStateToProps = state => {
+  return {
+    accounts: state.accounts,
+    drizzleStatus: state.drizzleStatus,
+    web3: state.web3,
+  };
+};
+
+export default drizzleConnect(LoadingMetamask, mapStateToProps);
