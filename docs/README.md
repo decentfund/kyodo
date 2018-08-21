@@ -19,10 +19,10 @@ Colony: Decent.Fund
 Decent.Find aims to grow the community of people who are interested in experiments in building the decentralized organization which embraces individual and social interests, economic efficiency and incentive mechanism for growing.
 
 ## Kyodo/Decent.Fund domain structure
-![](https://i.imgur.com/gt1afEs.png)
+![](https://i.imgur.com/ec7SFum.png)
 
 ## Smart contracts' relations
-![](https://i.imgur.com/ZAeRT5O.png)
+![](https://i.imgur.com/SQ1tplh.png)
 
 ## Task management models
 There are two opposite models of the Task management in Kyodo:
