@@ -18,6 +18,7 @@ contract KyodoDAO is Ownable {
   address[] whitelistedAddresses;
   MintableToken public Token;
   uint256 public currentPeriodStartTime;
+  uint public currentPeriodStartBlock;
   uint public periodDaysLength;
 
   constructor(address _token) public {
@@ -49,6 +50,7 @@ contract KyodoDAO is Ownable {
   // TODO: multisig function
   function startNewPeriod() public onlyOwner returns (uint256) {
     currentPeriodStartTime = now;
+    currentPeriodStartBlock = block.number;
     return currentPeriodStartTime;
   }
 
