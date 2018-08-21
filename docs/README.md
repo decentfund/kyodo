@@ -2,12 +2,12 @@
 
 # Kyodo
 **Kyodo**
-the crossplatform incentive tool for building crypto economy for DAO based on Impression revenue model. We build Kyodo to run Decent.Fund. 
+Ethereum blockchain based web app, the crossplatform incentive tool for building crypto economy for DAO based on Impression revenue model. We build Kyodo to run Decent.Fund. 
 As an organisational structure it's defined as Adhocracy
 As a governance it has two models Democracy and Meritocracy.
 
 Colony: Decent.Fund
-**Decent.Fund mission** is to contribute to the mass adoption of the decentrilezed solutions, making the concepts of the new crypto economy closer to unchain world. According to the mission Decent.Fund focuses on following activities:
+**Decent.Fund mission** is to contribute to the mass adoption of the decentrilezed solutions, making the concepts of the new crypto economy closer to unchained world. According to the mission Decent.Fund focuses on following activities:
 
 1. UI/UX design
 2. Programming
@@ -25,7 +25,7 @@ Decent.Find aims to grow the community of people who are interested in experimen
 ![](https://i.imgur.com/ZAeRT5O.png)
 
 ## Task management models
-There are two oppsite models of the Task management in Kyodo:
+There are two opposite models of the Task management in Kyodo:
 
 1. Impression revenue model
 The contribution is done without an inintial task setting. 
