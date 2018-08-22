@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import FormattedAddress from './FormattedAddress';
 
 const StyledContainer = styled.div`
   display: flex;
@@ -15,27 +16,22 @@ const StyledDiv = styled.div`
   margin-bottom: 27px;
 `;
 
+const GRAY = 'rgba(0, 0, 0, 0.2)';
+const BLACK = 'rgb(0, 0, 0)';
+
 const StyledAlias = StyledDiv.extend`
-  width: 245px;
+  width: 170px;
   text-overflow: ellipsis;
   overflow: hidden;
-  margin-right: 15px;
+  white-space: nowrap;
 
-  color: ${props =>
-    props.placeholder ? 'rgb(0, 0, 0, 0.2)' : 'rgb(0, 0, 0, 1)'};
-`;
-
-const StyledAddress = StyledDiv.extend`
-  text-overflow: ellipsis;
-  overflow: hidden;
-  flex-grow: 1;
-  text-align: right;
+  color: ${props => (props.placeholder ? GRAY : BLACK)};
 `;
 
 const WhitelistedAddress = ({ alias, value }) => (
   <StyledContainer>
     <StyledAlias placeholder={!alias}>{alias || 'member known as'}</StyledAlias>
-    <StyledAddress>{value}</StyledAddress>
+    <FormattedAddress>{value}</FormattedAddress>
   </StyledContainer>
 );
 
