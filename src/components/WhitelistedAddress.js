@@ -20,6 +20,9 @@ const StyledAlias = StyledDiv.extend`
   text-overflow: ellipsis;
   overflow: hidden;
   margin-right: 15px;
+
+  color: ${props =>
+    props.placeholder ? 'rgb(0, 0, 0, 0.2)' : 'rgb(0, 0, 0, 1)'};
 `;
 
 const StyledAddress = StyledDiv.extend`
@@ -31,7 +34,7 @@ const StyledAddress = StyledDiv.extend`
 
 const WhitelistedAddress = ({ alias, value }) => (
   <StyledContainer>
-    <StyledAlias>{alias}</StyledAlias>
+    <StyledAlias placeholder={!alias}>{alias || 'member known as'}</StyledAlias>
     <StyledAddress>{value}</StyledAddress>
   </StyledContainer>
 );
