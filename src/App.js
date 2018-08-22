@@ -171,7 +171,6 @@ class App extends Component {
     });
   }
   render() {
-    return <div />;
     const { address, tokenName } = this.state;
     const {
       accounts: { 0: userAddress },
