@@ -8,8 +8,6 @@ const StyledAddress = styled.div`
   font-size: 18px;
   font-style: normal;
   font-weight: normal;
-  line-height: normal;
-  margin-bottom: 27px;
 
   text-overflow: ellipsis;
   overflow: hidden;
@@ -21,7 +19,7 @@ const GrayTextSpan = styled.span`
   color: ${GRAY};
 `;
 
-const FormattedAddress = ({ children: value }) => (
+const FormattedAddress = ({ children: value = '' }) => (
   <StyledAddress>
     {value.slice(0, 6)}
     <GrayTextSpan>{value.slice(6, -4)}</GrayTextSpan>

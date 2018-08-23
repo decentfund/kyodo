@@ -6,6 +6,7 @@ import styled, { injectGlobal } from 'styled-components';
 // import Helloworld from './Helloworld.js';
 import Nickname from './Nickname';
 import Header from './components/Header';
+import AddRiotID from './components/AddRiotID';
 import Members from './components/Members';
 import MintTokens from './components/MintTokens';
 import UserBalance from './components/UserBalance';
@@ -229,7 +230,7 @@ class App extends Component {
               prevBlock={prevBlock}
             />
           ) : null}
-
+          <AddRiotID address={userAddress} />
           {whitelistedAddresses.length > 0 || owner === userAddress ? (
             <Members
               canAdd={owner === userAddress}

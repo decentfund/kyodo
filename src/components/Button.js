@@ -1,39 +1,15 @@
-import React from "react";
-import styled from "styled-components";
-import propTypes from "prop-types";
-
-const Wrapper = styled.div`
-  ${"" /* background-color: red; */};
-`;
+import styled from 'styled-components';
 
 const StyledButton = styled.button`
-  :hover {
-    cursor: pointer;
-  }
-  margin: 10px;
-  padding: 5px 12px 5px 12px;
+  padding: 5px 15px 8px 12px;
   border-radius: 5px;
   font-size: 1.1rem;
-  border: ${props => (props.active ? "1px solid black" : "none")};
-  box-shadow: ${props => (props.profile ? "2px 2px #F5F905" : "none")};
+  background: ${props => (props.active ? '#F5F905' : 'rgba(0, 0, 0, 0.06)')};
+  border: none;
+  box-shadow: inset -2px -2px 0px 5px rgba(255, 255, 255, 1);
+  border-radius: 6px 8px 8px 8px;
+  border: ${props => (props.active ? '1px solid black' : 'none')};
 `;
+// box-shadow: ${props => (props.profile ? '2px 2px #F5F905' : 'none')};
 
-const Button = ({ ...props }) => (
-  <Wrapper>
-    <StyledButton {...props}>{props.children}</StyledButton>
-  </Wrapper>
-);
-
-Button.defaultProps = {
-  children: "BUTTON",
-  profile: false,
-  active: false
-};
-
-Button.propTypes = {
-  children: propTypes.string,
-  profile: propTypes.bool,
-  active: propTypes.bool
-};
-
-export default Button;
+export default StyledButton;
