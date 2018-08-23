@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled, { injectGlobal } from 'styled-components';
 // import Helloworld from './Helloworld.js';
-import Nickname from './Nickname';
 import Header from './components/Header';
+import AddRiotID from './components/AddRiotID';
 import Members from './components/Members';
 import MintTokens from './components/MintTokens';
 import UserBalance from './components/UserBalance';
@@ -98,13 +98,13 @@ class App extends Component {
     kyodoContract
       .setAlias(name, { from: account })
       .then(() => kyodoContract.getAlias.call(account))
-      .then(nickname => this.setState({ nickname }))
-      .then(() => decentToken.balanceOf.call(account))
-      .then(balance =>
-        this.setState({
-          currentUserBalance: balance.toNumber(),
-        }),
-      );
+      .then(nickname => this.setState({ nickname }));
+    // .then(() => decentToken.balanceOf.call(account))
+    // .then(balance =>
+    // this.setState({
+    // currentUserBalance: balance.toNumber(),
+    // }),
+    // );
   };
 
   instantiateContract() {
@@ -229,7 +229,9 @@ class App extends Component {
               prevBlock={prevBlock}
             />
           ) : null}
-
+          {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
+            <AddRiotID account={this.props.accounts[0]} />
+          ) : null}
           {whitelistedAddresses.length > 0 || owner === userAddress ? (
             <Members
               canAdd={owner === userAddress}
@@ -238,13 +240,6 @@ class App extends Component {
             />
           ) : null}
           {owner === userAddress ? <MintTokens /> : null}
-          {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
-            <Nickname
-              address={userAddress}
-              nickname={this.state.nickname}
-              onSaveNickname={this.handleSaveNickName}
-            />
-          ) : null}
         </StyledMainInfoContainer>
       </div>
     );
@@ -259,7 +254,7 @@ const mapStateToProps = state => ({
   owner: getOwner(getContract('KyodoDAO')(state)),
   whitelistedAddresses: getWhitelistedAddresses(
     getContract('KyodoDAO')(state),
-  ).map(address => ({ value: address })),
+  ).map(address => address),
   currentPeriodStartTime: getCurrentPeriodStartTime(
     getContract('KyodoDAO')(state),
   ),
