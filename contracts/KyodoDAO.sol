@@ -13,7 +13,7 @@ contract KyodoDAO is Ownable {
     bool whitelisted;
   }
 
-  string[] usedAliases;
+  string[] public usedAliases;
   mapping(address => Member) public whitelist;
   address[] whitelistedAddresses;
   MintableToken public Token;
@@ -31,6 +31,12 @@ contract KyodoDAO is Ownable {
     return whitelistedAddresses;
   }
 
+  // @dev Returns list of whitelistedAddresses.
+  // @return List of whitelisted addresses.
+  function getUsedAliasesLength() public view returns (uint) {
+    return usedAliases.length;
+  }
+
   function getMembersCount() public view returns (uint)
   {
     return whitelistedAddresses.length;
@@ -45,6 +51,17 @@ contract KyodoDAO is Ownable {
       if (usedAliases[i].toSlice().contains(_value.toSlice())) return false;
     }
     return true;
+  }
+
+  function getNickNameIndex(string _value)
+    public
+    view
+    returns (int)
+  {
+    for (uint i=0; i < usedAliases.length; i++) {
+      if (usedAliases[i].toSlice().contains(_value.toSlice())) return int(i);
+    }
+    return -1;
   }
 
   // TODO: multisig function
@@ -67,9 +84,22 @@ contract KyodoDAO is Ownable {
     external
   {
     require(nickNameNotExist(_value));
+    string storage prevValue = whitelist[msg.sender].alias;
+    int prevIndex = getNickNameIndex(prevValue);
     whitelist[msg.sender].alias = _value;
+
+    // update used aliases
     usedAliases.push(_value);
-    MintableToken(Token).mint(msg.sender, 100000);
+
+    // delete previous nickname
+    if (prevIndex >= 0) {
+      usedAliases[uint(prevIndex)] = usedAliases[usedAliases.length - 1];
+      delete usedAliases[usedAliases.length - 1];
+      usedAliases.length--;
+    }
+
+    // TODO:  Check if should mint
+    // MintableToken(Token).mint(msg.sender, 100000);
   }
 
   function getAlias(address _addr) public view returns (string)
