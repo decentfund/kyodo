@@ -55,7 +55,7 @@ class Members extends Component {
       <div>
         <StyledHeader>Colony Members</StyledHeader>
         {whitelistedAddresses.map(address => (
-          <WhitelistedAddress {...address} key={address.value} />
+          <WhitelistedAddress value={address} key={address} />
         ))}
         {canAdd ? (
           <StyledFormContainer>
