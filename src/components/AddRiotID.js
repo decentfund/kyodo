@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
+import { getContract } from '../reducers';
 import FormattedAddress from './FormattedAddress';
 import Input from './Input';
 import Button from './Button';
@@ -44,20 +47,68 @@ const StyledArc = styled.div`
   top: 28px;
 `;
 
-const AddRiotID = ({ address, alias }) => (
-  <div>
-    <StyledHeader>Attach a nickname to your address</StyledHeader>
-    <StyledContainer>
-      <StyledAddressBox>
-        <FormattedAddress>{address}</FormattedAddress>
-      </StyledAddressBox>
-      <StyledArc />
-      <Input label="your nickname:" />
-    </StyledContainer>
-    <div style={{ marginTop: '34px' }}>
-      <Button active>Attach</Button>
-    </div>
-  </div>
-);
+class AddRiotID extends Component {
+  constructor(props, context) {
+    super(props, context);
+    this.contracts = context.drizzle.contracts;
+    this.dataKey = this.contracts.KyodoDAO.methods.getAlias.cacheCall(
+      this.props.account,
+    );
+  }
 
-export default AddRiotID;
+  state = {
+    alias: '',
+  };
+
+  onChange = ({ currentTarget: { value } }) => {
+    this.setState({ alias: value, changed: true });
+  };
+
+  onSubmit = () => {
+    this.contracts.KyodoDAO.methods.setAlias.cacheSend(this.state.alias);
+  };
+
+  render() {
+    // TODO: Loading
+    if (!this.dataKey || !this.props.KyodoDAO.getAlias[this.dataKey])
+      return null;
+
+    const alias = this.props.KyodoDAO.getAlias[this.dataKey].value;
+
+    const { account: address } = this.props;
+    return (
+      <div>
+        <StyledHeader>Attach a nickname to your address</StyledHeader>
+        <StyledContainer>
+          <StyledAddressBox>
+            <FormattedAddress>{address}</FormattedAddress>
+          </StyledAddressBox>
+          <StyledArc />
+          <Input
+            label="your nickname:"
+            value={this.state.changed ? this.state.alias : alias}
+            onChange={this.onChange}
+          />
+        </StyledContainer>
+        <div style={{ marginTop: '34px' }}>
+          <Button
+            active={this.state.alias.length && this.state.changed}
+            onClick={this.onSubmit}
+          >
+            Attach
+          </Button>
+        </div>
+      </div>
+    );
+  }
+}
+
+AddRiotID.contextTypes = {
+  drizzle: PropTypes.object,
+};
+
+const mapStateToProps = (state, { account }) => ({
+  KyodoDAO: getContract('KyodoDAO')(state),
+});
+
+export default drizzleConnect(AddRiotID, mapStateToProps);

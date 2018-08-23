@@ -230,7 +230,7 @@ class App extends Component {
               prevBlock={prevBlock}
             />
           ) : null}
-          <AddRiotID address={userAddress} />
+          <AddRiotID account={this.props.accounts[0]} />
           {whitelistedAddresses.length > 0 || owner === userAddress ? (
             <Members
               canAdd={owner === userAddress}
