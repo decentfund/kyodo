@@ -8,7 +8,5 @@ module.exports = (deployer, network, accounts) => {
     const { accounts } = deployParameters;
     const addresses = Object.keys(accounts);
     await KyodoDAO.at(KyodoDAO.address).addManyToWhitelist(addresses);
-    await KyodoDAO.at(KyodoDAO.address).startNewPeriod();
-    return KyodoDAO.at(KyodoDAO.address).setPeriodDaysLength(14);
   });
 };
