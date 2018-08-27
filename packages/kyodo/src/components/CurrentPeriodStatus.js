@@ -46,7 +46,7 @@ class CurrentPeriodStatus extends Component {
     super(props, context);
     this.contracts = context.drizzle.contracts;
     this.balanceKey = this.contracts.DecentToken.methods.balanceOf.cacheCall(
-      this.contracts.KyodoDAO.address,
+      props.colonyAddress,
     );
     this.currentPeriodStartTimeKey = this.contracts.KyodoDAO.methods.currentPeriodStartTime.cacheCall();
     this.periodLengthKey = this.contracts.KyodoDAO.methods.periodDaysLength.cacheCall();

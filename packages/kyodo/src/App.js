@@ -179,7 +179,7 @@ class App extends Component {
       currentPeriodStartTime,
       periodDaysLength,
     } = this.props;
-    let prevBlock;
+    let prevBlock, colonyAddress;
     if (this.props.drizzleStatus.initialized) {
       this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
       this.drizzle.contracts.KyodoDAO.methods.getWhitelistedAddresses.cacheCall();
@@ -188,6 +188,7 @@ class App extends Component {
 
       this.prevBlockKey = this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartBlock.cacheCall();
       this.tokenSymbolKey = this.drizzle.contracts.DecentToken.methods.symbol.cacheCall();
+      this.colonyAddressKey = this.drizzle.contracts.KyodoDAO.methods.Colony.cacheCall();
     }
 
     if (
@@ -196,6 +197,13 @@ class App extends Component {
     ) {
       prevBlock = this.props.KyodoDAO.currentPeriodStartBlock[this.prevBlockKey]
         .value;
+    }
+
+    if (
+      this.colonyAddressKey &&
+      this.props.KyodoDAO.Colony[this.prevBlockKey]
+    ) {
+      colonyAddress = this.props.KyodoDAO.Colony[this.colonyAddressKey].value;
     }
 
     const tokenSymbol =
@@ -223,10 +231,11 @@ class App extends Component {
             {prevBlock ? <TotalSupplyChange prevBlock={prevBlock} /> : null}
           </div>
           <br />
-          {prevBlock ? (
+          {prevBlock && colonyAddress ? (
             <CurrentPeriodStatus
               tokenSymbol={tokenSymbol}
               prevBlock={prevBlock}
+              colonyAddress={colonyAddress}
             />
           ) : null}
           {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
