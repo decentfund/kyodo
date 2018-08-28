@@ -1,3 +1,9 @@
 node_modules
-
 lerna-debug.log
+.tern-port
+**/deploy_parameters.json
+/node_modules
+**/build/*
+**/ganache-accounts.json
+yarn-error.log
+yarn.lock

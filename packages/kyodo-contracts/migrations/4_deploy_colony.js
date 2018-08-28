@@ -11,10 +11,7 @@ const { default: ColonyNetworkClient } = require('@colony/colony-js-client');
 const { TruffleLoader } = require('@colony/colony-js-contract-loader-fs');
 
 const appDirectory = fs.realpathSync(process.cwd());
-const contractDir = path.resolve(
-  appDirectory,
-  '../../colonyNetwork/build/contracts',
-);
+const contractDir = path.resolve(appDirectory, '../build/contracts');
 
 const loader = new TruffleLoader({
   contractDir,
