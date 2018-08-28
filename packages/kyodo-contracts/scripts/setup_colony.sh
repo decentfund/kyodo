@@ -15,7 +15,7 @@ log "Initializing colonyNetwork submodule..."
 git submodule update --init --recursive
 
 # Move to colonyNetwork directory
-cd packages/colonyNetwork
+cd lib/colonyNetwork
 
 # Install colonyNetwork dependencies
 log "Installing colonyNetwork dependencies..."

@@ -13,8 +13,6 @@ import PeriodProgress from './components/PeriodProgress';
 import FundStatistics from './components/FundStatistics';
 import CurrentPeriodStatus from './components/CurrentPeriodStatus';
 import TotalSupplyChange from './components/TotalSupplyChange';
-import DecentToken from '../build/contracts/DecentToken.json';
-import KyodoDAO from '../build/contracts/KyodoDAO.json';
 import {
   getContract,
   getOwner,
@@ -88,7 +86,6 @@ class App extends Component {
   handleSaveNickName = name => {
     const {
       kyodoContract,
-      decentToken,
       web3: {
         eth: {
           accounts: [account],
@@ -107,71 +104,8 @@ class App extends Component {
     // );
   };
 
-  instantiateContract() {
-    /*
-     * SMART CONTRACT EXAMPLE
-     *
-     * Normally these functions would be called in the context of a
-     * state management library, but for convenience I've placed them here.
-     */
-
-    const contract = require('truffle-contract');
-    const decentToken = contract(DecentToken);
-    decentToken.setProvider(this.state.web3.currentProvider);
-
-    const kyodoDAO = contract(KyodoDAO);
-    kyodoDAO.setProvider(this.state.web3.currentProvider);
-
-    // Declaring this for later so we can chain functions on SimpleStorage.
-    // var simpleStorageInstance;
-
-    // Get accounts.
-    this.state.web3.eth.getAccounts(async (error, accounts) => {
-      const tokenContract = await decentToken.deployed();
-      const totalSupply = await tokenContract.totalSupply();
-      const currentUserBalance = await tokenContract.balanceOf(accounts[0]);
-      const tokenName = await tokenContract.name();
-      const tokenSymbol = await tokenContract.symbol();
-
-      const kyodoContract = await kyodoDAO.deployed();
-      const whitelistedAddresses = await kyodoContract.getWhitelistedAddresses.call();
-      const owner = await kyodoContract.owner.call();
-
-      const nick = await kyodoContract.getAlias.call(accounts[0]);
-      console.log(nick);
-
-      this.setState({
-        totalSupply: totalSupply.toNumber(),
-        currentUserBalance: currentUserBalance.toNumber(),
-        tokenName,
-        tokenSymbol,
-        whitelistedAddresses,
-        kyodoContract,
-        owner,
-        nickname: nick,
-      });
-      // decentToken
-      // .deployed()
-      // .then(instance => {
-      // console.log(instance);
-      // return instance.balanceOf(0x0);
-      // // simpleStorageInstance = instance;
-      // // Stores a given value, 5 by default.
-      // // return simpleStorageInstance.set(5, { from: accounts[0] });
-      // })
-      // .then(result => {
-      // console.log(result);
-      // // Get the value from the contract to prove it worked.
-      // // return simpleStorageInstance.get.call(accounts[0]);
-      // })
-      // .then(result => {
-      // // Update state with the result.
-      // // return this.setState({ storageValue: result.c[0] });
-      // });
-    });
-  }
   render() {
-    const { address, tokenName } = this.state;
+    const { address } = this.state;
     const {
       accounts: { 0: userAddress },
       owner,
