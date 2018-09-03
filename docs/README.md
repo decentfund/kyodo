@@ -78,7 +78,7 @@ DF token is the hybryd token, that featuring traits of both Usage and Work token
 - Grants access to system functionalities
 - Allows ownerto contribute to the system
 
-*Legal status *
+*Legal status*
 Utility token - closely tied to funcionality  / internal currency / Grants owners to contribute to the system vs passive investor role. 
 
 How to earn: Buy on exhange or Fund management domain
@@ -113,19 +113,20 @@ Incentives involve both monetary and non-monetary rewards and punishments:
 
 The incentive to hold - the rising token value
 
-**Minting** 
+**Token distribution**
 Period - 1 mnth
 In the end of a period a member should sign a transaction aproving the amount of tips (DF tokens) he spreaded within members as evaluation of the work they done. 
 In the end of period the amount of points a members earned for a work are converted to the DF token and destributed to the members from the Gov domain.
+![](https://i.imgur.com/fEaJ4b0.png)
 
 **Inflation**
 Dynamic inflation depends on the amount of  the money earned in a current period.
 
-**Token distribution**
 
-![](https://i.imgur.com/fEaJ4b0.png)
 
-![](https://i.imgur.com/fEaJ4b0.png)
+
+
+
 
 ![](https://i.imgur.com/KcjRVop.png)
 
