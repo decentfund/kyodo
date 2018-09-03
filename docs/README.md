@@ -37,8 +37,8 @@ The process:
 stake task → add task description → assign roles →  define amount of DF token to stake to participate → define reward tasks  → open task
 
 ## Installation
-To run the whole Kyodo project you need to setup 3 projects:
-- Kyodo (this repository) to setup colony, sign final tips, get your balance and view tasks progress
+This is a monorepo for kyodo project consisting of 3 modules:
+- Kyodo web app to setup colony, sign final tips, get your balance and view tasks progress
 - Kyodo backend to run mongodb server and tipping watch within period
 - Kyodo bot to run riot bot for task creation and instant tipping
 
@@ -143,13 +143,13 @@ yarn
 ### Start ganache
 
 ```
-ganache-cli --gasLimit 7000000 -b 3
+yarn start_ganache
 ```
 
 ### Create initial distribution of tokens
 
 ```
-cp migrations/deploy_parameters.example.json migrations/deploy_parameters.json
+cp packages/kyodo/migrations/deploy_parameters.example.json packages/kyodo/migrations/deploy_parameters.json
 ```
 
 Change `deploy_parameters.json` to reflect the initial distribution you want or leave accounts section empty.
@@ -158,7 +158,7 @@ Change `deploy_parameters.json` to reflect the initial distribution you want or 
 We implement ERC-20 token contract to bootstrap app based on OpenZeppelin ERC20 Mintable token and Ownable contracts, for working with strings we utilize strings.sol library.
 
 ```
-truffle migrate --reset --compile-all
+yarn deploy_contracts
 ```
 
 ### Start frontend app
@@ -182,5 +182,5 @@ npm run jest
 
 ### Setting up arbitrary token balances
 
-If you need to specify additional token balances you can do so by creating a `balances.json` file in the root of the project.
+If you need to specify additional token balances you can do so by creating a `balances.json` file in the root of the kyodo package
 Tokens should be speficied in the form of `TICKER: BALANCE`, like `BTC: 1`

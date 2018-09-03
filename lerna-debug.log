@@ -1,0 +1,19 @@
+0 silly argv { _: [ 'import' ],
+0 silly argv   lernaVersion: '3.1.4',
+0 silly argv   '$0': 'lerna',
+0 silly argv   dir: '../kyodo' }
+1 notice cli v3.1.4
+2 verbose rootPath /home/igor/Development/decent.fund/kyodo-lerna
+3 error Error: Command failed: git rev-parse HEAD
+3 error fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.
+3 error Use '--' to separate paths from revisions, like this:
+3 error 'git <command> [<revision>...] -- [<file>...]'
+3 error
+3 error HEAD
+3 error
+3 error     at makeError (/home/igor/.nvm/versions/node/v10.9.0/lib/node_modules/lerna/node_modules/execa/index.js:172:9)
+3 error     at Function.module.exports.sync (/home/igor/.nvm/versions/node/v10.9.0/lib/node_modules/lerna/node_modules/execa/index.js:341:15)
+3 error     at Object.execSync (/home/igor/.nvm/versions/node/v10.9.0/lib/node_modules/lerna/node_modules/@lerna/child-process/index.js:22:16)
+3 error     at ImportCommand.getCurrentSHA (/home/igor/.nvm/versions/node/v10.9.0/lib/node_modules/lerna/node_modules/@lerna/import/index.js:118:34)
+3 error     at ImportCommand.initialize (/home/igor/.nvm/versions/node/v10.9.0/lib/node_modules/lerna/node_modules/@lerna/import/index.js:90:31)
+3 error     at Promise.resolve.then (/home/igor/.nvm/versions/node/v10.9.0/lib/node_modules/lerna/node_modules/@lerna/command/index.js:245:24)
