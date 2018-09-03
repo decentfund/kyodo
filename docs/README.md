@@ -51,6 +51,12 @@ cd kyodo
 yarn
 ```
 
+### Setup colonyNetwork
+
+```
+yarn setup_colony
+```
+
 ### Start ganache
 
 ```
