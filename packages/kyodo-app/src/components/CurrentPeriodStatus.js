@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { drizzleConnect } from 'drizzle-react';
 import dfToken from './dftoken.svg';
 import { getRate, getContract } from '../reducers';
-import { formatEth, formatEur } from '../helpers/format';
+import { FormattedEth, FormattedEur } from './FormattedCurrency';
 
 const WrapperCurrentPeriodStatus = styled.div`
   border-top: 4px solid rgba(0, 0, 0, 0.05);
@@ -99,8 +99,8 @@ class CurrentPeriodStatus extends Component {
             {periodEnd.format('DD.MM.YYYY')}
           </p>
           <p>
-            {formatEur(balance * tokenPriceEUR)}{' '}
-            {formatEth(balance * tokenPriceETH)}
+            <FormattedEur>{balance * tokenPriceEUR}</FormattedEur>{' '}
+            <FormattedEth>{balance * tokenPriceETH}</FormattedEth>
           </p>
         </StyledBottom>
       </WrapperCurrentPeriodStatus>

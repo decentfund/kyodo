@@ -4,21 +4,26 @@ import { ContractData } from 'drizzle-react-components';
 import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
 import { getRate, getContract } from '../reducers';
-import { formatEth, formatEur } from '../helpers/format';
+import { FormattedEth, FormattedEur } from './FormattedCurrency';
 import dfToken from './dftoken.svg';
 
 const StyledUserBalance = styled.div`
   display: inline-block;
   vertical-align: top;
-  width: 260px;
+  width: 295px;
 `;
 
 const StyledLabel = styled.label`
   font-size: 12px;
 `;
 
-const StyledAmount = styled.div`
+const StyledAmount = styled.span`
   font-size: 32px;
+`;
+
+const StyledConvertedAmount = styled.div`
+  display: inline-block;
+  margin-left: 9px;
 `;
 
 const StyledTokenLogo = styled.img`
@@ -33,6 +38,7 @@ const StyledTokenLogoContainer = styled.div`
 
 const StyledBalance = styled.div`
   display: inline-block;
+  vertical-align: top;
 `;
 
 class UserBalance extends Component {
@@ -42,11 +48,17 @@ class UserBalance extends Component {
     this.dataKey = this.contracts.DecentToken.methods.balanceOf.cacheCall(
       this.props.account,
     );
+    this.totalSupplyKey = this.contracts.DecentToken.methods.totalSupply.cacheCall();
   }
 
   render() {
     // TODO: Loading
-    if (!this.dataKey || !this.props.DecentToken.balanceOf[this.dataKey])
+    if (
+      !this.dataKey ||
+      !this.props.DecentToken.balanceOf[this.dataKey] ||
+      !this.totalSupplyKey ||
+      !this.props.DecentToken.totalSupply[this.totalSupplyKey]
+    )
       return null;
 
     const { contractName, account, tokenPriceEUR, tokenPriceETH } = this.props;
@@ -58,17 +70,32 @@ class UserBalance extends Component {
         </StyledTokenLogoContainer>
         <StyledBalance>
           <StyledLabel>my balance</StyledLabel>
-          <StyledAmount>
-            <ContractData
-              contract={contractName}
-              method="balanceOf"
-              methodArgs={[account]}
-            />{' '}
-            <ContractData contract={contractName} method="symbol" />
-          </StyledAmount>
           <div>
-            {formatEur(balance * tokenPriceEUR)}{' '}
-            {formatEth(balance * tokenPriceETH)}
+            <StyledAmount>
+              <ContractData
+                contract={contractName}
+                method="balanceOf"
+                methodArgs={[account]}
+              />{' '}
+              <ContractData contract={contractName} method="symbol" />
+            </StyledAmount>
+            <StyledConvertedAmount>
+              <div>
+                <FormattedEth>{balance * tokenPriceETH}</FormattedEth>
+              </div>
+              <div>
+                ~<FormattedEur>{balance * tokenPriceEUR}</FormattedEur>
+              </div>
+            </StyledConvertedAmount>
+            <div>
+              {(
+                (this.props.DecentToken.balanceOf[this.dataKey].value /
+                  this.props.DecentToken.totalSupply[this.totalSupplyKey]
+                    .value) *
+                100
+              ).toFixed(2)}
+              % CAP
+            </div>
           </div>
         </StyledBalance>
       </StyledUserBalance>

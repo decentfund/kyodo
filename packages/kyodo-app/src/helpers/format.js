@@ -1,7 +1,7 @@
-const ETH = 'ETH';
-const DAI = 'DAI';
-const USD = 'USD';
-const EUR = 'EUR';
+export const ETH = 'ETH';
+export const DAI = 'DAI';
+export const USD = 'USD';
+export const EUR = 'EUR';
 
 export function formatCurrency(value, currency, precision = 0) {
   let decimalPoints = precision;
@@ -23,6 +23,3 @@ export function formatCurrency(value, currency, precision = 0) {
     Math.round(value * 10 ** decimalPoints) / 10 ** decimalPoints,
   );
 }
-
-export const formatEth = value => `${formatCurrency(value, ETH)} ETH`;
-export const formatEur = value => `${formatCurrency(value, EUR)} €`;
