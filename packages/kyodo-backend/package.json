@@ -1,0 +1,47 @@
+{
+  "name": "kyodo-backend",
+  "version": "0.0.1",
+  "description": "magic",
+  "main": "app.js",
+  "scripts": {
+    "test": "test",
+    "start": "./node_modules/.bin/nodemon app.js",
+    "precise-commits": "precise-commits",
+    "precommit": "npm run precise-commits"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/decentfund/kyodo-backend.git"
+  },
+  "keywords": [
+    "colony",
+    "ethereum",
+    "hackathon"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/decentfund/kyodo-backend/issues"
+  },
+  "homepage": "https://github.com/decentfund/kyodo-backend#readme",
+  "dependencies": {
+    "@colony/colony-js-adapter-ethers": "^1.5.0",
+    "@colony/colony-js-client": "^1.5.0",
+    "@colony/colony-js-contract-loader-http": "^1.4.1",
+    "body-parser": "^1.18.3",
+    "buffer": "^5.1.0",
+    "eth-dagger": "^0.0.1",
+    "ethers": "^3.0.22",
+    "express": "^4.16.3",
+    "ipfs": "^0.29.3",
+    "mongoose": "^5.1.6",
+    "uuid": "^3.2.1",
+    "web3": "^1.0.0-beta.34"
+  },
+  "devDependencies": {
+    "husky": "^0.14.3",
+    "nodemon": "^1.17.5",
+    "precise-commits": "^1.0.2",
+    "prettier": "^1.13.6"
+  }
+}
