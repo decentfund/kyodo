@@ -1,5 +1,6 @@
-import KyodoDAO from './../build/contracts/KyodoDAO.json';
-import DecentToken from './../build/contracts/DecentToken.json';
+// TODO: For production we need to export interfaces in kyodo-contracts folder and work with abi and deployed addresses
+import KyodoDAO from '@kyodo/contracts/build/contracts/KyodoDAO.json';
+import DecentToken from '@kyodo/contracts/build/contracts/DecentToken.json';
 
 const drizzleOptions = {
   web3: {

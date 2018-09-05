@@ -4,11 +4,7 @@
   "devDependencies": {
     "lerna": "^3.1.4"
   },
-  "scripts": {
-    "start": "cd packages/kyodo && node scripts/start.js",
-    "build": "cd packages/kyodo && node scripts/build.js",
-    "truffle:test": "cd packages/kyodo && node scripts/test.sh",
-    "start_ganache": "sh scripts/start_ganache.sh",
-    "deploy_contracts": "sh scripts/deploy_contracts.sh"
-  }
+  "workspaces": [
+    "packages/*"
+  ]
 }

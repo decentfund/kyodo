@@ -16,6 +16,7 @@ contract KyodoDAO is Ownable {
   string[] public usedAliases;
   mapping(address => Member) public whitelist;
   address[] whitelistedAddresses;
+  address public Colony;
   MintableToken public Token;
   uint256 public currentPeriodStartTime;
   uint public currentPeriodStartBlock;
@@ -42,6 +43,9 @@ contract KyodoDAO is Ownable {
     return whitelistedAddresses.length;
   }
 
+  function setColonyAddress(address _address) public onlyOwner {
+    Colony = _address;
+  }
 
   function nickNameNotExist(string _value)
     public

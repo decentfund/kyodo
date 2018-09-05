@@ -1,0 +1,3 @@
+[submodule "packages/kyodo-contracts/lib/colonyNetwork"]
+	path = packages/kyodo-contracts/lib/colonyNetwork
+	url = https://github.com/JoinColony/colonyNetwork
