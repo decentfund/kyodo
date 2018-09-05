@@ -107,7 +107,7 @@ class App extends Component {
   render() {
     const { address } = this.state;
     const {
-      accounts: { 0: userAddress },
+      userAddress,
       owner,
       whitelistedAddresses,
       currentPeriodStartTime,
@@ -158,10 +158,7 @@ class App extends Component {
           />
           <div style={{ marginBottom: 50 }}>
             <FundStatistics />
-            <UserBalance
-              contractName="DecentToken"
-              account={this.props.accounts[0]}
-            />
+            <UserBalance contractName="DecentToken" account={userAddress} />
             {prevBlock ? <TotalSupplyChange prevBlock={prevBlock} /> : null}
           </div>
           <br />
@@ -173,7 +170,7 @@ class App extends Component {
             />
           ) : null}
           {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
-            <AddRiotID account={this.props.accounts[0]} />
+            <AddRiotID account={userAddress} />
           ) : null}
           {whitelistedAddresses.length > 0 || owner === userAddress ? (
             <Members
@@ -190,14 +187,12 @@ class App extends Component {
 }
 
 const mapStateToProps = state => ({
-  accounts: state.accounts,
+  userAddress: state.accounts[0],
   KyodoDAO: getContract('KyodoDAO')(state),
   DecentToken: getContract('DecentToken')(state),
   drizzleStatus: state.drizzleStatus,
   owner: getOwner(getContract('KyodoDAO')(state)),
-  whitelistedAddresses: getWhitelistedAddresses(
-    getContract('KyodoDAO')(state),
-  ).map(address => address),
+  whitelistedAddresses: getWhitelistedAddresses(getContract('KyodoDAO')(state)),
   currentPeriodStartTime: getCurrentPeriodStartTime(
     getContract('KyodoDAO')(state),
   ),
