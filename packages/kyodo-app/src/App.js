@@ -69,6 +69,21 @@ class App extends Component {
   componentDidMount() {
     this.props.loadRate(['ETH', ...Object.keys(process.env.BALANCE)]);
     this.props.loadMultiSigBalance();
+    this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
+
+    this.drizzle.contracts.KyodoDAO.methods.getWhitelistedAddresses.cacheCall();
+    this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartTime.cacheCall();
+    this.drizzle.contracts.KyodoDAO.methods.periodDaysLength.cacheCall();
+
+    const prevBlockKey = this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartBlock.cacheCall();
+    const tokenSymbolKey = this.drizzle.contracts.DecentToken.methods.symbol.cacheCall();
+    const colonyAddressKey = this.drizzle.contracts.KyodoDAO.methods.Colony.cacheCall();
+
+    this.setState({
+      prevBlockKey,
+      tokenSymbolKey,
+      colonyAddressKey,
+    });
   }
 
   addToWhitelist = () => {
@@ -114,37 +129,29 @@ class App extends Component {
       periodDaysLength,
     } = this.props;
     let prevBlock, colonyAddress;
-    if (this.props.drizzleStatus.initialized) {
-      this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
-      this.drizzle.contracts.KyodoDAO.methods.getWhitelistedAddresses.cacheCall();
-      this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartTime.cacheCall();
-      this.drizzle.contracts.KyodoDAO.methods.periodDaysLength.cacheCall();
 
-      this.prevBlockKey = this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartBlock.cacheCall();
-      this.tokenSymbolKey = this.drizzle.contracts.DecentToken.methods.symbol.cacheCall();
-      this.colonyAddressKey = this.drizzle.contracts.KyodoDAO.methods.Colony.cacheCall();
+    if (
+      this.state.prevBlockKey &&
+      this.props.KyodoDAO.currentPeriodStartBlock[this.state.prevBlockKey]
+    ) {
+      prevBlock = this.props.KyodoDAO.currentPeriodStartBlock[
+        this.state.prevBlockKey
+      ].value;
     }
 
     if (
-      this.prevBlockKey &&
-      this.props.KyodoDAO.currentPeriodStartBlock[this.prevBlockKey]
+      this.state.colonyAddressKey &&
+      this.props.KyodoDAO.Colony[this.state.colonyAddressKey]
     ) {
-      prevBlock = this.props.KyodoDAO.currentPeriodStartBlock[this.prevBlockKey]
+      colonyAddress = this.props.KyodoDAO.Colony[this.state.colonyAddressKey]
         .value;
     }
 
-    if (
-      this.colonyAddressKey &&
-      this.props.KyodoDAO.Colony[this.prevBlockKey]
-    ) {
-      colonyAddress = this.props.KyodoDAO.Colony[this.colonyAddressKey].value;
-    }
-
     const tokenSymbol =
-      this.tokenSymbolKey &&
+      this.state.tokenSymbolKey &&
       this.props.DecentToken &&
-      this.props.DecentToken.symbol[this.tokenSymbolKey] &&
-      this.props.DecentToken.symbol[this.tokenSymbolKey].value;
+      this.props.DecentToken.symbol[this.state.tokenSymbolKey] &&
+      this.props.DecentToken.symbol[this.state.tokenSymbolKey].value;
 
     return (
       <div className="App">
