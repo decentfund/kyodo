@@ -132,7 +132,7 @@ Dynamic inflation depends on the amount of the money earned in a current period.
 
 ![](https://i.imgur.com/rmQ2QMA.png)
 
-### To setup web app
+### To setup monorepo packages and its dependencies
 
 ```
 git clone https://github.com/decentfund/kyodo.git
@@ -140,30 +140,22 @@ cd kyodo
 yarn
 ```
 
-### Setup colonyNetwork
+### Setup contracts
 
-```
-yarn setup_colony
-```
+```bash
+cd packages/kyodo-contracts
 
-### Start ganache
-
-```
+# Start ganache cli with necessary parameters
 yarn start_ganache
-```
 
-### Create initial distribution of tokens
+# Setup colonyNetwork and its dependencies
+yarn setup_colony
 
-```
-cp packages/kyodo/migrations/deploy_parameters.example.json packages/kyodo/migrations/deploy_parameters.json
-```
+# Create initial distribution of tokens
+# Change `deploy_parameters.json` to reflect the initial distribution you want or leave the accounts section empty.
+cp migrations/deploy_parameters.example.json migrations/deploy_parameters.json
 
-Change `deploy_parameters.json` to reflect the initial distribution you want or leave the accounts section empty.
-
-### Compile smart-contracts:
-We implement an ERC-20 token contract to bootstrap app based on OpenZeppelin ERC20 Mintable token and Ownable contracts, for working with strings we utilize strings.sol library.
-
-```
+# Compile smart contracts
 yarn deploy_contracts
 ```
 
@@ -178,13 +170,16 @@ Don't forget to switch Metamask network to localhost:8545
 
 ### Testing
 
-```
-// Truffle teste
+```bash
+# Truffle teste
 npm run truffle:test
 
-// App tests
+# App tests
 npm run jest
 ```
+
+### Smart-contracts
+We implement an ERC-20 token contract to bootstrap app based on OpenZeppelin ERC20 Mintable token and Ownable contracts, for working with strings we utilize strings.sol library.
 
 ### Setting up arbitrary token balances
 
