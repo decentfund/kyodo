@@ -4,6 +4,9 @@ var DecentToken = artifacts.require('./DecentToken.sol');
 var KyodoDAO = artifacts.require('./KyodoDAO.sol');
 const { providers, Wallet } = require('ethers');
 const { default: EthersAdapter } = require('@colony/colony-js-adapter-ethers');
+const {
+  default: NetworkLoader,
+} = require('@colony/colony-js-contract-loader-network');
 
 // Import the ColonyNetworkClient
 const { default: ColonyNetworkClient } = require('@colony/colony-js-client');
@@ -13,35 +16,52 @@ const { TruffleLoader } = require('@colony/colony-js-contract-loader-fs');
 const appDirectory = fs.realpathSync(process.cwd());
 const contractDir = path.resolve(appDirectory, '../build/contracts');
 
-const loader = new TruffleLoader({
-  contractDir,
-});
+const getPrivateKey = (network, accounts) => {
+  // import keys from ganache if development
+  // else try to get keys from wallet created from env mnemonic var
+  // TODO: Wrap and throw error on empty file / var
+  if (network === 'development') {
+    const keys = require('../ganache-accounts.json');
+    const rawKey = keys.private_keys[accounts[0]];
+    return rawKey.startsWith('0x') ? rawKey : `0x${rawKey}`;
+  } else {
+    const mnemonic = process.env.MNEMONIC;
+    return Wallet.fromMnemonic(mnemonic).privateKey;
+  }
+};
+
+const getProvider = network => {
+  if (network === 'development') {
+    // Create a provider for local TestRPC (Ganache)
+    return new providers.JsonRpcProvider('http://localhost:8545/');
+  } else {
+    return providers.getDefaultProvider(network);
+  }
+};
+
+const getLoader = network => {
+  if (network !== 'rinkeby') {
+    return new TruffleLoader({
+      contractDir,
+    });
+  } else {
+    return new NetworkLoader({ network });
+  }
+};
 
 module.exports = (deployer, network, accounts) => {
   deployer.then(async () => {
-    let wallet;
-    let provider;
-    if (network === 'development') {
-      // import keys
-      const keys = require('../ganache-accounts.json');
-      const rawKey = keys.private_keys[accounts[0]];
-      const key = rawKey.startsWith('0x') ? rawKey : `0x${rawKey}`;
+    // get key
+    const key = getPrivateKey(network, accounts);
 
-      // Create a provider for local TestRPC (Ganache)
-      provider = new providers.JsonRpcProvider('http://localhost:8545/');
+    // get provider
+    const provider = getProvider(network);
 
-      // Create a wallet with the private key (so we have a balance we can use)
-      wallet = new Wallet(key, provider);
-    } else if (network === 'ropsten') {
-      const mnemonic = process.env.MNEMONIC;
+    // setting wallet
+    const wallet = new Wallet(key, provider);
 
-      // Create a provider for INFURA
-      provider = new providers.InfuraProvider(providers.network.ropsten);
-      wallet = Wallet.fromMnemonic(mnemonic);
-    } else {
-      // TODO: Mainnet
-      return;
-    }
+    // getting loader
+    const loader = getLoader(network);
 
     // Create an adapter (powered by ethers)
     const adapter = new EthersAdapter({
@@ -57,6 +77,7 @@ module.exports = (deployer, network, accounts) => {
     // Get decentToken address
     const tokenAddress = DecentToken.address;
 
+    // TODO: Verify if colony exists
     // Create new colony
     const data = await networkClient.createColony.send({
       tokenAddress,
