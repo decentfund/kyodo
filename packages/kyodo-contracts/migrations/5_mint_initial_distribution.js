@@ -3,7 +3,7 @@ var KyodoDAO = artifacts.require('./KyodoDAO.sol');
 var deployParameters = require('./deploy_parameters.json');
 var tokenInstance;
 
-module.exports = (deployer, network, accounts) => {
+module.exports = deployer => {
   deployer.then(async () => {
     tokenInstance = DecentToken.at(DecentToken.address);
     const { accounts } = deployParameters;
@@ -18,6 +18,7 @@ module.exports = (deployer, network, accounts) => {
       (acc, value) => acc + value,
       0,
     );
+
     await tokenInstance.mint(KyodoDAO.address, totalToMint * 0.5);
   });
 };
