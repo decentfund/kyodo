@@ -68,6 +68,16 @@ export const getRate = (state, from, to) => {
   });
 };
 
+export const getBalances = state => {
+  return Object.keys(state.balances).map(key => {
+    return {
+      ticker: key,
+      balance: state.balances[key],
+      tokenPrice: getRate(state, key, BASE_CURRENCY),
+    };
+  });
+};
+
 const reducer = combineReducers({
   routing: routerReducer,
   rates,

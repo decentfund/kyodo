@@ -7,6 +7,7 @@ import styled, { injectGlobal } from 'styled-components';
 import Header from './components/Header';
 import AddRiotID from './components/AddRiotID';
 import Members from './components/Members';
+import MultisigBalance from './components/MultisigBalance';
 import MintTokens from './components/MintTokens';
 import UserBalance from './components/UserBalance';
 import PeriodProgress from './components/PeriodProgress';
@@ -187,6 +188,7 @@ class App extends Component {
             />
           ) : null}
           {owner === userAddress ? <MintTokens /> : null}
+          <MultisigBalance />
         </StyledMainInfoContainer>
       </div>
     );
