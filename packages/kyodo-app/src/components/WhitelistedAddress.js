@@ -4,11 +4,12 @@ import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
 import FormattedAddress from './FormattedAddress';
 import { getContract, getTotalSupply } from '../reducers';
-import { formatDecimals } from '../helpers/format';
+import { formatDecimals, formatCurrency } from '../helpers/format';
 
 const StyledContainer = styled.div`
   display: flex;
   width: 100%;
+  font-size: 16px;
 `;
 
 const StyledDiv = styled.div`
@@ -30,6 +31,16 @@ const StyledAlias = StyledDiv.extend`
   white-space: nowrap;
 
   color: ${props => (props.isPlaceholder ? GRAY : BLACK)};
+`;
+
+const StyledValue = styled.div`
+  width: 60px;
+  text-align: center;
+  margin: 0 0 0 20px;
+`;
+
+const StyledShare = StyledValue.extend`
+  text-align: right;
 `;
 
 class WhitelistedAddress extends Component {
@@ -77,8 +88,8 @@ class WhitelistedAddress extends Component {
           {(alias && alias.value) || 'member known as'}
         </StyledAlias>
         <FormattedAddress>{value}</FormattedAddress>
-        <span>{balance}</span>
-        <span>{((balance / totalSupply) * 100).toFixed(2)}%</span>
+        <StyledValue>{formatCurrency(balance, 'DF', 2)}</StyledValue>
+        <StyledShare>{((balance / totalSupply) * 100).toFixed(2)}%</StyledShare>
       </StyledContainer>
     );
   }
