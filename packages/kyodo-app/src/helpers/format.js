@@ -26,3 +26,6 @@ export function formatCurrency(value, currency, precision = 0) {
 
 export const formatEth = value => `${formatCurrency(value, ETH)} ETH`;
 export const formatEur = value => `${formatCurrency(value, EUR)} €`;
+
+export const formatDecimals = (value, decimals) =>
+  value / Math.pow(10, decimals);
