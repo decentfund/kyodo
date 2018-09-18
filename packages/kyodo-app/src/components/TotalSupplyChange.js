@@ -4,7 +4,12 @@ import styled from 'styled-components';
 import { drizzleConnect } from 'drizzle-react';
 import { ContractData } from 'drizzle-react-components';
 import { getRate, getContract } from '../reducers';
-import { formatEth, formatEur } from '../helpers/format';
+import {
+  formatEth,
+  formatEur,
+  formatCurrency,
+  formatDecimals,
+} from '../helpers/format';
 
 const StyledTotalSupplyChange = styled.div`
   background: #f7ffc7;
@@ -30,30 +35,53 @@ const StyledChangeCurrency = styled.div`
 `;
 
 class TotalSupplyChange extends Component {
+  state = {};
+
   constructor(props, context) {
     super(props, context);
     this.contracts = context.drizzle.contracts;
-    this.dataKey = this.contracts.DecentToken.methods.totalSupply.cacheCall();
-    this.prevDataKey = this.contracts.DecentToken.methods.totalSupply.cacheCall(
+  }
+
+  componentDidMount() {
+    const contract = this.contracts.DecentToken;
+
+    const dataKey = contract.methods.totalSupply.cacheCall();
+    const prevDataKey = contract.methods.totalSupply.cacheCall(
       { from: this.props.userAddress },
       this.props.prevBlock,
     );
+    const decimalsKey = contract.methods.decimals.cacheCall();
+
+    this.setState({
+      dataKey,
+      prevDataKey,
+      decimalsKey,
+    });
   }
 
   render() {
     // TODO: Loading
     if (
-      !this.prevDataKey ||
-      !this.props.DecentToken.totalSupply[this.prevDataKey] ||
-      !this.dataKey ||
-      !this.props.DecentToken.totalSupply[this.dataKey]
+      !this.state.prevDataKey ||
+      !this.props.DecentToken.totalSupply[this.state.prevDataKey] ||
+      !this.state.dataKey ||
+      !this.props.DecentToken.totalSupply[this.state.dataKey] ||
+      !this.state.decimalsKey ||
+      !this.props.DecentToken.decimals[this.state.decimalsKey]
     )
       return null;
 
-    const prevSupply = this.props.DecentToken.totalSupply[this.prevDataKey]
+    const decimals = this.props.DecentToken.decimals[this.state.decimalsKey]
       .value;
-    const totalSupply = this.props.DecentToken.totalSupply[this.dataKey].value;
-    const change = totalSupply - prevSupply;
+    const prevSupply = formatDecimals(
+      this.props.DecentToken.totalSupply[this.state.prevDataKey].value,
+      decimals,
+    );
+    const totalSupply = formatDecimals(
+      this.props.DecentToken.totalSupply[this.state.dataKey].value,
+      decimals,
+    );
+    const change = formatCurrency(totalSupply - prevSupply, 'DF', 3);
 
     const { contractName, tokenPriceEUR, tokenPriceETH } = this.props;
     return (

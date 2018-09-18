@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { drizzleConnect } from 'drizzle-react';
 import dfToken from './dftoken.svg';
 import { getRate, getContract } from '../reducers';
-import { formatEth, formatEur } from '../helpers/format';
+import { formatEth, formatEur, formatDecimals } from '../helpers/format';
 
 const WrapperCurrentPeriodStatus = styled.div`
   border-top: 4px solid rgba(0, 0, 0, 0.05);
@@ -42,26 +42,42 @@ const StyledTokenLogo = styled.img`
 `;
 
 class CurrentPeriodStatus extends Component {
+  state = {};
+
   constructor(props, context) {
     super(props, context);
     this.contracts = context.drizzle.contracts;
-    this.balanceKey = this.contracts.DecentToken.methods.balanceOf.cacheCall(
-      props.colonyAddress,
+  }
+
+  componentDidMount() {
+    const { DecentToken, KyodoDAO } = this.contracts;
+    const balanceKey = DecentToken.methods.balanceOf.cacheCall(
+      this.props.colonyAddress,
     );
-    this.currentPeriodStartTimeKey = this.contracts.KyodoDAO.methods.currentPeriodStartTime.cacheCall();
-    this.periodLengthKey = this.contracts.KyodoDAO.methods.periodDaysLength.cacheCall();
+    const decimalsKey = DecentToken.methods.decimals.cacheCall();
+    const currentPeriodStartTimeKey = KyodoDAO.methods.currentPeriodStartTime.cacheCall();
+    const periodLengthKey = KyodoDAO.methods.periodDaysLength.cacheCall();
+
+    this.setState({
+      balanceKey,
+      decimalsKey,
+      currentPeriodStartTimeKey,
+      periodLengthKey,
+    });
   }
 
   render() {
     if (
-      !this.balanceKey ||
-      !this.props.DecentToken.balanceOf[this.balanceKey] ||
-      !this.currentPeriodStartTimeKey ||
+      !this.state.balanceKey ||
+      !this.props.DecentToken.balanceOf[this.state.balanceKey] ||
+      !this.state.decimalsKey ||
+      !this.props.DecentToken.decimals[this.state.decimalsKey] ||
+      !this.state.currentPeriodStartTimeKey ||
       !this.props.KyodoDAO.currentPeriodStartTime[
-        this.currentPeriodStartTimeKey
+        this.state.currentPeriodStartTimeKey
       ] ||
-      !this.periodLengthKey ||
-      !this.props.KyodoDAO.periodDaysLength[this.periodLengthKey]
+      !this.state.periodLengthKey ||
+      !this.props.KyodoDAO.periodDaysLength[this.state.periodLengthKey]
     )
       return null;
 
@@ -72,15 +88,19 @@ class CurrentPeriodStatus extends Component {
       tokenSymbol,
     } = this.props;
 
-    const balance = this.props.DecentToken.balanceOf[this.balanceKey].value;
+    const balance = formatDecimals(
+      this.props.DecentToken.balanceOf[this.state.balanceKey].value,
+      this.props.DecentToken.decimals[this.state.decimalsKey].value,
+    );
 
     const periodStart = moment.unix(
-      this.props.KyodoDAO.currentPeriodStartTime[this.currentPeriodStartTimeKey]
-        .value,
+      this.props.KyodoDAO.currentPeriodStartTime[
+        this.state.currentPeriodStartTimeKey
+      ].value,
     );
 
     const periodEnd = moment(periodStart).add(
-      this.props.KyodoDAO.periodDaysLength[this.periodLengthKey].value,
+      this.props.KyodoDAO.periodDaysLength[this.state.periodLengthKey].value,
       'days',
     );
 

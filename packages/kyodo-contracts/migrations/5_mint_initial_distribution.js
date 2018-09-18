@@ -10,7 +10,7 @@ module.exports = deployer => {
 
     // Minting initial distribution
     Object.keys(accounts).forEach(async address => {
-      await tokenInstance.mint(address, accounts[address]);
+      await tokenInstance.mint(address, accounts[address] * Math.pow(10, 18));
     });
 
     // Minting reserve tokens
@@ -19,6 +19,9 @@ module.exports = deployer => {
       0,
     );
 
-    await tokenInstance.mint(KyodoDAO.address, totalToMint * 0.5);
+    await tokenInstance.mint(
+      KyodoDAO.address,
+      totalToMint * 0.5 * Math.pow(10, 18),
+    );
   });
 };

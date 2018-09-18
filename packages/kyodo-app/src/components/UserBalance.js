@@ -4,7 +4,7 @@ import { ContractData } from 'drizzle-react-components';
 import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
 import { getRate, getContract } from '../reducers';
-import { formatEth, formatEur } from '../helpers/format';
+import { formatEth, formatEur, formatDecimals } from '../helpers/format';
 import dfToken from './dftoken.svg';
 
 const StyledUserBalance = styled.div`
@@ -36,21 +36,41 @@ const StyledBalance = styled.div`
 `;
 
 class UserBalance extends Component {
+  state = {};
+
   constructor(props, context) {
     super(props, context);
     this.contracts = context.drizzle.contracts;
-    this.dataKey = this.contracts.DecentToken.methods.balanceOf.cacheCall(
-      this.props.account,
-    );
+  }
+
+  componentDidMount() {
+    const contract = this.contracts.DecentToken;
+
+    const balanceKey = contract.methods.balanceOf.cacheCall(this.props.account);
+    const decimalsKey = contract.methods.decimals.cacheCall();
+
+    this.setState({
+      balanceKey,
+      decimalsKey,
+    });
   }
 
   render() {
     // TODO: Loading
-    if (!this.dataKey || !this.props.DecentToken.balanceOf[this.dataKey])
+    if (
+      !this.state.balanceKey ||
+      !this.props.DecentToken.balanceOf[this.state.balanceKey] ||
+      !this.state.decimalsKey ||
+      !this.props.DecentToken.decimals[this.state.decimalsKey]
+    )
       return null;
 
-    const { contractName, account, tokenPriceEUR, tokenPriceETH } = this.props;
-    const balance = this.props.DecentToken.balanceOf[this.dataKey].value;
+    const { contractName, tokenPriceEUR, tokenPriceETH } = this.props;
+    const balance = formatDecimals(
+      this.props.DecentToken.balanceOf[this.state.balanceKey].value,
+      this.props.DecentToken.decimals[this.state.decimalsKey].value,
+    );
+
     return (
       <StyledUserBalance>
         <StyledTokenLogoContainer>
@@ -59,12 +79,7 @@ class UserBalance extends Component {
         <StyledBalance>
           <StyledLabel>my balance</StyledLabel>
           <StyledAmount>
-            <ContractData
-              contract={contractName}
-              method="balanceOf"
-              methodArgs={[account]}
-            />{' '}
-            <ContractData contract={contractName} method="symbol" />
+            {balance} <ContractData contract={contractName} method="symbol" />
           </StyledAmount>
           <div>
             {formatEur(balance * tokenPriceEUR)}{' '}
