@@ -13,7 +13,7 @@ const StyledContainer = styled.div`
 
 const StyledDiv = styled.div`
   font-family: Roboto Mono;
-  font-size: 18px;
+  font-size: 16px;
   font-style: normal;
   font-weight: normal;
   line-height: normal;
