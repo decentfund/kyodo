@@ -3,16 +3,18 @@ import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
 import FormattedAddress from './FormattedAddress';
-import { getContract } from '../reducers';
+import { getContract, getTotalSupply } from '../reducers';
+import { formatDecimals, formatCurrency } from '../helpers/format';
 
 const StyledContainer = styled.div`
   display: flex;
   width: 100%;
+  font-size: 16px;
 `;
 
 const StyledDiv = styled.div`
   font-family: Roboto Mono;
-  font-size: 18px;
+  font-size: 16px;
   font-style: normal;
   font-weight: normal;
   line-height: normal;
@@ -31,26 +33,54 @@ const StyledAlias = StyledDiv.extend`
   color: ${props => (props.isPlaceholder ? GRAY : BLACK)};
 `;
 
+const StyledValue = styled.div`
+  width: 60px;
+  text-align: center;
+  margin: 0 0 0 20px;
+`;
+
+const StyledShare = StyledValue.extend`
+  text-align: right;
+`;
+
 class WhitelistedAddress extends Component {
+  state = {};
+
   constructor(props, context) {
     super(props, context);
     this.contracts = context.drizzle.contracts;
   }
   componentDidMount() {
-    const contract = this.contracts.KyodoDAO;
+    const { KyodoDAO, DecentToken } = this.contracts;
 
-    // let drizzle know we want to watch the `myString` method
-    const dataKey = contract.methods.getAlias.cacheCall(this.props.value);
+    const aliasKey = KyodoDAO.methods.getAlias.cacheCall(this.props.value);
+    const balanceKey = DecentToken.methods.balanceOf.cacheCall(
+      this.props.value,
+    );
+    const decimalsKey = DecentToken.methods.decimals.cacheCall();
 
-    // save the `dataKey` to local component state for later reference
-    this.setState({ dataKey });
+    this.setState({ aliasKey, balanceKey, decimalsKey });
   }
   render() {
+    // TODO: Loading
+    if (
+      !this.state.balanceKey ||
+      !this.props.DecentToken.balanceOf[this.state.balanceKey] ||
+      !this.state.decimalsKey ||
+      !this.props.DecentToken.decimals[this.state.decimalsKey]
+    )
+      return null;
+
     let alias =
       this.state &&
-      this.state.dataKey &&
-      this.props.KyodoDAO.getAlias[this.state.dataKey];
-    const { value } = this.props;
+      this.state.aliasKey &&
+      this.props.KyodoDAO.getAlias[this.state.aliasKey];
+    const { value, totalSupply } = this.props;
+
+    const balance = formatDecimals(
+      this.props.DecentToken.balanceOf[this.state.balanceKey].value,
+      this.props.DecentToken.decimals[this.state.decimalsKey].value,
+    );
 
     return (
       <StyledContainer>
@@ -58,6 +88,8 @@ class WhitelistedAddress extends Component {
           {(alias && alias.value) || 'member known as'}
         </StyledAlias>
         <FormattedAddress>{value}</FormattedAddress>
+        <StyledValue>{formatCurrency(balance, 'DF', 2)}</StyledValue>
+        <StyledShare>{((balance / totalSupply) * 100).toFixed(2)}%</StyledShare>
       </StyledContainer>
     );
   }
@@ -69,6 +101,8 @@ WhitelistedAddress.contextTypes = {
 
 const mapStateToProps = (state, { account }) => ({
   drizzleStatus: state.drizzleStatus,
+  totalSupply: getTotalSupply(getContract('DecentToken')(state)),
+  DecentToken: getContract('DecentToken')(state),
   KyodoDAO: getContract('KyodoDAO')(state),
 });
 

@@ -52,7 +52,7 @@ button {
 const StyledMainInfoContainer = styled.div`
   display: block;
   padding: 0 40px;
-  max-width: 665px;
+  max-width: 772px;
 `;
 
 class App extends Component {

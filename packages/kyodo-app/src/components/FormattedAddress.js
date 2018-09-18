@@ -5,7 +5,7 @@ const GRAY = 'rgba(0, 0, 0, 0.2)';
 
 const StyledAddress = styled.div`
   font-family: Roboto Mono;
-  font-size: 18px;
+  font-size: 16px;
   font-style: normal;
   font-weight: normal;
 
