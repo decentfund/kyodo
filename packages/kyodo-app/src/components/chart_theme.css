@@ -89,6 +89,10 @@ rect.bb-circle._expanded_, use.bb-circle._expanded_ {
   .bb-bar._expanded_ {
     fill-opacity: 0.75; }
 
+.bb-target-ETH {
+  opacity: 0 !important;
+}
+
 /*-- Focus --*/
 .bb-target.bb-focused {
   opacity: 1; }
@@ -263,3 +267,13 @@ rect.bb-circle._expanded_, use.bb-circle._expanded_ {
 .tooltip_date {
   margin-bottom: 6px;
 }
+
+/*-- Token chart --*/
+/*-- Line --*/
+.token-chart .bb-line {
+  stroke-width: 1px; }
+
+/*-- Area --*/
+.token-chart .bb-area {
+  stroke-width: 0;
+  opacity: 0; }
