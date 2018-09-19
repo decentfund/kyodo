@@ -3,7 +3,7 @@ import moment from 'moment';
 import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
 import BillboardChart from 'react-billboardjs';
-import 'react-billboardjs/lib/billboard.css';
+import './chart_theme.css';
 import { StyledHeader } from './StyledSharedComponents';
 import TokenBalance from './TokenBalance';
 import { getBalances, getFundBaseBalance, getHistorical } from '../reducers';
@@ -37,11 +37,33 @@ const axis = {
     },
   },
   y: {
+    show: false,
     tick: {
       format: function(x) {
         return formatEur(x);
       },
     },
+  },
+};
+
+const CHART_POINT = {
+  r: 0,
+  focus: {
+    expand: {
+      r: 2,
+    },
+  },
+};
+
+const CHART_TOOLTIP = {
+  format: {
+    title: x => moment(x).format('D MMM'),
+    name: () => '',
+  },
+  contents: (data, defaultTitleFormat, defaultValueFormat, color) => {
+    return `<div><div class="tooltip_date">${moment(data[0].x).format(
+      'D MMM',
+    )}</div><div>${formatEur(data[0].value)}</div></div>`;
   },
 };
 
@@ -82,9 +104,11 @@ class MultisigBalance extends Component {
           <StyledChartHolder>
             <BillboardChart
               data={CHART_DATA}
+              point={CHART_POINT}
               ref={c => (this.chartInstance = c)}
               axis={axis}
               legend={{ show: false }}
+              tooltip={CHART_TOOLTIP}
             />
           </StyledChartHolder>
         </StyledContainer>
