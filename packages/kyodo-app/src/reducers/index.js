@@ -1,10 +1,15 @@
 import { combineReducers } from 'redux';
+import Moment from 'moment';
+import { extendMoment } from 'moment-range';
 import { routerReducer } from 'react-router-redux';
 import { drizzleReducers } from 'drizzle';
 import get from 'lodash/get';
 import rates, * as fromRates from './rates';
 import balances from './balances';
+import historical, * as fromHistorical from './historical';
 import { BASE_CURRENCY } from '../constants';
+
+const moment = extendMoment(Moment);
 
 export const getContract = contractName => state =>
   get(state, `contracts[${contractName}]`);
@@ -35,7 +40,24 @@ export const getWhitelistedAddresses = getFromContract(
   [],
 );
 
-export const getFundBaseBalance = state => {
+export const getFundBaseBalance = (state, date) => {
+  if (date) {
+    const baseCurrencyFundBalance = Object.keys(state.balances).reduce(
+      (prev, key) => {
+        const baseCurrencyRate = fromHistorical.getRate(
+          state.historical,
+          key,
+          BASE_CURRENCY,
+          date,
+        );
+        return state.balances[key] * baseCurrencyRate + prev;
+      },
+      0,
+    );
+
+    return baseCurrencyFundBalance;
+  }
+
   const baseCurrencyFundBalance = Object.keys(state.balances).reduce(
     (prev, key) => {
       const baseCurrencyRate = fromRates.getRate(
@@ -78,10 +100,21 @@ export const getBalances = state => {
   });
 };
 
+export const getHistorical = state => {
+  const range = moment.rangeFromInterval('day', -30, moment.now());
+  const dates = Array.from(range.by('day')).map(d => d.format('YYYY-MM-DD'));
+  const data = dates.map(date => ({
+    date,
+    balanceEUR: getFundBaseBalance(state, date),
+  }));
+  return data;
+};
+
 const reducer = combineReducers({
   routing: routerReducer,
   rates,
   balances,
+  historical,
   ...drizzleReducers,
 });
 

@@ -68,6 +68,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    // FIXME: move load rate to loadMultisigBalance saga
     this.props.loadRate(['ETH', ...Object.keys(process.env.BALANCE)]);
     this.props.loadMultiSigBalance();
     this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
