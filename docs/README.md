@@ -136,6 +136,30 @@ Dynamic inflation depends on the amount of the money earned in a current period.
 
 ![](https://i.imgur.com/rmQ2QMA.png)
 
+# Government domain
+
+Government type - Meritocracy
+"Meritocracy is the idea that decisions should be taken by the entities better qualified for it" - Xavi Vives
+
+Merit properties by Xavi Vives
+1. Defines what’s of value to the system to make decisions.
+2. Can’t be a medium of exchange
+3. Needs to be quantifiable
+
+The merit, which meets requirements, is represented by NFT token in Kyodo. 
+
+One member of Gov domain can have only one NFT token, meaning one member has only one vote.
+
+NFT token is the access to vote in Gov domain.
+
+Other members elect the new Gov domain's members in Kyodo by voting on Aragon platform.
+
+The voting topics of the Gov domain are:
+- Tokenomics 
+- Approving a new member / NFT minting
+- Creating a new domain
+- Disputes from other domains
+
 ### To setup monorepo packages and its dependencies
 
 ```
