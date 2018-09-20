@@ -2,6 +2,7 @@ pragma solidity ^0.4.24;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
+import "../lib/BokkyPooBahsDateTimeLibrary/contracts/BokkyPooBahsDateTimeLibrary.sol";
 import "./strings.sol";
 
 contract KyodoDAO is Ownable {
@@ -21,6 +22,10 @@ contract KyodoDAO is Ownable {
   uint256 public currentPeriodStartTime;
   uint public currentPeriodStartBlock;
   uint public periodDaysLength;
+
+  uint[] periods;
+
+  event NewPeriodStart(uint periodId);
 
   constructor(address _token) public {
     Token = MintableToken(_token);
@@ -68,10 +73,13 @@ contract KyodoDAO is Ownable {
     return -1;
   }
 
-  // TODO: multisig function
-  function startNewPeriod() public onlyOwner returns (uint256) {
+  function startNewPeriod() public returns (uint256) {
+    require(now > BokkyPooBahsDateTimeLibrary.addDays(currentPeriodStartTime, periodDaysLength));
+
     currentPeriodStartTime = now;
     currentPeriodStartBlock = block.number;
+    periods.push(currentPeriodStartBlock);
+    emit NewPeriodStart(currentPeriodStartBlock);
     return currentPeriodStartTime;
   }
 

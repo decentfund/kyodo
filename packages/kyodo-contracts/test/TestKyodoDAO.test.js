@@ -80,4 +80,48 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
       assert.equal(colonyMembers, 0);
     });
   });
+  describe('sets period days length', function() {
+    it('works', async function() {
+      await this.kyodo.setPeriodDaysLength(4);
+      let periodDaysLength = await this.kyodo.periodDaysLength();
+      assert.equal(periodDaysLength, 4);
+      await this.kyodo.setPeriodDaysLength(10);
+      periodDaysLength = await this.kyodo.periodDaysLength();
+      assert.equal(periodDaysLength, 10);
+    });
+  });
+  describe('starts new period', function() {
+    it('for new colony', async function() {
+      const currentBlock = await web3.eth.getBlock('latest').number;
+      await this.kyodo.startNewPeriod();
+      const currentPeriodStartBlock = await this.kyodo.currentPeriodStartBlock();
+      assert.equal(currentPeriodStartBlock, currentBlock + 1);
+    });
+    it('reverts on immediate time new period start', async function() {
+      await this.kyodo.startNewPeriod();
+      await assertRevert(this.kyodo.startNewPeriod());
+    });
+    it('works after passing time', async function() {
+      let currentBlock = await web3.eth.getBlock('latest').number;
+      await this.kyodo.startNewPeriod();
+      let currentPeriodStartBlock = await this.kyodo.currentPeriodStartBlock();
+      assert.equal(currentPeriodStartBlock, currentBlock + 1);
+      await assertRevert(this.kyodo.startNewPeriod());
+      await this.kyodo.setPeriodDaysLength(1);
+      const callback = () => {};
+      await web3.currentProvider.sendAsync(
+        {
+          jsonrpc: '2.0',
+          method: 'evm_increaseTime',
+          params: [86401], // 86400 seconds in a day
+          id: new Date().getTime(),
+        },
+        callback,
+      );
+      currentBlock = await web3.eth.getBlock('latest').number;
+      await this.kyodo.startNewPeriod();
+      currentPeriodStartBlock = await this.kyodo.currentPeriodStartBlock();
+      assert.equal(currentPeriodStartBlock, currentBlock + 1);
+    });
+  });
 });
