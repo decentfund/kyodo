@@ -1,4 +1,5 @@
 import axios from 'axios';
+import moment from 'moment';
 import {
   all,
   fork,
@@ -11,6 +12,8 @@ import { drizzleSagas } from 'drizzle';
 import {
   LOAD_RATE_REQUEST,
   LOAD_RATE_SUCCESS,
+  LOAD_HISTORICAL_RATES_REQUEST,
+  LOAD_HISTORICAL_RATES_SUCCESS,
   LOAD_MULTISIG_BALANCE_REQUEST,
   LOAD_MULTISIG_BALANCE_SUCCESS,
 } from './constants';
@@ -59,6 +62,7 @@ function* loadBalance() {
     const tokenSymbols = tokens.map(token => token.tokenInfo.symbol);
 
     yield put(fromActions.loadRate(tokenSymbols));
+    yield put(fromActions.loadHistoricalRates(tokenSymbols));
     yield put({
       type: LOAD_MULTISIG_BALANCE_SUCCESS,
       data: eventLoad.data,
@@ -70,10 +74,44 @@ function* watchLoadBalance() {
   yield takeLatest(LOAD_MULTISIG_BALANCE_REQUEST, loadBalance);
 }
 
+function* loadHistoricalRate(currency) {
+  const apiURI = `https://min-api.cryptocompare.com/data/histoday?fsym=${currency}&tsym=${BASE_CURRENCY}&limit=30`;
+
+  const eventLoad = yield call(axios.get, apiURI);
+  const {
+    data: { Data },
+  } = eventLoad;
+
+  const data = {};
+  Data.forEach(value => {
+    data[moment.unix(value.time).format('YYYY-MM-DD')] = {
+      [currency]: value.close,
+      [BASE_CURRENCY]: 1,
+    };
+  });
+
+  yield put({
+    type: LOAD_HISTORICAL_RATES_SUCCESS,
+    data,
+  });
+}
+
+function* loadHistoricalRates({ currencies }) {
+  try {
+    // loop through currencies and create a load request
+    yield currencies.map(currency => call(loadHistoricalRate, currency));
+  } catch (e) {}
+}
+
+function* watchLoadHistoricalRates() {
+  yield takeLatest(LOAD_HISTORICAL_RATES_REQUEST, loadHistoricalRates);
+}
+
 export default function* root() {
   yield all([
     ...drizzleSagas.map(saga => fork(saga)),
     watchLoadBalance(),
     watchLoadRate(),
+    watchLoadHistoricalRates(),
   ]);
 }

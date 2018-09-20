@@ -6,15 +6,8 @@ import Input from './Input';
 import WhitelistedAddress from './WhitelistedAddress';
 import FormButton from './FormButton';
 import MembersHeaderIcons from './MembersHeaderIcons';
+import { StyledHeader } from './StyledSharedComponents';
 import { isValidAddress } from '../helpers';
-
-const StyledHeader = styled.header`
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 300;
-  line-height: normal;
-  margin-bottom: 20px;
-`;
 
 const StyledFormContainer = styled.div`
   margin-top: 20px;
