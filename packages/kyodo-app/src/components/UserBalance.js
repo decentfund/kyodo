@@ -4,21 +4,28 @@ import { ContractData } from 'drizzle-react-components';
 import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
 import { getRate, getContract } from '../reducers';
-import { formatEth, formatEur, formatDecimals } from '../helpers/format';
+import { FormattedEth, FormattedEur } from './FormattedCurrency';
+import { formatDecimals } from '../helpers/format';
 import dfToken from './dftoken.svg';
 
 const StyledUserBalance = styled.div`
   display: inline-block;
   vertical-align: top;
-  width: 260px;
+  width: 295px;
 `;
 
 const StyledLabel = styled.label`
   font-size: 12px;
 `;
 
-const StyledAmount = styled.div`
+const StyledAmount = styled.span`
   font-size: 32px;
+  font-family: Roboto Mono;
+`;
+
+const StyledConvertedAmount = styled.div`
+  display: inline-block;
+  margin-left: 9px;
 `;
 
 const StyledTokenLogo = styled.img`
@@ -33,6 +40,7 @@ const StyledTokenLogoContainer = styled.div`
 
 const StyledBalance = styled.div`
   display: inline-block;
+  vertical-align: top;
 `;
 
 class UserBalance extends Component {
@@ -48,16 +56,20 @@ class UserBalance extends Component {
 
     const balanceKey = contract.methods.balanceOf.cacheCall(this.props.account);
     const decimalsKey = contract.methods.decimals.cacheCall();
+    const totalSupplyKey = this.contracts.DecentToken.methods.totalSupply.cacheCall();
 
     this.setState({
       balanceKey,
       decimalsKey,
+      totalSupplyKey,
     });
   }
 
   render() {
     // TODO: Loading
     if (
+      !this.state.totalSupplyKey ||
+      !this.props.DecentToken.totalSupply[this.state.totalSupplyKey] ||
       !this.state.balanceKey ||
       !this.props.DecentToken.balanceOf[this.state.balanceKey] ||
       !this.state.decimalsKey ||
@@ -65,7 +77,7 @@ class UserBalance extends Component {
     )
       return null;
 
-    const { contractName, tokenPriceEUR, tokenPriceETH } = this.props;
+    const { contractName, account, tokenPriceEUR, tokenPriceETH } = this.props;
     const balance = formatDecimals(
       this.props.DecentToken.balanceOf[this.state.balanceKey].value,
       this.props.DecentToken.decimals[this.state.decimalsKey].value,
@@ -78,12 +90,29 @@ class UserBalance extends Component {
         </StyledTokenLogoContainer>
         <StyledBalance>
           <StyledLabel>my balance</StyledLabel>
-          <StyledAmount>
-            {balance} <ContractData contract={contractName} method="symbol" />
-          </StyledAmount>
           <div>
-            {formatEur(balance * tokenPriceEUR)}{' '}
-            {formatEth(balance * tokenPriceETH)}
+            <StyledAmount>
+              {balance}
+              &thinsp;
+              <ContractData contract={contractName} method="symbol" />
+            </StyledAmount>
+            <StyledConvertedAmount>
+              <div>
+                <FormattedEth>{balance * tokenPriceETH}</FormattedEth>
+              </div>
+              <div>
+                ~<FormattedEur>{balance * tokenPriceEUR}</FormattedEur>
+              </div>
+            </StyledConvertedAmount>
+            <div>
+              {(
+                (this.props.DecentToken.balanceOf[this.state.balanceKey].value /
+                  this.props.DecentToken.totalSupply[this.state.totalSupplyKey]
+                    .value) *
+                100
+              ).toFixed(2)}
+              % CAP
+            </div>
           </div>
         </StyledBalance>
       </StyledUserBalance>

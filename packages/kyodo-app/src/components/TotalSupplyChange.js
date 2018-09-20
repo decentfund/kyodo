@@ -4,12 +4,8 @@ import styled from 'styled-components';
 import { drizzleConnect } from 'drizzle-react';
 import { ContractData } from 'drizzle-react-components';
 import { getRate, getContract } from '../reducers';
-import {
-  formatEth,
-  formatEur,
-  formatCurrency,
-  formatDecimals,
-} from '../helpers/format';
+import { FormattedEth, FormattedEur } from './FormattedCurrency';
+import { formatCurrency, formatDecimals } from '../helpers/format';
 
 const StyledTotalSupplyChange = styled.div`
   background: #f7ffc7;
@@ -28,6 +24,7 @@ const StyledHeader = styled.header`
 const StyledSupplyChange = styled.div`
   font-size: 24px;
   margin-bottom: 8px;
+  font-family: Roboto Mono;
 `;
 
 const StyledChangeCurrency = styled.div`
@@ -88,12 +85,13 @@ class TotalSupplyChange extends Component {
       <StyledTotalSupplyChange>
         <StyledHeader>change</StyledHeader>
         <StyledSupplyChange>
-          {change > 0 ? `+${change}` : change}{' '}
+          {change > 0 ? `+${change}` : change}
+          &thinsp;
           <ContractData contract={contractName} method="symbol" />
         </StyledSupplyChange>
         <StyledChangeCurrency>
-          {formatEur(change * tokenPriceEUR)}{' '}
-          {formatEth(change * tokenPriceETH)}
+          <FormattedEth>{change * tokenPriceETH}</FormattedEth>{' '}
+          <FormattedEur>{change * tokenPriceEUR}</FormattedEur>
         </StyledChangeCurrency>
       </StyledTotalSupplyChange>
     );

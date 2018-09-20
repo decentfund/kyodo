@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { ContractData } from 'drizzle-react-components';
 import { drizzleConnect } from 'drizzle-react';
 import StatisticsLabel from './StatisticsLabel';
-import { formatEth, formatEur } from '../helpers/format';
+import { FormattedEth, FormattedEur } from './FormattedCurrency';
 import {
   getRate,
   getTotalSupply,
@@ -21,10 +21,12 @@ const FundStatistics = ({ balance, balanceEur, totalSupply }) => (
   <FundStatisticsContainer>
     <StatisticsLabel label="SUP">{totalSupply} tokens</StatisticsLabel>
     <StatisticsLabel label="CAP">
-      {formatEth(balance)} ~{formatEur(balanceEur)}
+      <FormattedEth>{balance}</FormattedEth> ~
+      <FormattedEur>{balanceEur}</FormattedEur>
     </StatisticsLabel>
     <StatisticsLabel label="1 ◯">
-      {formatEth(balance / totalSupply)} ~{formatEur(balanceEur / totalSupply)}
+      <FormattedEth>{balance / totalSupply}</FormattedEth> ~
+      <FormattedEur>{balanceEur / totalSupply}</FormattedEur>
     </StatisticsLabel>
     <StatisticsLabel label="FUND">
       <ContractData contract="KyodoDAO" method="getMembersCount" /> members

@@ -1,7 +1,7 @@
-const ETH = 'ETH';
-const DAI = 'DAI';
-const USD = 'USD';
-const EUR = 'EUR';
+export const ETH = 'ETH';
+export const DAI = 'DAI';
+export const USD = 'USD';
+export const EUR = 'EUR';
 
 export function formatCurrency(value, currency, precision = 0) {
   let decimalPoints = precision;

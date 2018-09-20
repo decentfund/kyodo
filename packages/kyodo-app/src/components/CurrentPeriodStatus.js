@@ -5,7 +5,8 @@ import styled from 'styled-components';
 import { drizzleConnect } from 'drizzle-react';
 import dfToken from './dftoken.svg';
 import { getRate, getContract } from '../reducers';
-import { formatEth, formatEur, formatDecimals } from '../helpers/format';
+import { FormattedEth, FormattedEur } from './FormattedCurrency';
+import { formatDecimals } from '../helpers/format';
 
 const WrapperCurrentPeriodStatus = styled.div`
   border-top: 4px solid rgba(0, 0, 0, 0.05);
@@ -32,6 +33,7 @@ const Bounty = styled.div`
   align-content: baseline;
   font-size: 24px;
   line-height: 28px;
+  font-family: Roboto Mono;
 `;
 const Light = styled.span`
   color: rgba(0, 0, 0, 0.07);
@@ -110,7 +112,9 @@ class CurrentPeriodStatus extends Component {
           {periodName}
           <Bounty>
             <Light>bounty</Light> <StyledTokenLogo src={dfToken} />
-            {balance} {tokenSymbol}
+            {balance}
+            &thinsp;
+            {tokenSymbol}
           </Bounty>
         </StyledTop>
         <StyledBottom>
@@ -119,8 +123,8 @@ class CurrentPeriodStatus extends Component {
             {periodEnd.format('DD.MM.YYYY')}
           </p>
           <p>
-            {formatEur(balance * tokenPriceEUR)}{' '}
-            {formatEth(balance * tokenPriceETH)}
+            <FormattedEur>{balance * tokenPriceEUR}</FormattedEur>{' '}
+            <FormattedEth>{balance * tokenPriceETH}</FormattedEth>
           </p>
         </StyledBottom>
       </WrapperCurrentPeriodStatus>
