@@ -1,3 +1,6 @@
 [submodule "packages/kyodo-contracts/lib/colonyNetwork"]
 	path = packages/kyodo-contracts/lib/colonyNetwork
 	url = https://github.com/JoinColony/colonyNetwork
+[submodule "packages/kyodo-contracts/lib/BokkyPooBahsDateTimeLibrary"]
+	path = packages/kyodo-contracts/lib/BokkyPooBahsDateTimeLibrary
+	url = https://github.com/bokkypoobah/BokkyPooBahsDateTimeLibrary.git
