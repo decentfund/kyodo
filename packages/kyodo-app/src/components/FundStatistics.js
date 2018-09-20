@@ -19,9 +19,7 @@ const FundStatisticsContainer = styled.div`
 
 const FundStatistics = ({ balance, balanceEur, totalSupply }) => (
   <FundStatisticsContainer>
-    <StatisticsLabel label="SUP">
-      <ContractData contract="DecentToken" method="totalSupply" /> tokens
-    </StatisticsLabel>
+    <StatisticsLabel label="SUP">{totalSupply} tokens</StatisticsLabel>
     <StatisticsLabel label="CAP">
       <FormattedEth>{balance}</FormattedEth> ~
       <FormattedEur>{balanceEur}</FormattedEur>

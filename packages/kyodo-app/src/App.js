@@ -52,7 +52,7 @@ button {
 const StyledMainInfoContainer = styled.div`
   display: block;
   padding: 0 40px;
-  max-width: 665px;
+  max-width: 772px;
 `;
 
 class App extends Component {
@@ -69,6 +69,21 @@ class App extends Component {
   componentDidMount() {
     this.props.loadRate(['ETH', ...Object.keys(process.env.BALANCE)]);
     this.props.loadMultiSigBalance();
+    this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
+
+    this.drizzle.contracts.KyodoDAO.methods.getWhitelistedAddresses.cacheCall();
+    this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartTime.cacheCall();
+    this.drizzle.contracts.KyodoDAO.methods.periodDaysLength.cacheCall();
+
+    const prevBlockKey = this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartBlock.cacheCall();
+    const tokenSymbolKey = this.drizzle.contracts.DecentToken.methods.symbol.cacheCall();
+    const colonyAddressKey = this.drizzle.contracts.KyodoDAO.methods.Colony.cacheCall();
+
+    this.setState({
+      prevBlockKey,
+      tokenSymbolKey,
+      colonyAddressKey,
+    });
   }
 
   addToWhitelist = () => {
@@ -107,44 +122,36 @@ class App extends Component {
   render() {
     const { address } = this.state;
     const {
-      accounts: { 0: userAddress },
+      userAddress,
       owner,
       whitelistedAddresses,
       currentPeriodStartTime,
       periodDaysLength,
     } = this.props;
     let prevBlock, colonyAddress;
-    if (this.props.drizzleStatus.initialized) {
-      this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
-      this.drizzle.contracts.KyodoDAO.methods.getWhitelistedAddresses.cacheCall();
-      this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartTime.cacheCall();
-      this.drizzle.contracts.KyodoDAO.methods.periodDaysLength.cacheCall();
 
-      this.prevBlockKey = this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartBlock.cacheCall();
-      this.tokenSymbolKey = this.drizzle.contracts.DecentToken.methods.symbol.cacheCall();
-      this.colonyAddressKey = this.drizzle.contracts.KyodoDAO.methods.Colony.cacheCall();
+    if (
+      this.state.prevBlockKey &&
+      this.props.KyodoDAO.currentPeriodStartBlock[this.state.prevBlockKey]
+    ) {
+      prevBlock = this.props.KyodoDAO.currentPeriodStartBlock[
+        this.state.prevBlockKey
+      ].value;
     }
 
     if (
-      this.prevBlockKey &&
-      this.props.KyodoDAO.currentPeriodStartBlock[this.prevBlockKey]
+      this.state.colonyAddressKey &&
+      this.props.KyodoDAO.Colony[this.state.colonyAddressKey]
     ) {
-      prevBlock = this.props.KyodoDAO.currentPeriodStartBlock[this.prevBlockKey]
+      colonyAddress = this.props.KyodoDAO.Colony[this.state.colonyAddressKey]
         .value;
     }
 
-    if (
-      this.colonyAddressKey &&
-      this.props.KyodoDAO.Colony[this.prevBlockKey]
-    ) {
-      colonyAddress = this.props.KyodoDAO.Colony[this.colonyAddressKey].value;
-    }
-
     const tokenSymbol =
-      this.tokenSymbolKey &&
+      this.state.tokenSymbolKey &&
       this.props.DecentToken &&
-      this.props.DecentToken.symbol[this.tokenSymbolKey] &&
-      this.props.DecentToken.symbol[this.tokenSymbolKey].value;
+      this.props.DecentToken.symbol[this.state.tokenSymbolKey] &&
+      this.props.DecentToken.symbol[this.state.tokenSymbolKey].value;
 
     return (
       <div className="App">
@@ -158,10 +165,7 @@ class App extends Component {
           />
           <div style={{ marginBottom: 50 }}>
             <FundStatistics />
-            <UserBalance
-              contractName="DecentToken"
-              account={this.props.accounts[0]}
-            />
+            <UserBalance contractName="DecentToken" account={userAddress} />
             {prevBlock ? <TotalSupplyChange prevBlock={prevBlock} /> : null}
           </div>
           <br />
@@ -173,7 +177,7 @@ class App extends Component {
             />
           ) : null}
           {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
-            <AddRiotID account={this.props.accounts[0]} />
+            <AddRiotID account={userAddress} />
           ) : null}
           {whitelistedAddresses.length > 0 || owner === userAddress ? (
             <Members
@@ -190,14 +194,12 @@ class App extends Component {
 }
 
 const mapStateToProps = state => ({
-  accounts: state.accounts,
+  userAddress: state.accounts[0],
   KyodoDAO: getContract('KyodoDAO')(state),
   DecentToken: getContract('DecentToken')(state),
   drizzleStatus: state.drizzleStatus,
   owner: getOwner(getContract('KyodoDAO')(state)),
-  whitelistedAddresses: getWhitelistedAddresses(
-    getContract('KyodoDAO')(state),
-  ).map(address => address),
+  whitelistedAddresses: getWhitelistedAddresses(getContract('KyodoDAO')(state)),
   currentPeriodStartTime: getCurrentPeriodStartTime(
     getContract('KyodoDAO')(state),
   ),

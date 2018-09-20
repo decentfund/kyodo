@@ -12,7 +12,11 @@ export const getContract = contractName => state =>
 export const getFromContract = (value, defaultValue) => contract =>
   get(contract, value, defaultValue);
 
-export const getTotalSupply = getFromContract('totalSupply["0x0"].value', 0);
+export const getDecimals = getFromContract('decimals["0x0"].value', 0);
+
+export const getTotalSupply = contract =>
+  getFromContract('totalSupply["0x0"].value', 0)(contract) /
+  Math.pow(10, getDecimals(contract));
 
 export const getSymbol = getFromContract('symbol["0x0"].value', '');
 

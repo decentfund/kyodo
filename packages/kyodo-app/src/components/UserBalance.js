@@ -5,6 +5,7 @@ import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
 import { getRate, getContract } from '../reducers';
 import { FormattedEth, FormattedEur } from './FormattedCurrency';
+import { formatDecimals } from '../helpers/format';
 import dfToken from './dftoken.svg';
 
 const StyledUserBalance = styled.div`
@@ -19,6 +20,7 @@ const StyledLabel = styled.label`
 
 const StyledAmount = styled.span`
   font-size: 32px;
+  font-family: Roboto Mono;
 `;
 
 const StyledConvertedAmount = styled.div`
@@ -42,27 +44,45 @@ const StyledBalance = styled.div`
 `;
 
 class UserBalance extends Component {
+  state = {};
+
   constructor(props, context) {
     super(props, context);
     this.contracts = context.drizzle.contracts;
-    this.dataKey = this.contracts.DecentToken.methods.balanceOf.cacheCall(
-      this.props.account,
-    );
-    this.totalSupplyKey = this.contracts.DecentToken.methods.totalSupply.cacheCall();
+  }
+
+  componentDidMount() {
+    const contract = this.contracts.DecentToken;
+
+    const balanceKey = contract.methods.balanceOf.cacheCall(this.props.account);
+    const decimalsKey = contract.methods.decimals.cacheCall();
+    const totalSupplyKey = this.contracts.DecentToken.methods.totalSupply.cacheCall();
+
+    this.setState({
+      balanceKey,
+      decimalsKey,
+      totalSupplyKey,
+    });
   }
 
   render() {
     // TODO: Loading
     if (
-      !this.dataKey ||
-      !this.props.DecentToken.balanceOf[this.dataKey] ||
-      !this.totalSupplyKey ||
-      !this.props.DecentToken.totalSupply[this.totalSupplyKey]
+      !this.state.totalSupplyKey ||
+      !this.props.DecentToken.totalSupply[this.state.totalSupplyKey] ||
+      !this.state.balanceKey ||
+      !this.props.DecentToken.balanceOf[this.state.balanceKey] ||
+      !this.state.decimalsKey ||
+      !this.props.DecentToken.decimals[this.state.decimalsKey]
     )
       return null;
 
     const { contractName, account, tokenPriceEUR, tokenPriceETH } = this.props;
-    const balance = this.props.DecentToken.balanceOf[this.dataKey].value;
+    const balance = formatDecimals(
+      this.props.DecentToken.balanceOf[this.state.balanceKey].value,
+      this.props.DecentToken.decimals[this.state.decimalsKey].value,
+    );
+
     return (
       <StyledUserBalance>
         <StyledTokenLogoContainer>
@@ -72,11 +92,8 @@ class UserBalance extends Component {
           <StyledLabel>my balance</StyledLabel>
           <div>
             <StyledAmount>
-              <ContractData
-                contract={contractName}
-                method="balanceOf"
-                methodArgs={[account]}
-              />{' '}
+              {balance}
+              &thinsp;
               <ContractData contract={contractName} method="symbol" />
             </StyledAmount>
             <StyledConvertedAmount>
@@ -89,8 +106,8 @@ class UserBalance extends Component {
             </StyledConvertedAmount>
             <div>
               {(
-                (this.props.DecentToken.balanceOf[this.dataKey].value /
-                  this.props.DecentToken.totalSupply[this.totalSupplyKey]
+                (this.props.DecentToken.balanceOf[this.state.balanceKey].value /
+                  this.props.DecentToken.totalSupply[this.state.totalSupplyKey]
                     .value) *
                 100
               ).toFixed(2)}

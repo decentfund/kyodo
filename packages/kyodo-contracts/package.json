@@ -3,19 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@colony/colony-js-adapter-ethers": "1.5.3",
-    "@colony/colony-js-client": "^1.5.4",
+    "@colony/colony-js-adapter-ethers": "1.6.0",
+    "@colony/colony-js-client": "^1.6.1",
     "@colony/colony-js-contract-loader-fs": "^1.5.4",
-    "ethers": "^3.0.26"
+    "@colony/colony-js-contract-loader-network": "^1.6.2",
+    "ethers": "^3.0.27"
   },
   "devDependencies": {
-    "truffle": "^4.1.11",
-    "ganache-cli": "^6.1.3"
+    "babel-eslint": "^9.0.0",
+    "ganache-cli": "^6.1.3",
+    "truffle": "^4.1.11"
   },
   "scripts": {
     "start-ganache": "sh scripts/start_ganache.sh",
     "truffle:test": "scripts/test.sh",
     "setup-colony": "sh scripts/setup_colony.sh",
-    "deploy-contracts": "sh scripts/deploy_contracts.sh"
+    "deploy-contracts": "./scripts/deploy_colony.sh && ./scripts/deploy_kyodo.sh",
+    "deploy-contracts-ropsten": "./scripts/deploy_colony.sh ropsten && ./scripts/deploy_kyodo.sh ropsten",
+    "deploy-contracts-rinkeby": "./scripts/deploy_kyodo.sh rinkeby"
   }
 }

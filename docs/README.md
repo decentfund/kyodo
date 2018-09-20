@@ -1,138 +1,142 @@
 <img align="center" src="./img/kyodo_logo.svg" />
 
 # Kyodo
+
 **Kyodo**
-Ethereum blockchain based web app, the crossplatform incentive tool for building crypto economy for DAO based on Impression revenue model. We build Kyodo to run Decent.Fund. 
-As an organisational structure it's defined as Adhocracy
-As a governance it has two models Democracy and Meritocracy.
+Ethereum blockchain based web app, the cross-platform incentive tool for building the crypto economy for DAO based on Impression revenue model. We build Kyodo to run Decent.Fund.
+As an organizational structure, it's defined as Adhocracy
+As governance, it has two models Democracy and Meritocracy.
 
 Colony: Decent.Fund
-**Decent.Fund mission** is to contribute to the mass adoption of the decentrilezed solutions, making the concepts of the new crypto economy closer to unchained world. According to the mission Decent.Fund focuses on following activities:
+**Decent.Fund mission** is to contribute to the mass adoption of the decentralized solutions, making the concepts of the new crypto economy closer to the unchained world. According to the mission Decent.Fund focuses on following activities:
 
 1. UI/UX design
 2. Programming
 3. Digital marketing
 4. Research
 5. Education
-6. Fund management 
+6. Fund management
 
-Decent.Find aims to grow the community of people who are interested in experiments in building the decentralized organization which embraces individual and social interests, economic efficiency and incentive mechanism for growing.
+Decent.Fund aims to grow the community of people who are interested in experiments in building the decentralized organization which embraces individual and social interests, economic efficiency and incentive mechanism for growing.
 
 ## Kyodo/Decent.Fund domain structure
+
 ![](https://i.imgur.com/ec7SFum.png)
 
 ## Smart contracts' relations
+
 ![](https://i.imgur.com/SQ1tplh.png)
 
 ## Task management models
+
 There are two opposite models of the Task management in Kyodo:
 
 1. Impression revenue model
-The contribution is done without an inintial task setting. 
-A contributor posts the contribution to Riot/Colony → Domain's members evaluate the contribution by tipping → send tips with Riot bot → the contributor gets his DF tokens
+   The contribution is done without an initial task setting.
+   A contributor posts the contribution to Riot/Colony → Domain's members evaluate the contribution by tipping → send tips with Riot bot → the contributor gets his DF tokens.
 
-2. Task managment model
-Everybody can iniciate task by staking DF token.
-The process:
-stake task → add task description → assign roles →  define amount of DF token to stake to participate → define reward tasks  → open task
+2. Task management model
+   Everybody can initiate task by staking DF token.
+   The process:
+   stake task → add task description → assign roles → define an amount of DF token to stake to participate → define reward tasks → open task
 
 ## Installation
-This is a monorepo for kyodo project consisting of 3 modules:
+
+This is a monorepo for Kyodo project consisting of 3 modules:
+
 - Kyodo web app to setup colony, sign final tips, get your balance and view tasks progress
-- Kyodo backend to run mongodb server and tipping watch within period
+- Kyodo backend to run mongodb server and tipping watch within a period
 - Kyodo bot to run riot bot for task creation and instant tipping
 
 # **Tokenomics**
 
-The Kyodo token model should reflect the value, which the project aims to accumulate and grow, discourages speculation, incentivizes desirable dynamics within a community built around open source software. 
+The Kyodo token model should reflect the value, which the project aims to accumulate and grow, discourages speculation, incentivizes desirable dynamics within a community built around open source software.
 
-The Kyodo has two-token model / continious: 
+The Kyodo has a two-token model / continuous:
 
 **DF token**
 
-*Tech layer* - ERC 20 Blockchain native token
- 
-*Purposes:*
-Cryptocurrency. DF token is intended to be a medium of exchange and store of value for the Decent.Fund activity.  DF token is tied to the fund of the comminity, which is under the GOV domain. 
+_Tech layer_ - ERC 20 Blockchain native token
+
+_Purposes:_
+Cryptocurrency. DF token is intended to be a medium of exchange and store of value for the Decent.Fund activity. DF token is tied to the fund of the community, which is under the GOV domain.
 
 The price of DF token is calculated with this formula:
 Total cap / Total supply
 
-DF token funcionality as cryptocurrency is:
+DF token functionality as cryptocurrency is:
+
 - payments for tasks
 - medium of exchange
 
+DF token also has a functionality of Network token which is intended to be used within Kyodo ecosystem:
 
-DF token also has a funcionality of  Network token which is intended to be used within Kyodo ecosystem:
 - ability to set a task
 - ability to claim a task
 - ability to vote
-- ability to iniciate a dispute 
+- ability to initiate a dispute
 
-*Underlying value*
-Network value token that is tied to value and development of the network. 
-Closely interwind with key interactions of Decent.Fund participants. The value generated by work within Decent.Fund domains increases the token value and the share of the fund a member will recieve.
+_Underlying value_
+Network value token that is tied to the value and development of the network.
+Closely interwind with key interactions of Decent.Fund participants. The value generated by work within Decent.Fund domains increases the token value and the share of the fund a member will receive.
 
-*Utility*
-DF token is the hybryd token, that featuring traits of both Usage and Work token:
+_Utility_
+DF token is the hybrid token that featuring traits of both Usage and Work token:
+
 - Grants access to system functionalities
-- Allows ownerto contribute to the system
+- Allows owner to contribute to the system
 
-*Legal status*
-Utility token - closely tied to funcionality  / internal currency / Grants owners to contribute to the system vs passive investor role. 
+_Legal status_
+Utility token - closely tied to functionality / internal currency / Grants owners to contribute to the system vs. passive investor role.
 
-How to earn: Buy on exhange or Fund management domain
+How to earn: Buy on a decentralized exchange or Fund management domain
 
-**DFMerit** 
-*Tech layer* - NFT Blockchain native token
-*Purpose:*
-Network token - not intended to be cryptocurrency, has the funcionality within the system:
+**DFMerit**
+_Tech layer_ - NFT Blockchain native token
+_Purpose:_
+Network token - not intended to be cryptocurrency, has the functionality within the system:
+
 - access to contribute in Gov domain
 
-*Underlying value* 
-Network value token that is tied to value and development of the network. 
+_Underlying value_
+Network value token that is tied to the value and development of the network.
 
-*Utility* 
-Usage token - the token that provides access to Gov domain 
+_Utility_
+Usage token - the token that provides access to Gov domain
 
-*Legal status* - Utility token
+_Legal status_ - Utility token
 
-How to earn: owners are defined in Gov domain. The dispute could be initiated by a member who wants the merit. The decision is made by voting within Gov domain. 
+How to earn: owners are defined in Gov domain. The dispute could be initiated by a member who wants the merit. The decision is made by voting within Gov domain.
 
 **Incentives**
 Incentives involve both monetary and non-monetary rewards and punishments:
+
 - pay-for-performance reward in points which are converted to DF token every period (completing tasks, voting)
 - holder reward (holding DF token)
-- Inactivity punishment (a member loses stake he put to claim the task in case  of not showing an activity. Inactivity is defined by not receiving points for the claimed task)
+- Inactivity punishment (a member loses stake he put to claim the task in case of not showing an activity. Inactivity is defined by not receiving points for the claimed task)
 
-|  | Short-run | Long-run |
-| -------- | -------- | -------- |
-| Fanancial    | Points     | DF token revenue     |
-| -------- | -------- | -------- |
-| Non-Fanancial    | Work with the decentralized community     | Mission driven    |
+|               | Short-run                             | Long-run         |
+| ------------- | ------------------------------------- | ---------------- |
+| Fanancial     | Points                                | DF token revenue |
+| --------      | --------                              | --------         |
+| Non-Fanancial | Work with the decentralized community | Mission driven   |
 
 The incentive to hold - the rising token value
 
 **Token distribution**
-Period - 1 mnth
-In the end of a period a member should sign a transaction aproving the amount of tips (DF tokens) he spreaded within members as evaluation of the work they done. 
-In the end of period the amount of points a members earned for a work are converted to the DF token and destributed to the members from the Gov domain.
+Period - 1 month
+At the end of a period, a member should sign a transaction approving the number of tips (DF tokens) he spread within members as evaluation of the work they have done.
+At the end of the period, the number of points members earned for work are converted to the DF token and distributed to the members from the Gov domain.
 ![](https://i.imgur.com/fEaJ4b0.png)
 
 **Inflation**
-Dynamic inflation depends on the amount of  the money earned in a current period.
-
-
-
-
-
-
+Dynamic inflation depends on the amount of the money earned in a current period.
 
 ![](https://i.imgur.com/KcjRVop.png)
 
 ![](https://i.imgur.com/rmQ2QMA.png)
 
-### To setup web app
+### To setup monorepo packages and its dependencies
 
 ```
 git clone https://github.com/decentfund/kyodo.git
@@ -140,31 +144,23 @@ cd kyodo
 yarn
 ```
 
-### Setup colonyNetwork
+### Setup contracts
 
-```
-yarn setup_colony
-```
+```bash
+cd packages/kyodo-contracts
 
-### Start ganache
+# Start ganache cli with necessary parameters
+yarn start-ganache
 
-```
-yarn start_ganache
-```
+# Setup colonyNetwork and its dependencies
+yarn setup-colony
 
-### Create initial distribution of tokens
+# Create initial distribution of tokens
+# Change `deploy_parameters.json` to reflect the initial distribution you want or leave the accounts section empty.
+cp migrations/deploy_parameters.example.json migrations/deploy_parameters.json
 
-```
-cp packages/kyodo/migrations/deploy_parameters.example.json packages/kyodo/migrations/deploy_parameters.json
-```
-
-Change `deploy_parameters.json` to reflect the initial distribution you want or leave accounts section empty.
-
-### Compile smart-contracts:
-We implement ERC-20 token contract to bootstrap app based on OpenZeppelin ERC20 Mintable token and Ownable contracts, for working with strings we utilize strings.sol library.
-
-```
-yarn deploy_contracts
+# Compile smart contracts
+yarn deploy-contracts
 ```
 
 ### Start frontend app
@@ -175,18 +171,21 @@ yarn start
 
 Don't forget to switch Metamask network to localhost:8545
 
-
 ### Testing
 
-```
-// Truffle teste
+```bash
+# Truffle tests
 npm run truffle:test
 
-// App tests
+# App tests
 npm run jest
 ```
 
+### Smart-contracts
+
+We implement an ERC-20 token contract to bootstrap app based on OpenZeppelin ERC20 Mintable token and Ownable contracts, for working with strings we utilize strings.sol library.
+
 ### Setting up arbitrary token balances
 
-If you need to specify additional token balances you can do so by creating a `balances.json` file in the root of the kyodo package
-Tokens should be speficied in the form of `TICKER: BALANCE`, like `BTC: 1`
+If you need to specify additional token balances, you can do so by creating a `balances.json` file in the root of the kyodo package
+Tokens should be specified in the form of `TICKER: BALANCE`, like `BTC: 1`

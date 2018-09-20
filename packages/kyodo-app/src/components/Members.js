@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import Input from './Input';
 import WhitelistedAddress from './WhitelistedAddress';
 import FormButton from './FormButton';
+import MembersHeaderIcons from './MembersHeaderIcons';
 import { isValidAddress } from '../helpers';
 
 const StyledHeader = styled.header`
@@ -12,7 +13,7 @@ const StyledHeader = styled.header`
   font-style: normal;
   font-weight: 300;
   line-height: normal;
-  margin-bottom: 34px;
+  margin-bottom: 20px;
 `;
 
 const StyledFormContainer = styled.div`
@@ -54,6 +55,7 @@ class Members extends Component {
     return (
       <div>
         <StyledHeader>Colony Members</StyledHeader>
+        <MembersHeaderIcons />
         {whitelistedAddresses.map(address => (
           <WhitelistedAddress value={address} key={address} />
         ))}

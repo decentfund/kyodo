@@ -9,6 +9,7 @@ const drizzleOptions = {
       type: 'ws',
       url: 'ws://127.0.0.1:8545',
       // url: 'ws://ropsten.infura.io/ws',
+      // url: 'ws://rinkeby.infura.io/ws',
       // change URL and Metamask server
     },
   },
