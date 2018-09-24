@@ -48,6 +48,7 @@
     "react-billboardjs": "^1.4.3",
     "react-dev-utils": "^5.0.1",
     "react-dom": "^16.4.0",
+    "react-intl": "^2.6.0",
     "react-redux": "^5.0.2",
     "react-router": "^4.3.1",
     "react-router-redux": "^4.0.7",

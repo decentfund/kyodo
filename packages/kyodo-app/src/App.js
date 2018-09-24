@@ -14,6 +14,7 @@ import PeriodProgress from './components/PeriodProgress';
 import FundStatistics from './components/FundStatistics';
 import CurrentPeriodStatus from './components/CurrentPeriodStatus';
 import TotalSupplyChange from './components/TotalSupplyChange';
+import Earnings from './components/Earnings';
 import {
   getContract,
   getOwner,
@@ -180,6 +181,7 @@ class App extends Component {
               colonyAddress={colonyAddress}
             />
           ) : null}
+          <Earnings />
           {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
             <AddRiotID account={userAddress} />
           ) : null}
