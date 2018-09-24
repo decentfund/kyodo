@@ -29,7 +29,7 @@ export default (
         ...action.rates,
       };
     case 'GET_CONTRACT_VAR':
-      if (action.name !== 'DecentToken') return state;
+      if (action.name !== 'Token') return state;
       if (action.variable === 'symbol') {
         return {
           ...state,

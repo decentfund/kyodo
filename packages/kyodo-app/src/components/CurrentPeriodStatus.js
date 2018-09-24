@@ -52,11 +52,11 @@ class CurrentPeriodStatus extends Component {
   }
 
   componentDidMount() {
-    const { DecentToken, KyodoDAO } = this.contracts;
-    const balanceKey = DecentToken.methods.balanceOf.cacheCall(
+    const { Token, KyodoDAO } = this.contracts;
+    const balanceKey = Token.methods.balanceOf.cacheCall(
       this.props.colonyAddress,
     );
-    const decimalsKey = DecentToken.methods.decimals.cacheCall();
+    const decimalsKey = Token.methods.decimals.cacheCall();
     const currentPeriodStartTimeKey = KyodoDAO.methods.currentPeriodStartTime.cacheCall();
     const periodLengthKey = KyodoDAO.methods.periodDaysLength.cacheCall();
 
@@ -71,9 +71,9 @@ class CurrentPeriodStatus extends Component {
   render() {
     if (
       !this.state.balanceKey ||
-      !this.props.DecentToken.balanceOf[this.state.balanceKey] ||
+      !this.props.Token.balanceOf[this.state.balanceKey] ||
       !this.state.decimalsKey ||
-      !this.props.DecentToken.decimals[this.state.decimalsKey] ||
+      !this.props.Token.decimals[this.state.decimalsKey] ||
       !this.state.currentPeriodStartTimeKey ||
       !this.props.KyodoDAO.currentPeriodStartTime[
         this.state.currentPeriodStartTimeKey
@@ -91,8 +91,8 @@ class CurrentPeriodStatus extends Component {
     } = this.props;
 
     const balance = formatDecimals(
-      this.props.DecentToken.balanceOf[this.state.balanceKey].value,
-      this.props.DecentToken.decimals[this.state.decimalsKey].value,
+      this.props.Token.balanceOf[this.state.balanceKey].value,
+      this.props.Token.decimals[this.state.decimalsKey].value,
     );
 
     const periodStart = moment.unix(
@@ -138,7 +138,7 @@ CurrentPeriodStatus.defaultProps = {
 
 CurrentPeriodStatus.propTypes = {
   periodName: PropTypes.string,
-  DecentToken: PropTypes.object,
+  Token: PropTypes.object,
   KyodoDAO: PropTypes.object,
   tokenPriceEUR: PropTypes.number,
   tokenPriceETH: PropTypes.number,
@@ -149,7 +149,7 @@ CurrentPeriodStatus.contextTypes = {
 };
 
 const mapStateToProps = state => ({
-  DecentToken: getContract('DecentToken')(state),
+  Token: getContract('Token')(state),
   KyodoDAO: getContract('KyodoDAO')(state),
   tokenPriceEUR: getRate(state, 'DF', 'EUR'),
   tokenPriceETH: getRate(state, 'DF', 'ETH'),

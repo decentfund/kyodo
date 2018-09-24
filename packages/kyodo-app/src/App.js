@@ -78,7 +78,7 @@ class App extends Component {
     this.drizzle.contracts.KyodoDAO.methods.periodDaysLength.cacheCall();
 
     const prevBlockKey = this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartBlock.cacheCall();
-    const tokenSymbolKey = this.drizzle.contracts.DecentToken.methods.symbol.cacheCall();
+    const tokenSymbolKey = this.drizzle.contracts.Token.methods.symbol.cacheCall();
     const colonyAddressKey = this.drizzle.contracts.KyodoDAO.methods.Colony.cacheCall();
 
     this.setState({
@@ -113,7 +113,7 @@ class App extends Component {
       .setAlias(name, { from: account })
       .then(() => kyodoContract.getAlias.call(account))
       .then(nickname => this.setState({ nickname }));
-    // .then(() => decentToken.balanceOf.call(account))
+    // .then(() => Token.balanceOf.call(account))
     // .then(balance =>
     // this.setState({
     // currentUserBalance: balance.toNumber(),
@@ -136,9 +136,11 @@ class App extends Component {
       this.state.prevBlockKey &&
       this.props.KyodoDAO.currentPeriodStartBlock[this.state.prevBlockKey]
     ) {
-      prevBlock = this.props.KyodoDAO.currentPeriodStartBlock[
-        this.state.prevBlockKey
-      ].value;
+      prevBlock =
+        parseInt(
+          this.props.KyodoDAO.currentPeriodStartBlock[this.state.prevBlockKey]
+            .value,
+        ) - 1;
     }
 
     if (
@@ -151,9 +153,9 @@ class App extends Component {
 
     const tokenSymbol =
       this.state.tokenSymbolKey &&
-      this.props.DecentToken &&
-      this.props.DecentToken.symbol[this.state.tokenSymbolKey] &&
-      this.props.DecentToken.symbol[this.state.tokenSymbolKey].value;
+      this.props.Token &&
+      this.props.Token.symbol[this.state.tokenSymbolKey] &&
+      this.props.Token.symbol[this.state.tokenSymbolKey].value;
 
     return (
       <div className="App">
@@ -167,7 +169,7 @@ class App extends Component {
           />
           <div style={{ marginBottom: 50 }}>
             <FundStatistics />
-            <UserBalance contractName="DecentToken" account={userAddress} />
+            <UserBalance contractName="Token" account={userAddress} />
             {prevBlock ? <TotalSupplyChange prevBlock={prevBlock} /> : null}
           </div>
           <br />
@@ -199,7 +201,7 @@ class App extends Component {
 const mapStateToProps = state => ({
   userAddress: state.accounts[0],
   KyodoDAO: getContract('KyodoDAO')(state),
-  DecentToken: getContract('DecentToken')(state),
+  Token: getContract('Token')(state),
   drizzleStatus: state.drizzleStatus,
   owner: getOwner(getContract('KyodoDAO')(state)),
   whitelistedAddresses: getWhitelistedAddresses(getContract('KyodoDAO')(state)),

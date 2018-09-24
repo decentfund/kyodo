@@ -1,7 +1,10 @@
-var DecentToken = artifacts.require('./DecentToken.sol');
+var Token = artifacts.require('./Token.sol');
 
-module.exports = (deployer, network, accounts) => {
+module.exports = deployer => {
   deployer.then(async () => {
-    await deployer.deploy(DecentToken);
+    const name = 'D E C E N T . F U N D';
+    const symbol = 'DF';
+    const decimals = 18;
+    await deployer.deploy(Token, name, symbol, decimals);
   });
 };

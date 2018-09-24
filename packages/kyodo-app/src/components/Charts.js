@@ -161,7 +161,7 @@ const mapStateToProps = state => {
   return {
     historical: getHistorical(state),
     tokenPriceHistorical: getHistoricalTokenPrice(state),
-    totalSupply: getTotalSupply(getContract('DecentToken')(state)),
+    totalSupply: getTotalSupply(getContract('Token')(state)),
   };
 };
 

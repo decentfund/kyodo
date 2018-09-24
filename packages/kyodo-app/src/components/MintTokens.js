@@ -46,7 +46,7 @@ class Members extends Component {
 
     if (state.drizzleStatus.initialized) {
       // Unable to use cacheSend function due to external function drizzle smartcontract handling
-      this.tx = this.drizzle.contracts.DecentToken.methods
+      this.tx = this.drizzle.contracts.Token.methods
         .mint(this.state.address, this.state.amount)
         .send({ from: userAddress });
     }

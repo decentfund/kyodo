@@ -51,13 +51,11 @@ class WhitelistedAddress extends Component {
     this.contracts = context.drizzle.contracts;
   }
   componentDidMount() {
-    const { KyodoDAO, DecentToken } = this.contracts;
+    const { KyodoDAO, Token } = this.contracts;
 
     const aliasKey = KyodoDAO.methods.getAlias.cacheCall(this.props.value);
-    const balanceKey = DecentToken.methods.balanceOf.cacheCall(
-      this.props.value,
-    );
-    const decimalsKey = DecentToken.methods.decimals.cacheCall();
+    const balanceKey = Token.methods.balanceOf.cacheCall(this.props.value);
+    const decimalsKey = Token.methods.decimals.cacheCall();
 
     this.setState({ aliasKey, balanceKey, decimalsKey });
   }
@@ -65,9 +63,9 @@ class WhitelistedAddress extends Component {
     // TODO: Loading
     if (
       !this.state.balanceKey ||
-      !this.props.DecentToken.balanceOf[this.state.balanceKey] ||
+      !this.props.Token.balanceOf[this.state.balanceKey] ||
       !this.state.decimalsKey ||
-      !this.props.DecentToken.decimals[this.state.decimalsKey]
+      !this.props.Token.decimals[this.state.decimalsKey]
     )
       return null;
 
@@ -78,8 +76,8 @@ class WhitelistedAddress extends Component {
     const { value, totalSupply } = this.props;
 
     const balance = formatDecimals(
-      this.props.DecentToken.balanceOf[this.state.balanceKey].value,
-      this.props.DecentToken.decimals[this.state.decimalsKey].value,
+      this.props.Token.balanceOf[this.state.balanceKey].value,
+      this.props.Token.decimals[this.state.decimalsKey].value,
     );
 
     return (
@@ -101,8 +99,8 @@ WhitelistedAddress.contextTypes = {
 
 const mapStateToProps = (state, { account }) => ({
   drizzleStatus: state.drizzleStatus,
-  totalSupply: getTotalSupply(getContract('DecentToken')(state)),
-  DecentToken: getContract('DecentToken')(state),
+  totalSupply: getTotalSupply(getContract('Token')(state)),
+  Token: getContract('Token')(state),
   KyodoDAO: getContract('KyodoDAO')(state),
 });
 

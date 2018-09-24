@@ -1,5 +1,6 @@
 {
   "accounts": {
     "SOME_ADDRESS": 100
-  }
+  },
+  "domains": []
 }
