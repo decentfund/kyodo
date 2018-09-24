@@ -33,10 +33,11 @@
     "eth-dagger": "^0.0.1",
     "ethers": "^3.0.22",
     "express": "^4.16.3",
-    "ipfs": "^0.29.3",
+    "ipfs": "^0.31.7",
     "mongoose": "^5.1.6",
+    "truffle": "4.1.14",
     "uuid": "^3.2.1",
-    "web3": "^1.0.0-beta.34"
+    "web3": "0.20.6"
   },
   "devDependencies": {
     "husky": "^0.14.3",

@@ -1,25 +1,25 @@
-const { Colony } = require("./db.js");
-const { initiateNetwork } = require("./network.js");
-const { getCurrentBlock } = require("./utils/getCurrentBlock");
+const { Colony } = require('./db.js');
+const { initiateNetwork } = require('./network.js');
+const { getCurrentBlock } = require('./utils/getCurrentBlock');
 
 exports.createColony = async (req, res) => {
   let networkClient = await initiateNetwork();
   const tokenAddress = await networkClient.createToken({
     name: req.body.tokenName,
-    symbol: req.body.tokenSymbol
+    symbol: req.body.tokenSymbol,
   });
-  console.log("Token address: " + tokenAddress);
+  console.log('Token address: ' + tokenAddress);
 
   const {
-    eventData: { colonyId, colonyAddress }
+    eventData: { colonyId, colonyAddress },
   } = await networkClient.createColony.send({ tokenAddress });
 
-  console.log("Colony ID: " + colonyId);
-  console.log("Colony address: " + colonyAddress);
+  console.log('Colony ID: ' + colonyId);
+  console.log('Colony address: ' + colonyAddress);
 
   const colonyClient = await networkClient.getColonyClient(colonyId);
   const metaColonyClient = await networkClient.getMetaColonyClient();
-  console.log("Meta Colony address: " + metaColonyClient.contract.address);
+  console.log('Meta Colony address: ' + metaColonyClient.contract.address);
   const currentBlock = await getCurrentBlock();
 
   const colony = new Colony({
@@ -30,7 +30,7 @@ exports.createColony = async (req, res) => {
     tokenName: req.body.tokenName,
     tokenSymbol: req.body.tokenSymbol,
     creationBlockNumber: currentBlock,
-    creationDate: Date.now()
+    creationDate: Date.now(),
   });
 
   colony.save((err, colony) => {
@@ -56,4 +56,22 @@ exports.getColonies = async (req, res) => {
     console.log(colonies);
     res.send(`ALL AVAILABLE TASKS: ${colonies}`);
   });
+};
+
+exports.createColony = async colonyAddress => {
+  const colony = new Colony({
+    colonyName: 'Test colony',
+    colonyId: 0,
+    colonyAddress: colonyAddress,
+    creationDate: Date.now(),
+  });
+  colony.save((err, colony) => {
+    if (err) return console.error(err);
+  });
+
+  return colony;
+};
+
+exports.getColonyById = async colonyId => {
+  return Colony.findOne({ colonyId });
 };

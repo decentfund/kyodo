@@ -1,32 +1,52 @@
-const { User } = require("./db.js");
+const { User } = require('./db.js');
 
-exports.addUser = async (req, res) => {
-  //TODO: Colony network integration
-  //getBalanceOf.call({ sourceAddress })
-
+const dbAddUser = async ({ address, alias, balance, domains, tasks }) => {
   const user = new User({
-    address: req.body.address,
-    alias: req.body.alias,
-    balance: req.body.balance,
-    domains: req.body.domains,
-    tasks: req.body.tasks,
-    dateCreated: Date.now()
+    address,
+    alias,
+    balance,
+    domains,
+    tasks,
+    dateCreated: Date.now(),
   });
 
-  user.save();
-  res.status(200).send({
-    user: user,
-    message: "ALL GOOD! User saved successfully. Have a beer"
+  user.save(err => {
+    if (err) return null;
+  });
+
+  return user;
+};
+
+exports.dbAddUser = dbAddUser;
+
+exports.addUser = async (req, res) => {
+  const user = dbAddUser(req.body);
+
+  if (user) {
+    res.status(200).send({
+      user,
+      message: 'ALL GOOD! User saved successfully. Have a beer',
+    });
+  }
+};
+
+const dbGetAllUsers = async () => {
+  return await User.find((err, users) => {
+    if (err) {
+      console.log(err);
+      return [];
+    }
+    return users;
   });
 };
 
 exports.getAllUsers = async (req, res) => {
-  let users = await User.find((err, users) => {
-    if (err) return console.log(err);
-  });
+  let users = await dbGetAllUsers();
   res.status(200).send(users);
   return users;
 };
+
+exports.dbGetAllUsers = dbGetAllUsers;
 
 exports.getUserByAddress = async (req, res) => {
   await User.find({ address: req.body.address });
