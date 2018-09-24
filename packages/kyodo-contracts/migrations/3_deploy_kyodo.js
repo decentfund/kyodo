@@ -1,12 +1,16 @@
 var KyodoDAO = artifacts.require('./KyodoDAO.sol');
-var DecentToken = artifacts.require('./DecentToken.sol');
+var Token = artifacts.require('./Token.sol');
 var deployParameters = require('./deploy_parameters.json');
+var getColonyClient = require('./getColonyClient');
 
 module.exports = (deployer, network, accounts) => {
   deployer.then(async () => {
-    await deployer.deploy(KyodoDAO, DecentToken.address);
-    const { accounts } = deployParameters;
-    const addresses = Object.keys(accounts);
+    const colonyNetworkClient = getColonyClient(network, accounts);
+    await colonyNetworkClient.init();
+
+    await deployer.deploy(KyodoDAO, Token.address);
+    const { accounts: initAccounts } = deployParameters;
+    const addresses = Object.keys(initAccounts);
     await KyodoDAO.at(KyodoDAO.address).addManyToWhitelist(addresses);
   });
 };

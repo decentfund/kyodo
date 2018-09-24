@@ -52,11 +52,11 @@ class UserBalance extends Component {
   }
 
   componentDidMount() {
-    const contract = this.contracts.DecentToken;
+    const contract = this.contracts.Token;
 
     const balanceKey = contract.methods.balanceOf.cacheCall(this.props.account);
     const decimalsKey = contract.methods.decimals.cacheCall();
-    const totalSupplyKey = this.contracts.DecentToken.methods.totalSupply.cacheCall();
+    const totalSupplyKey = this.contracts.Token.methods.totalSupply.cacheCall();
 
     this.setState({
       balanceKey,
@@ -69,18 +69,18 @@ class UserBalance extends Component {
     // TODO: Loading
     if (
       !this.state.totalSupplyKey ||
-      !this.props.DecentToken.totalSupply[this.state.totalSupplyKey] ||
+      !this.props.Token.totalSupply[this.state.totalSupplyKey] ||
       !this.state.balanceKey ||
-      !this.props.DecentToken.balanceOf[this.state.balanceKey] ||
+      !this.props.Token.balanceOf[this.state.balanceKey] ||
       !this.state.decimalsKey ||
-      !this.props.DecentToken.decimals[this.state.decimalsKey]
+      !this.props.Token.decimals[this.state.decimalsKey]
     )
       return null;
 
     const { contractName, account, tokenPriceEUR, tokenPriceETH } = this.props;
     const balance = formatDecimals(
-      this.props.DecentToken.balanceOf[this.state.balanceKey].value,
-      this.props.DecentToken.decimals[this.state.decimalsKey].value,
+      this.props.Token.balanceOf[this.state.balanceKey].value,
+      this.props.Token.decimals[this.state.decimalsKey].value,
     );
 
     return (
@@ -106,8 +106,8 @@ class UserBalance extends Component {
             </StyledConvertedAmount>
             <div>
               {(
-                (this.props.DecentToken.balanceOf[this.state.balanceKey].value /
-                  this.props.DecentToken.totalSupply[this.state.totalSupplyKey]
+                (this.props.Token.balanceOf[this.state.balanceKey].value /
+                  this.props.Token.totalSupply[this.state.totalSupplyKey]
                     .value) *
                 100
               ).toFixed(2)}
@@ -127,7 +127,7 @@ UserBalance.contextTypes = {
 const mapStateToProps = (state, { account }) => ({
   tokenPriceEUR: getRate(state, 'DF', 'EUR'),
   tokenPriceETH: getRate(state, 'DF', 'ETH'),
-  DecentToken: getContract('DecentToken')(state),
+  Token: getContract('Token')(state),
 });
 
 export default drizzleConnect(UserBalance, mapStateToProps);

@@ -40,12 +40,12 @@ class TotalSupplyChange extends Component {
   }
 
   componentDidMount() {
-    const contract = this.contracts.DecentToken;
+    const contract = this.contracts.Token;
 
     const dataKey = contract.methods.totalSupply.cacheCall();
     const prevDataKey = contract.methods.totalSupply.cacheCall(
       { from: this.props.userAddress },
-      this.props.prevBlock,
+      this.props.prevBlock.toString(),
     );
     const decimalsKey = contract.methods.decimals.cacheCall();
 
@@ -60,22 +60,21 @@ class TotalSupplyChange extends Component {
     // TODO: Loading
     if (
       !this.state.prevDataKey ||
-      !this.props.DecentToken.totalSupply[this.state.prevDataKey] ||
+      !this.props.Token.totalSupply[this.state.prevDataKey] ||
       !this.state.dataKey ||
-      !this.props.DecentToken.totalSupply[this.state.dataKey] ||
+      !this.props.Token.totalSupply[this.state.dataKey] ||
       !this.state.decimalsKey ||
-      !this.props.DecentToken.decimals[this.state.decimalsKey]
+      !this.props.Token.decimals[this.state.decimalsKey]
     )
       return null;
 
-    const decimals = this.props.DecentToken.decimals[this.state.decimalsKey]
-      .value;
+    const decimals = this.props.Token.decimals[this.state.decimalsKey].value;
     const prevSupply = formatDecimals(
-      this.props.DecentToken.totalSupply[this.state.prevDataKey].value,
+      this.props.Token.totalSupply[this.state.prevDataKey].value,
       decimals,
     );
     const totalSupply = formatDecimals(
-      this.props.DecentToken.totalSupply[this.state.dataKey].value,
+      this.props.Token.totalSupply[this.state.dataKey].value,
       decimals,
     );
     const change = formatCurrency(totalSupply - prevSupply, 'DF', 3);
@@ -99,7 +98,7 @@ class TotalSupplyChange extends Component {
 }
 
 TotalSupplyChange.defaultProps = {
-  contractName: 'DecentToken',
+  contractName: 'Token',
 };
 
 TotalSupplyChange.propTypes = {};
@@ -109,7 +108,7 @@ TotalSupplyChange.contextTypes = {
 };
 
 const mapStateToProps = state => ({
-  DecentToken: getContract('DecentToken')(state),
+  Token: getContract('Token')(state),
   userAddress: state.accounts[0],
   tokenPriceEUR: getRate(state, 'DF', 'EUR'),
   tokenPriceETH: getRate(state, 'DF', 'ETH'),

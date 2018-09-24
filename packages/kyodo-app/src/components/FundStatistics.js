@@ -39,7 +39,7 @@ const mapStateToProps = state => {
   return {
     balance: balanceEur / getRate(state, 'ETH', 'EUR'),
     balanceEur,
-    totalSupply: getTotalSupply(getContract('DecentToken')(state)),
+    totalSupply: getTotalSupply(getContract('Token')(state)),
   };
 };
 

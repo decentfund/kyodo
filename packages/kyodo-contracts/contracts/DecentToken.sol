@@ -1,10 +1,11 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.23;
+pragma experimental "v0.5.0";
 
-import "openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
+import "../lib/colonyNetwork/contracts/Token.sol";
 
-contract DecentToken is MintableToken {
+contract DecentToken is Token {
   // Token Information
-  string public constant name = "D E C E N T . F U N D";
-  string public constant symbol = "DF";
-  uint256 public constant decimals = 18;
+  // string public name = "D E C E N T . F U N D";
+  // string public symbol = "DF";
+  // uint8 public decimals = 18;
 }

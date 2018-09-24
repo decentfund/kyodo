@@ -1,6 +1,6 @@
 // TODO: For production we need to export interfaces in kyodo-contracts folder and work with abi and deployed addresses
 import KyodoDAO from '@kyodo/contracts/build/contracts/KyodoDAO.json';
-import DecentToken from '@kyodo/contracts/build/contracts/DecentToken.json';
+import Token from '@kyodo/contracts/build/contracts/Token.json';
 
 const drizzleOptions = {
   web3: {
@@ -13,7 +13,7 @@ const drizzleOptions = {
       // change URL and Metamask server
     },
   },
-  contracts: [KyodoDAO, DecentToken],
+  contracts: [KyodoDAO, Token],
   polls: {
     accounts: 1500,
   },

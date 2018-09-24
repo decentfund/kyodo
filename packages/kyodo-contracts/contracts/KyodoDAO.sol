@@ -1,12 +1,15 @@
 pragma solidity ^0.4.24;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../lib/BokkyPooBahsDateTimeLibrary/contracts/BokkyPooBahsDateTimeLibrary.sol";
+import "../lib/colonyNetwork/contracts/IColony.sol";
+import "../lib/colonyNetwork/contracts/Token.sol";
 import "./strings.sol";
 
 contract KyodoDAO is Ownable {
   using strings for *;
+  using SafeMath for uint256;
 
   // Defines Member type
   struct Member {
@@ -18,17 +21,26 @@ contract KyodoDAO is Ownable {
   mapping(address => Member) public whitelist;
   address[] whitelistedAddresses;
   address public Colony;
-  MintableToken public Token;
+  Token public KyodoToken;
   uint256 public currentPeriodStartTime;
   uint public currentPeriodStartBlock;
   uint public periodDaysLength;
+  uint public inflationRate;
+  // FIXME: store distribution in one uint256
+  uint[] public distribution;
 
   uint[] periods;
 
   event NewPeriodStart(uint periodId);
 
   constructor(address _token) public {
-    Token = MintableToken(_token);
+    KyodoToken = Token(_token);
+
+    // FIXME: create distribution by passing array
+    distribution = [1, 1, 1, 1];
+    inflationRate = 5;
+    periodDaysLength = 30;
+    currentPeriodStartTime = 0;
   }
 
   // @dev Returns list of whitelistedAddresses.
@@ -75,11 +87,29 @@ contract KyodoDAO is Ownable {
 
   function startNewPeriod() public returns (uint256) {
     require(now > BokkyPooBahsDateTimeLibrary.addDays(currentPeriodStartTime, periodDaysLength));
-
+    
     currentPeriodStartTime = now;
     currentPeriodStartBlock = block.number;
     periods.push(currentPeriodStartBlock);
     emit NewPeriodStart(currentPeriodStartBlock);
+
+    // Mint tokens
+    uint _totalSupply = Token(KyodoToken).totalSupply();
+    uint _toMint = _totalSupply.mul(inflationRate).div(100);
+    IColony(Colony).mintTokens(_toMint);
+
+    // Distribute between domains
+    uint totalPower = 0;
+    for (uint i=0; i < distribution.length; i++) {
+      totalPower = totalPower.add(distribution[i]);
+    }
+    // Claim tokens
+    IColony(Colony).claimColonyFunds(KyodoToken);
+    for (i=0; i < distribution.length; i++) {
+      IColony(Colony).moveFundsBetweenPots(1, i+2, distribution[i].mul(_toMint).div(totalPower), KyodoToken);
+    }
+
+
     return currentPeriodStartTime;
   }
 

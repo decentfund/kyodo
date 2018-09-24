@@ -97,7 +97,7 @@ export const getTokenBaseRate = contract => state => {
   return getFundBaseBalance(state) / totalSupply;
 };
 
-export const kyodoTokenContract = getContract('DecentToken');
+export const kyodoTokenContract = getContract('Token');
 
 // export const getRate = createSelector([getTokenContract, getRates], (kyodoTokenContract, rates) => {
 export const getRate = (state, from, to) => {

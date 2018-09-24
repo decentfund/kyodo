@@ -1,86 +1,22 @@
-const path = require('path');
-const fs = require('fs');
-var DecentToken = artifacts.require('./DecentToken.sol');
 var KyodoDAO = artifacts.require('./KyodoDAO.sol');
-const { providers, Wallet } = require('ethers');
-const { default: EthersAdapter } = require('@colony/colony-js-adapter-ethers');
-const {
-  default: NetworkLoader,
-} = require('@colony/colony-js-contract-loader-network');
-
-// Import the ColonyNetworkClient
-const { default: ColonyNetworkClient } = require('@colony/colony-js-client');
-
-const { TruffleLoader } = require('@colony/colony-js-contract-loader-fs');
-
-const appDirectory = fs.realpathSync(process.cwd());
-const contractDir = path.resolve(appDirectory, '../build/contracts');
-
-const getPrivateKey = (network, accounts) => {
-  // import keys from ganache if development
-  // else try to get keys from wallet created from env mnemonic var
-  // TODO: Wrap and throw error on empty file / var
-  if (network === 'development') {
-    const keys = require('../ganache-accounts.json');
-    const rawKey = keys.private_keys[accounts[0]];
-    return rawKey.startsWith('0x') ? rawKey : `0x${rawKey}`;
-  } else {
-    const mnemonic = process.env.MNEMONIC;
-    return Wallet.fromMnemonic(mnemonic).privateKey;
-  }
-};
-
-const getProvider = network => {
-  if (network === 'development') {
-    // Create a provider for local TestRPC (Ganache)
-    return new providers.JsonRpcProvider('http://localhost:8545/');
-  } else {
-    return providers.getDefaultProvider(network);
-  }
-};
-
-const getLoader = network => {
-  if (network !== 'rinkeby') {
-    return new TruffleLoader({
-      contractDir,
-    });
-  } else {
-    return new NetworkLoader({ network });
-  }
-};
+var Token = artifacts.require('./Token.sol');
+var getColonyClient = require('./getColonyClient');
+var addDomain = require('./addDomain');
+var deployParameters = require('./deploy_parameters.json');
 
 module.exports = (deployer, network, accounts) => {
   deployer.then(async () => {
-    // get key
-    const key = getPrivateKey(network, accounts);
+    const kyodoInstance = KyodoDAO.at(KyodoDAO.address);
 
-    // get provider
-    const provider = getProvider(network);
+    const { domains } = deployParameters;
 
-    // setting wallet
-    const wallet = new Wallet(key, provider);
-
-    // getting loader
-    const loader = getLoader(network);
-
-    // Create an adapter (powered by ethers)
-    const adapter = new EthersAdapter({
-      loader,
-      provider,
-      wallet,
-    });
-
-    // Connect to ColonyNetwork with the adapter!
-    const networkClient = new ColonyNetworkClient({ adapter });
-    await networkClient.init();
-
-    // Get decentToken address
-    const tokenAddress = DecentToken.address;
+    const colonyNetworkClient = getColonyClient(network, accounts);
+    await colonyNetworkClient.init();
 
     // TODO: Verify if colony exists
     // Create new colony
-    const data = await networkClient.createColony.send({
-      tokenAddress,
+    const data = await colonyNetworkClient.createColony.send({
+      tokenAddress: Token.address,
     });
 
     const {
@@ -88,6 +24,17 @@ module.exports = (deployer, network, accounts) => {
     } = data;
 
     // Setting KyodoDAO Colony address
-    await KyodoDAO.at(KyodoDAO.address).setColonyAddress(colonyAddress);
+    await kyodoInstance.setColonyAddress(colonyAddress);
+
+    // Get colony client
+    const colonyClient = await colonyNetworkClient.getColonyClientByAddress(
+      colonyAddress,
+    );
+
+    // Generating necessary amount of domains and writing initial distribution
+    const domainsCount = domains.length;
+    for (var i = 0; i < domainsCount; i++) {
+      await addDomain(colonyClient, 1);
+    }
   });
 };
