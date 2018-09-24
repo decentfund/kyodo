@@ -1,4 +1,4 @@
-const { User } = require('./db.js');
+const { User, getColonyById, getCurrentUserPeriod } = require('./db.js');
 
 const dbAddUser = async ({ address, alias, balance, domains, tasks }) => {
   const user = new User({
@@ -54,6 +54,13 @@ exports.getUserByAddress = async (req, res) => {
 
 exports.getUserByAlias = async (req, res) => {
   await User.find({ alias: req.body.alias });
+};
+
+exports.getUserBalance = async alias => {
+  const colony = await getColonyById(0);
+  const currentPeriodId = colony.periodIds[colony.periodIds.length - 1];
+  const { balance } = await getCurrentUserPeriod(alias, currentPeriodId);
+  return balance;
 };
 
 exports.addDomainToUser = async (req, res) => {

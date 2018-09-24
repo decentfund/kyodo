@@ -71,7 +71,3 @@ exports.createColony = async colonyAddress => {
 
   return colony;
 };
-
-exports.getColonyById = async colonyId => {
-  return Colony.findOne({ colonyId });
-};

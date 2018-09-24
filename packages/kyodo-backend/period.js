@@ -1,6 +1,5 @@
-const { Period, Colony } = require('./db.js');
+const { Period, Colony, getColonyById } = require('./db.js');
 const { dbGetAllUsers, getAllUsers, findUserByAddress } = require('./user.js');
-const { getColonyById } = require('./colony');
 const { PERIOD_TIME } = require('./constants/periodTime.js');
 const { getToken } = require('./token');
 

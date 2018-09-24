@@ -15,7 +15,7 @@ app.use(bodyParser.json()).use('/', router);
 
 app.listen(PORT, () => {
   console.log(':::INITIATING NETWORK:::');
-  initiateNetwork();
+  // initiateNetwork();
   initiateIpfs();
   console.log('::::::::RUNNING:::::::::');
 });
