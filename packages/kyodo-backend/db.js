@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const db = mongoose.connect("mongodb://localhost/colony");
+const db = mongoose.connect('mongodb://localhost/colony');
 
 const taskSchema = new mongoose.Schema({
   taskId: String,
@@ -11,7 +11,7 @@ const taskSchema = new mongoose.Schema({
   dateCreated: Date,
   dueDate: Date,
   potId: Number,
-  domainId: Number
+  domainId: Number,
   // id: Number,
   // skillId: Number
 });
@@ -24,14 +24,15 @@ const colonySchema = new mongoose.Schema({
   tokenName: String,
   tokenSymbol: String,
   creationBlockNumber: Number,
-  creationDate: Date
+  creationDate: Date,
+  periodIds: Array,
 });
 
 const domainSchema = new mongoose.Schema({
   domainId: Number,
   domainTitle: String,
   localSkillId: Number,
-  potId: Number
+  potId: Number,
 });
 
 const tipSchema = new mongoose.Schema({
@@ -42,7 +43,7 @@ const tipSchema = new mongoose.Schema({
   domainId: Number,
   potId: Number,
   dateCreated: Date,
-  periodId: Number
+  periodId: Number,
 });
 
 const userSchema = new mongoose.Schema({
@@ -51,21 +52,21 @@ const userSchema = new mongoose.Schema({
   balance: Number,
   domains: Array,
   tasks: Array,
-  dateCreated: Date
+  dateCreated: Date,
 });
 
 const periodSchema = new mongoose.Schema({
   title: String,
   address: String,
   periodId: Number,
-  balance: Number
+  balance: Number,
 });
 
-const Task = mongoose.model("Task", taskSchema);
-const Colony = mongoose.model("Colony", colonySchema);
-const Domain = mongoose.model("Domain", domainSchema);
-const Tip = mongoose.model("Tip", tipSchema);
-const User = mongoose.model("User", userSchema);
-const Period = mongoose.model("Period", periodSchema);
+const Task = mongoose.model('Task', taskSchema);
+const Colony = mongoose.model('Colony', colonySchema);
+const Domain = mongoose.model('Domain', domainSchema);
+const Tip = mongoose.model('Tip', tipSchema);
+const User = mongoose.model('User', userSchema);
+const Period = mongoose.model('Period', periodSchema);
 
 module.exports = { Task, Colony, Domain, Tip, User, Period };

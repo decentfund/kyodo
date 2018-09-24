@@ -90,8 +90,8 @@ contract KyodoDAO is Ownable {
     
     currentPeriodStartTime = now;
     currentPeriodStartBlock = block.number;
+    emit NewPeriodStart(periods.length);
     periods.push(currentPeriodStartBlock);
-    emit NewPeriodStart(currentPeriodStartBlock);
 
     // Mint tokens
     uint _totalSupply = Token(KyodoToken).totalSupply();
