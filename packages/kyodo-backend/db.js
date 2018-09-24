@@ -69,4 +69,22 @@ const Tip = mongoose.model('Tip', tipSchema);
 const User = mongoose.model('User', userSchema);
 const Period = mongoose.model('Period', periodSchema);
 
-module.exports = { Task, Colony, Domain, Tip, User, Period };
+const getColonyById = async colonyId => {
+  return await Colony.findOne({ colonyId });
+};
+
+const getCurrentUserPeriod = async (alias, periodId) => {
+  const { address } = await User.findOne({ alias });
+  return await Period.findOne({ address, periodId });
+};
+
+module.exports = {
+  Task,
+  Colony,
+  Domain,
+  Tip,
+  User,
+  Period,
+  getColonyById,
+  getCurrentUserPeriod,
+};
