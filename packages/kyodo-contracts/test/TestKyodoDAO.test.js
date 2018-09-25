@@ -232,4 +232,51 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
       assert.equal(currentPeriodStartBlock, currentBlock + 1);
     });
   });
+  describe('domain adding', function() {
+    it('works as expected', async function() {
+      let domainsLength = await kyodo.getDomainsLength();
+      assert.equal(domainsLength, 0, 'Domains are empty');
+
+      const firstDomain = 'GOV';
+      const secondDomain = 'FUND';
+
+      await kyodo.addDomain(firstDomain);
+      domainsLength = await kyodo.getDomainsLength();
+      assert.equal(
+        domainsLength,
+        1,
+        'Domains length is not correct after adding of first domain',
+      );
+      let domain = await kyodo.getDomain(0);
+      assert.equal(
+        domain[0],
+        firstDomain,
+        'First domain code is stored incorrectly',
+      );
+      assert.equal(
+        domain[1].toNumber(),
+        1,
+        'First domain id is stored incorrectly',
+      );
+
+      await kyodo.addDomain(secondDomain);
+      domainsLength = await kyodo.getDomainsLength();
+      assert.equal(
+        domainsLength,
+        2,
+        'Domains length is not correct after adding of second domain',
+      );
+      domain = await kyodo.getDomain(1);
+      assert.equal(
+        domain[0],
+        secondDomain,
+        'Second domain code is stored incorrectly',
+      );
+      assert.equal(
+        domain[1].toNumber(),
+        2,
+        'Second domain id is stored incorrectly',
+      );
+    });
+  });
 });
