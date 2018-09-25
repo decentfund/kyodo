@@ -76,7 +76,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         });
         it('empty address', async function() {
           truffleAssert.eventEmitted(setAliasTx, 'NewAliasSet', ev => {
-            return ev._address === owner && ev.alias === 'aaa';
+            return ev._address === owner && ev._alias === 'aaa';
           });
           const alias = await kyodo.getAlias(anotherAccount, {
             from: anotherAccount,

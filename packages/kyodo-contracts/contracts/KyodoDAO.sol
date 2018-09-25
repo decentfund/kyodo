@@ -32,7 +32,7 @@ contract KyodoDAO is Ownable {
   uint[] periods;
 
   event NewPeriodStart(uint _periodId);
-  event NewAliasSet(address _address, string alias);
+  event NewAliasSet(address _address, string _alias);
 
   constructor(address _token) public {
     KyodoToken = Token(_token);

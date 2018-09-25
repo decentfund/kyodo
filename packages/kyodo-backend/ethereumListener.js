@@ -5,7 +5,7 @@ const provider = new Web3.providers.HttpProvider('http://127.0.0.1:8545');
 const TruffleContract = require('truffle-contract');
 const KyodoDAO = require('@kyodo/contracts/build/contracts/KyodoDAO.json');
 const { createColony } = require('./colony.js');
-const { dbAddUser } = require('./user');
+const { dbAddUser, setUserAlias } = require('./user');
 const { initPeriod } = require('./period');
 
 let kyodo;
@@ -43,12 +43,23 @@ const startListener = () => {
     }
 
     kyodo.NewPeriodStart(null, { fromBlock: 0 }, async function(error, event) {
-      const periodId = event.args.periodId.toNumber();
+      const periodId = event.args._periodId.toNumber();
       const hasPeriod = colony.periodIds.includes(periodId);
 
       await updateUsers();
       if (!hasPeriod) {
         await initPeriod(periodId, colony.colonyId);
+      }
+    });
+
+    kyodo.NewAliasSet(null, { fromBlock: 0 }, async function(error, event) {
+      const address = event.args._address;
+      const alias = event.args._alias;
+      const blockNumber = event.blockNumber;
+
+      const user = await User.findOne({ address });
+      if (!user.aliasSet || user.aliasSet < event.blockNumber) {
+        await setUserAlias({ user, alias, blockNumber });
       }
     });
   });
