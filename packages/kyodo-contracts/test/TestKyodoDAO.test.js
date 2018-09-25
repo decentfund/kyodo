@@ -88,6 +88,44 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
           assert.equal(alias, 'aaa');
         });
       });
+      describe('alias setting', async function() {
+        it('should allow to set back alias', async () => {
+          await kyodo.addToWhitelist(owner);
+          const tx = await kyodo.setAlias('igor');
+          truffleAssert.eventEmitted(
+            tx,
+            'NewAliasSet',
+            ev => {
+              return ev._address === owner && ev._alias === 'igor';
+            },
+            'should allow to set address for whitelisted',
+          );
+          let usedAliasesLength = await kyodo.getUsedAliasesLength();
+          assert.equal(usedAliasesLength, 1, 'Alias is not stored');
+          const tx2 = await kyodo.setAlias('igorz');
+          truffleAssert.eventEmitted(
+            tx2,
+            'NewAliasSet',
+            ev => {
+              return ev._address === owner && ev._alias === 'igorz';
+            },
+            'should allow to set another free alias for whitelisted',
+          );
+          usedAliasesLength = await kyodo.getUsedAliasesLength();
+          assert.equal(usedAliasesLength, 1, 'Alias is not deleted');
+          const tx3 = await kyodo.setAlias('igor');
+          truffleAssert.eventEmitted(
+            tx3,
+            'NewAliasSet',
+            ev => {
+              return ev._address === owner && ev._alias === 'igor';
+            },
+            'should allow to set back original alias',
+          );
+          usedAliasesLength = await kyodo.getUsedAliasesLength();
+          assert.equal(usedAliasesLength, 1, 'Alias is not added');
+        });
+      });
     });
   });
   describe('initial distribution', function() {

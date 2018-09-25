@@ -70,7 +70,7 @@ contract KyodoDAO is Ownable {
     returns (bool)
   {
     for (uint i=0; i < usedAliases.length; i++) {
-      if (usedAliases[i].toSlice().contains(_value.toSlice())) return false;
+      if (usedAliases[i].toSlice().equals(_value.toSlice())) return false;
     }
     return true;
   }
