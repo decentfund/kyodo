@@ -63,6 +63,17 @@ exports.getUserBalance = async alias => {
   return balance;
 };
 
+exports.setUserAlias = async ({ user, alias, blockNumber }) => {
+  user.alias = alias;
+  user.aliasSet = blockNumber;
+
+  user.save(err => {
+    if (err) return null;
+  });
+
+  return user;
+};
+
 exports.addDomainToUser = async (req, res) => {
   // TODO:
 };

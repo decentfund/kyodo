@@ -1,3 +1,4 @@
+import truffleAssert from 'truffle-assertions';
 import assertRevert from 'openzeppelin-solidity/test/helpers/assertRevert';
 import { getTokenArgs } from '../lib/colonyNetwork/helpers/test-helper';
 
@@ -67,11 +68,16 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         assert.equal(usedAliases, 1);
       });
       describe('finishes successfully for whitelisted and get', function() {
+        let setAliasTx;
         beforeEach(async function() {
           await kyodo.addToWhitelist(owner);
-          await kyodo.setAlias('aaa');
+          const tx = await kyodo.setAlias('aaa');
+          setAliasTx = tx;
         });
         it('empty address', async function() {
+          truffleAssert.eventEmitted(setAliasTx, 'NewAliasSet', ev => {
+            return ev._address === owner && ev._alias === 'aaa';
+          });
           const alias = await kyodo.getAlias(anotherAccount, {
             from: anotherAccount,
           });
