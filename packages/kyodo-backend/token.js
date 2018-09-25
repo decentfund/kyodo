@@ -7,16 +7,22 @@ let token;
 
 const initializeToken = async () => {
   if (token) return token;
-  const contract = TruffleContract(Token);
-  contract.setProvider(provider);
+  const contract = await TruffleContract(Token);
+  await contract.setProvider(provider);
   const instance = await contract.deployed();
   token = instance;
-  // console.log(token);
   return token;
+};
+
+const getBalance = async (address, blockNumber) => {
+  const balance = await token.balanceOf(address, blockNumber);
+  const decimals = await token.decimals();
+  return balance / Math.pow(10, decimals);
 };
 
 initializeToken();
 
 module.exports = {
   getToken: initializeToken,
+  getBalance,
 };

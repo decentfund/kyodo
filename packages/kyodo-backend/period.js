@@ -1,12 +1,12 @@
 const { Period, Colony, getColonyById } = require('./db.js');
 const { dbGetAllUsers, getAllUsers, findUserByAddress } = require('./user.js');
 const { PERIOD_TIME } = require('./constants/periodTime.js');
-const { getToken } = require('./token');
+const { getBalance } = require('./token');
 
 let currentPeriod = 0;
 console.log('PERIOD', currentPeriod);
 
-const initPeriod = async (periodId, colonyId) => {
+const initPeriod = async (blockNumber, periodId, colonyId) => {
   const colony = await getColonyById(colonyId);
   const users = await dbGetAllUsers();
   currentPeriod = periodId;
@@ -15,18 +15,15 @@ const initPeriod = async (periodId, colonyId) => {
     if (err) return console.error(err);
   });
 
-  const token = await getToken();
-
   users.map(async el => {
-    const balance = await token.balanceOf(el.address);
-    // console.log(balance);
+    const balance = await getBalance(el.address, blockNumber);
     let period = new Period({
       // TODO: Period title
       title: 'My new period',
       address: el.address,
       periodId: currentPeriod,
       // TODO: Fetch user balance
-      balance: balance.toNumber(), //current user balance
+      balance, //current user balance
       tips: 0,
     });
     await period.save(err => {
