@@ -16,6 +16,7 @@ const {
 // If modifying these scopes, delete credentials.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const TOKEN_PATH = 'credentials.json';
+const { getUserBalance } = require('@kyodo/backend/user');
 
 // Load client secrets from a local file.
 fs.readFile('client_secret.json', (err, content) => {
@@ -117,6 +118,8 @@ function authenticated(auth) {
             handleDish(event, room, client, auth);
           } else if (command == '!create') {
             handleTask(event, room, client, auth);
+          } else if (command == '!balance') {
+            handleBalance(event, room, client, auth);
           } else if (command == '!sheet') {
             client.sendTextMessage(
               roomId,
@@ -276,6 +279,54 @@ function handleTask(event, room, client, auth) {
         'ERROR, please use the following format:\n!dish [#of points] [type of points] points to [handle] for [reason]',
       );
     }
+  }
+}
+
+const isDirectChat = (room, user) => {
+  let type = 'room';
+  // if (type === 'directMessage') {
+  // state.sources[roomId].name = room.name.replace(/@(\w+):.+/, '$1');
+  // }
+  const allMembers = room.currentState.getMembers();
+  if (
+    type === 'room' &&
+    allMembers.length <= 2 &&
+    allMembers.some(m => m.userId === user)
+  ) {
+    // if (
+    // // allMembers.some(m => m.getDMInviter()) &&
+    // ) {
+    type = 'directMessage';
+    // }
+  }
+
+  return type === 'directMessage';
+};
+
+async function handleBalance(event, room, client, auth) {
+  const sender = event.getSender();
+  const message = event.getContent().body;
+
+  let userRoom = client.getRooms().find(r => isDirectChat(r, sender));
+  let roomId;
+  if (userRoom) roomId = userRoom.roomId;
+  if (!userRoom) {
+    const newChat = await client.createRoom({
+      preset: 'trusted_private_chat',
+      invite: [sender],
+      is_direct: true,
+    });
+    roomId = newChat.room_id;
+  }
+
+  try {
+    const balance = await getUserBalance(sender.slice(1).split(':')[0]);
+    client.sendTextMessage(roomId, `Your current points balance is ${balance}`);
+  } catch (e) {
+    client.sendTextMessage(
+      roomId,
+      'You are not registered! If you are whitelisted head over to http://kyodo.decent.fund to set your alias',
+    );
   }
 }
 
