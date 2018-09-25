@@ -31,7 +31,8 @@ contract KyodoDAO is Ownable {
 
   uint[] periods;
 
-  event NewPeriodStart(uint periodId);
+  event NewPeriodStart(uint _periodId);
+  event NewAliasSet(address _address, string alias);
 
   constructor(address _token) public {
     KyodoToken = Token(_token);
@@ -142,6 +143,8 @@ contract KyodoDAO is Ownable {
 
     // TODO:  Check if should mint
     // MintableToken(Token).mint(msg.sender, 100000);
+
+    emit NewAliasSet(msg.sender, _value);
   }
 
   function getAlias(address _addr) public view returns (string)
