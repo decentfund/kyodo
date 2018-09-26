@@ -39,6 +39,7 @@ contract KyodoDAO is Ownable {
 
   event NewPeriodStart(uint _periodId);
   event NewAliasSet(address _address, string _alias);
+  event NewDomainAdded(string _code, uint _id);
 
   constructor(address _token) public {
     KyodoToken = Token(_token);
@@ -214,8 +215,11 @@ contract KyodoDAO is Ownable {
   function addDomain(string _code) external onlyOwner {
     IColony(Colony).addDomain(1);
 
-    Domain memory domain = Domain(_code, domains.length.add(1));
+    uint domainId = domains.length.add(1);
+    Domain memory domain = Domain(_code, domainId);
     domains.push(domain);
+
+    emit NewDomainAdded(_code, domainId);
   }
 
   /**

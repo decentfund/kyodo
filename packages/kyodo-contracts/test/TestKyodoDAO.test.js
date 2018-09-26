@@ -240,7 +240,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
       const firstDomain = 'GOV';
       const secondDomain = 'FUND';
 
-      await kyodo.addDomain(firstDomain);
+      let tx = await kyodo.addDomain(firstDomain);
       domainsLength = await kyodo.getDomainsLength();
       assert.equal(
         domainsLength,
@@ -258,8 +258,11 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         1,
         'First domain id is stored incorrectly',
       );
+      truffleAssert.eventEmitted(tx, 'NewDomainAdded', ev => {
+        return ev._code === firstDomain && ev._id.toNumber() === 1;
+      });
 
-      await kyodo.addDomain(secondDomain);
+      tx = await kyodo.addDomain(secondDomain);
       domainsLength = await kyodo.getDomainsLength();
       assert.equal(
         domainsLength,
@@ -277,6 +280,9 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         2,
         'Second domain id is stored incorrectly',
       );
+      truffleAssert.eventEmitted(tx, 'NewDomainAdded', ev => {
+        return ev._code === secondDomain && ev._id.toNumber() === 2;
+      });
     });
   });
 });
