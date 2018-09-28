@@ -120,8 +120,12 @@ exports.sendNewTip = async ({
 exports.getAllTips = async (req, res) => {
   let tips = await Tip.find((err, tips) => {
     if (err) return console.error(err);
-    res.send(`ALL AVAILABLE TASKS: ${tips}`);
-  });
+  })
+    .populate('task', 'taskTitle')
+    .populate('domain', 'domainTitle')
+    .populate('from')
+    .populate('to');
+  res.send(tips);
   return tips;
 };
 

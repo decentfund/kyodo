@@ -15,6 +15,7 @@ import FundStatistics from './components/FundStatistics';
 import CurrentPeriodStatus from './components/CurrentPeriodStatus';
 import TotalSupplyChange from './components/TotalSupplyChange';
 import Earnings from './components/Earnings';
+import TasksList from './components/TasksList';
 import {
   getContract,
   getOwner,
@@ -182,6 +183,7 @@ class App extends Component {
             />
           ) : null}
           <Earnings />
+          <TasksList />
           {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
             <AddRiotID account={userAddress} />
           ) : null}

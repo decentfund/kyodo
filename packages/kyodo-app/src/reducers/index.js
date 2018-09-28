@@ -7,6 +7,7 @@ import { createSelector } from 'reselect';
 import get from 'lodash/get';
 import rates, * as fromRates from './rates';
 import balances from './balances';
+import tips from './tips';
 import historical, * as fromHistorical from './historical';
 import { BASE_CURRENCY } from '../constants';
 
@@ -158,6 +159,7 @@ const reducer = combineReducers({
   rates,
   balances,
   historical,
+  tips,
   ...drizzleReducers,
 });
 
