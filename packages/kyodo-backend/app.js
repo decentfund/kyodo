@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const { initiateNetwork } = require('./network.js');
 const { initiateIpfs } = require('./ipfs.js');
 const startListener = require('./ethereumListener');
+const { initDb } = require('./db');
 
 const router = require('./router.js');
 
@@ -15,6 +16,7 @@ app.use(bodyParser.json()).use('/', router);
 
 app.listen(PORT, () => {
   console.log(':::INITIATING NETWORK:::');
+  initDb();
   // initiateNetwork();
   initiateIpfs();
   console.log('::::::::RUNNING:::::::::');

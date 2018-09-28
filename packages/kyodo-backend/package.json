@@ -4,7 +4,7 @@
   "description": "magic",
   "main": "app.js",
   "scripts": {
-    "test": "test",
+    "test": "jest",
     "start": "./node_modules/.bin/nodemon app.js",
     "precise-commits": "precise-commits",
     "precommit": "npm run precise-commits"
@@ -42,8 +42,14 @@
   },
   "devDependencies": {
     "husky": "^0.14.3",
+    "jest": "^23.6.0",
+    "mongodb": "3.1.6",
+    "mongodb-memory-server": "^2.2.0",
     "nodemon": "^1.17.5",
     "precise-commits": "^1.0.2",
     "prettier": "^1.13.6"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }

@@ -1,9 +1,15 @@
-const { Tip } = require("./db.js");
+const { Tip, getDomainByCode } = require('./db.js');
 const {
   changeUserBalance,
   currentPeriod,
-  getUserByAddressInPeriod
-} = require("./period.js");
+  getUserByAddressInPeriod,
+} = require('./period');
+const {
+  getUserBalance,
+  dbGetUserByAlias: getUserByAlias,
+  dbAddUser: addUser,
+} = require('./user');
+const { dbCreateTask: createTask, getTaskByTitle } = require('./task');
 
 exports.sendTip = async (req, res) => {
   // TODO: colonyClient integration
@@ -12,8 +18,8 @@ exports.sendTip = async (req, res) => {
 
   let tipAmount = req.body.amount;
   if (tipAmount <= 0) {
-    res.status(400).send("Seriously?!");
-    return "No money no honey, sorry";
+    res.status(400).send('Seriously?!');
+    return 'No money no honey, sorry';
   }
 
   let sender = await getUserByAddressInPeriod(req.body.from);
@@ -22,9 +28,9 @@ exports.sendTip = async (req, res) => {
   let senderBalance = sender[0].balance;
   let receiverAddress = receiver[0].address;
 
-  if (!this.checkBalance(senderBalance, tipAmount)) {
-    res.status(400).send("Inssuficient funds for the tip");
-    return "No money no honey, sorry";
+  if (!checkBalance(senderBalance, tipAmount)) {
+    res.status(400).send('Inssuficient funds for the tip');
+    return 'No money no honey, sorry';
   }
 
   await changeUserBalance(senderAddress, tipAmount);
@@ -38,7 +44,7 @@ exports.sendTip = async (req, res) => {
     domainId: req.body.domainId,
     potId: req.body.potId,
     dateCreated: Date.now(),
-    periodId: currentPeriod
+    periodId: currentPeriod,
   });
 
   tip.save((err, tip) => {
@@ -47,8 +53,68 @@ exports.sendTip = async (req, res) => {
   res
     .status(200)
     .send(
-      `User ${senderAddress} Successfully tipped user ${receiverAddress} with ${tipAmount} `
+      `User ${senderAddress} Successfully tipped user ${receiverAddress} with ${tipAmount} `,
     );
+};
+
+exports.sendNewTip = async ({
+  sender,
+  amount = 0,
+  domain,
+  title,
+  receiver,
+} = {}) => {
+  // Verify sender is present and has enough points
+  if (!sender) throw Error('No sender specified');
+  if (amount <= 0) {
+    // TODO: Raise error
+    throw new Error('No money no honey, sorry');
+  }
+
+  // Throw error if sender is not present
+  const senderUser = await getUserByAlias(sender);
+  if (!senderUser) throw Error('Sender is not registered');
+  const senderBalance = await getUserBalance(sender);
+
+  // Get receiver if not present create a new one
+  let receiverUser = await getUserByAlias(receiver);
+  if (!receiverUser) {
+    receiverUser = await addUser({ alias: receiver });
+  }
+
+  if (!checkBalance(senderBalance, amount))
+    throw Error('No money no honey, sorry');
+
+  // await changeUserBalance(senderAddress, tipAmount);
+  // await changeUserBalance(receiverAddress, -tipAmount);
+  //
+
+  // Getting domain
+  // TODO: Throw error if domain is not found
+  const domainId = await getDomainByCode(domain);
+
+  // TODO: Try to find task
+  // FIXME: Find task in period
+  // If not available create a new one
+  let task = await getTaskByTitle(title);
+  if (!task) {
+    task = await createTask({ title });
+  }
+
+  let tip = new Tip({
+    from: senderUser,
+    to: receiverUser,
+    amount,
+    taskId: task,
+    domainId,
+    // potId: req.body.potId,
+    dateCreated: Date.now(),
+    // FIXME: Get period from colony
+    periodId: currentPeriod,
+  });
+
+  await tip.save();
+  return tip;
 };
 
 exports.getAllTips = async (req, res) => {
@@ -59,7 +125,9 @@ exports.getAllTips = async (req, res) => {
   return tips;
 };
 
-exports.checkBalance = (balance, amount) => {
+const checkBalance = (balance, amount) => {
   if (amount <= balance && amount > 0) return true;
   return false;
 };
+
+exports.checkBalance = checkBalance;

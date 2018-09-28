@@ -1,6 +1,18 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const db = mongoose.connect('mongodb://localhost/colony');
+mongoose.connection.on('error', e => {
+  if (e.message.code === 'ETIMEDOUT') {
+    console.log(e);
+  }
+  console.log(e);
+});
+
+mongoose.connection.once('open', () => {
+  console.log(`MongoDB successfully connected to mongoUri`);
+});
+
+const initDb = () => mongoose.connect('mongodb://localhost/colony');
 
 const taskSchema = new mongoose.Schema({
   taskId: String,
@@ -11,7 +23,7 @@ const taskSchema = new mongoose.Schema({
   dateCreated: Date,
   dueDate: Date,
   potId: Number,
-  domainId: Number,
+  // domainId: Number,
   // id: Number,
   // skillId: Number
 });
@@ -36,11 +48,11 @@ const domainSchema = new mongoose.Schema({
 });
 
 const tipSchema = new mongoose.Schema({
-  from: String,
-  to: String,
+  from: { type: Schema.Types.ObjectId, ref: 'User' },
+  to: { type: Schema.Types.ObjectId, ref: 'User' },
   amount: Number,
-  taskId: Number,
-  domainId: Number,
+  taskId: { type: Schema.Types.ObjectId, ref: 'Task' },
+  domainId: { type: Schema.Types.ObjectId, ref: 'Domain' },
   potId: Number,
   dateCreated: Date,
   periodId: Number,
@@ -79,7 +91,15 @@ const getCurrentUserPeriod = async (alias, periodId) => {
   return await Period.findOne({ address, periodId });
 };
 
+const getDomainByCode = async code => {
+  const domain = await Domain.findOne({ domainTitle: code });
+  if (!domain) throw Error('Domain not found');
+
+  return domain;
+};
+
 module.exports = {
+  initDb,
   Task,
   Colony,
   Domain,
@@ -88,4 +108,5 @@ module.exports = {
   Period,
   getColonyById,
   getCurrentUserPeriod,
+  getDomainByCode,
 };

@@ -56,6 +56,10 @@ exports.getUserByAlias = async (req, res) => {
   await User.find({ alias: req.body.alias });
 };
 
+exports.dbGetUserByAlias = async alias => {
+  return await User.findOne({ alias });
+};
+
 exports.getUserBalance = async alias => {
   const colony = await getColonyById(0);
   const currentPeriodId = colony.periodIds[colony.periodIds.length - 1];
