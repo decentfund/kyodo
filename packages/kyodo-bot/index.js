@@ -12,11 +12,13 @@ const {
   sheet_id,
   sheet_tab_name,
 } = require('./constants');
+const { initDb } = require('@kyodo/backend/db');
 
 // If modifying these scopes, delete credentials.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const TOKEN_PATH = 'credentials.json';
 const { getUserBalance } = require('@kyodo/backend/user');
+const { sendNewTip } = require('@kyodo/backend/tip');
 
 // Load client secrets from a local file.
 fs.readFile('client_secret.json', (err, content) => {
@@ -99,6 +101,9 @@ function authenticated(auth) {
         userId: data.user_id,
         deviceId: data.device_id,
       });
+
+      // Connecting to db
+      initDb();
 
       client.on('Room.timeline', (event, room, toStartOfTimeline) => {
         if (
@@ -303,9 +308,10 @@ const isDirectChat = (room, user) => {
   return type === 'directMessage';
 };
 
-async function handleBalance(event, room, client, auth) {
+const cutUserAlias = sender => sender.slice(1).split(':')[0];
+
+const getOrCreatePrivateRoom = async (client, event) => {
   const sender = event.getSender();
-  const message = event.getContent().body;
 
   let userRoom = client.getRooms().find(r => isDirectChat(r, sender));
   let roomId;
@@ -319,8 +325,16 @@ async function handleBalance(event, room, client, auth) {
     roomId = newChat.room_id;
   }
 
+  return roomId;
+};
+
+async function handleBalance(event, room, client, auth) {
+  const sender = event.getSender();
+  const message = event.getContent().body;
+
+  const roomId = await getOrCreatePrivateRoom(client, event);
   try {
-    const balance = await getUserBalance(sender.slice(1).split(':')[0]);
+    const balance = await getUserBalance(cutUserAlias(sender));
     client.sendTextMessage(roomId, `Your current points balance is ${balance}`);
   } catch (e) {
     client.sendTextMessage(
@@ -330,7 +344,7 @@ async function handleBalance(event, room, client, auth) {
   }
 }
 
-function handleDish(event, room, client, auth) {
+async function handleDish(event, room, client, auth) {
   const sender = event.getSender();
   const message = event.getContent().body;
 
@@ -411,6 +425,8 @@ either add this user to the room, or try again using the format @[userId]:[domai
     const date = dayjs().format('DD-MMM-YYYY');
     const link = `https://riot.im/app/#/room/${room.roomId}/${event.getId()}`;
 
+    const roomId = await getOrCreatePrivateRoom(client, event);
+
     // const values = [
     // [
     // receiver,
@@ -426,23 +442,21 @@ either add this user to the room, or try again using the format @[userId]:[domai
     // const body = { values };
     // TODO: Write to DB instead of spreadsheets
     // TODO: Create task
-    axios
-      .post('http://localhost:3666/tip', {
-        taskId,
+    try {
+      const tip = await sendNewTip({
+        sender: cutUserAlias(sender),
+        receiver: cutUserAlias(receiver),
         amount,
-        from: sender,
-        to: receiver,
-      })
-      .then(function(response) {
-        const data = response.data;
-        client.sendTextMessage(
-          room.roomId,
-          `${sender} dished ${amount} ${type} points to ${receiver}`,
-        );
-      })
-      .catch(function(error) {
-        console.log(error);
+        domain: type,
       });
+
+      client.sendTextMessage(
+        room.roomId,
+        `${sender} dished ${amount} ${type} points to ${receiver}`,
+      );
+    } catch (e) {
+      client.sendTextMessage(roomId, e.message);
+    }
   } catch (err) {
     const MANUAL_ERROR_CODES = [
       'POINTS_NOT_NUMBER',

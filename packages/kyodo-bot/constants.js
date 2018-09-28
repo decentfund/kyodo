@@ -3,7 +3,7 @@
 // ]
 
 // Allowed point types
-module.exports.point_types = ['GOV', 'CODE', 'FUND', 'SOCIAL'];
+module.exports.point_types = ['GOV', 'DEV', 'FUND', 'SOCIAL'];
 
 module.exports.domains = [
   'matrix.org',
