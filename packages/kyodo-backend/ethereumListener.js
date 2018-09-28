@@ -102,6 +102,7 @@ const startListener = () => {
             blockNumber,
           };
         }
+        return a;
       }, {});
 
     // Syncing past aliases changes
