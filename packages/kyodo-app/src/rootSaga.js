@@ -12,6 +12,8 @@ import { drizzleSagas } from 'drizzle';
 import {
   LOAD_RATE_REQUEST,
   LOAD_RATE_SUCCESS,
+  LOAD_PERIOD_TASKS_REQUEST,
+  LOAD_PERIOD_TASKS_SUCCESS,
   LOAD_HISTORICAL_RATES_REQUEST,
   LOAD_HISTORICAL_RATES_SUCCESS,
   LOAD_MULTISIG_BALANCE_REQUEST,
@@ -107,11 +109,39 @@ function* watchLoadHistoricalRates() {
   yield takeLatest(LOAD_HISTORICAL_RATES_REQUEST, loadHistoricalRates);
 }
 
+function* loadPeriodTasks() {
+  try {
+    const apiURI = 'http://localhost:3666/tips';
+
+    const { data } = yield call(axios.get, apiURI);
+    const tasks = data.map(t => ({
+      title: t.task.taskTitle,
+      domain: t.domain.domainTitle,
+      from: t.from.alias,
+      to: t.to.alias,
+      id: t._id,
+      amount: t.amount,
+    }));
+
+    yield put({
+      type: LOAD_PERIOD_TASKS_SUCCESS,
+      tasks,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+function* watchLoadTasks() {
+  yield takeLatest(LOAD_PERIOD_TASKS_REQUEST, loadPeriodTasks);
+}
+
 export default function* root() {
   yield all([
     ...drizzleSagas.map(saga => fork(saga)),
     watchLoadBalance(),
     watchLoadRate(),
     watchLoadHistoricalRates(),
+    watchLoadTasks(),
   ]);
 }

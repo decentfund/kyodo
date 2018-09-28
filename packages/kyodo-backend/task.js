@@ -1,15 +1,30 @@
-const { generateIpfsHash, getTaskSpecification } = require("./ipfs.js");
-const { getColonyInstanceFromId } = require("./colony");
-const { initiateNetwork } = require("./network.js");
-const { Task } = require("./db.js");
+const { generateIpfsHash, getTaskSpecification } = require('./ipfs.js');
+const { getColonyInstanceFromId } = require('./colony');
+const { initiateNetwork } = require('./network.js');
+const { Task } = require('./db.js');
 
 const getTaskFromChain = async id => {
   const networkClient = await initiateNetwork();
   const colonyClient = await getColonyInstanceFromId(76);
   const task = await colonyClient.getTask.call({ taskId: id });
-  console.log("TASK:     ", task);
+  console.log('TASK:     ', task);
   return task;
 };
+
+const dbCreateTask = async ({ title }) => {
+  let task = await new Task({
+    taskTitle: title,
+    dateCreated: Date.now(),
+  });
+
+  await task.save(err => {
+    if (err) return console.error(err);
+  });
+
+  return task;
+};
+
+exports.dbCreateTask = dbCreateTask;
 
 exports.createTask = async (req, res) => {
   let networkClient = await initiateNetwork();
@@ -28,7 +43,7 @@ exports.createTask = async (req, res) => {
     dateCreated: Date.now(),
     dueDate: new Date(req.body.dueDate),
     potId: newTask.potId,
-    domainId: newTask.potId
+    domainId: newTask.potId,
     // id: newTask.id,
     // skillId: newTask.skillId
   });
@@ -42,6 +57,10 @@ exports.createTask = async (req, res) => {
 
 exports.getTaskById = async (req, res) => {
   await Task.find({ id: req.body.address });
+};
+
+exports.getTaskByTitle = async title => {
+  return await Task.findOne({ taskTitle: title });
 };
 
 exports.modifyTask = (req, res) => {

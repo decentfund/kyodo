@@ -17,6 +17,11 @@ contract KyodoDAO is Ownable {
     bool whitelisted;
   }
 
+  struct Domain {
+    string code;
+    uint id;
+  }
+
   string[] public usedAliases;
   mapping(address => Member) public whitelist;
   address[] whitelistedAddresses;
@@ -30,9 +35,11 @@ contract KyodoDAO is Ownable {
   uint[] public distribution;
 
   uint[] periods;
+  Domain[] domains;
 
   event NewPeriodStart(uint _periodId);
   event NewAliasSet(address _address, string _alias);
+  event NewDomainAdded(string _code, uint _id);
 
   constructor(address _token) public {
     KyodoToken = Token(_token);
@@ -201,4 +208,48 @@ contract KyodoDAO is Ownable {
     whitelist[_beneficiary].whitelisted = false;
   }
 
+  /**
+   * @dev Add domain to colony and store in kyodo contract.
+   * @param _code Domain code to store
+   */
+  function addDomain(string _code) external onlyOwner {
+    IColony(Colony).addDomain(1);
+
+    uint domainId = domains.length.add(1);
+    Domain memory domain = Domain(_code, domainId);
+    domains.push(domain);
+
+    emit NewDomainAdded(_code, domainId);
+  }
+
+  /**
+   * @dev Get added domains length.
+   */
+  function getDomainsLength() public view returns (uint) {
+    return domains.length;
+  }
+
+  /**
+   * @dev Get domain details by its index.
+   * @param _index Domain index to retrieve
+   */
+  function getDomain(uint _index) public view returns (string, uint) {
+    return (domains[_index].code, domains[_index].id);
+  }
+
+  // function getDomains()
+    // public
+    // returns (string[], uint[])
+  // {
+    // string[] memory codes = new string[](domains.length);
+    // uint[] memory ids = new uint[](domains.length);
+    
+    // for (uint i = 0; i < domains.length; i++) {
+      // Domain storage domain = domains[i];
+      // codes[i] = domain.code;
+      // ids[i] = domain.id;
+    // }
+    
+    // return (codes, ids);
+  // }
 }

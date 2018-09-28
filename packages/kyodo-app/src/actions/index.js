@@ -19,3 +19,9 @@ export function loadMultiSigBalance() {
     type: types.LOAD_MULTISIG_BALANCE_REQUEST,
   };
 }
+
+export function loadPeriodTasks() {
+  return {
+    type: types.LOAD_PERIOD_TASKS_REQUEST,
+  };
+}
