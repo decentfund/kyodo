@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { sendNewTip } from './tip';
-import { User, Task, Domain, Tip } from './db';
+import { User, Task, Domain, Tip, Colony } from './db';
 import user from './user';
 jest.mock('./user');
 
@@ -12,6 +12,9 @@ describe('insert', () => {
 
     const govDomain = new Domain({ domainTitle: 'GOV' });
     await govDomain.save();
+
+    const colony = new Colony();
+    await colony.save();
   });
 
   afterAll(async () => {
@@ -19,6 +22,17 @@ describe('insert', () => {
   });
 
   describe('send new tip', () => {
+    const knownUser = {
+      alias: 'igor',
+      address: '0x0',
+    };
+    const unknownUser = {
+      alias: 'alina',
+    };
+
+    const existingUserMock = new User(knownUser);
+    const newUserMock = new User(unknownUser);
+
     it('fails with empty object', async () => {
       try {
         await sendNewTip();
@@ -42,38 +56,31 @@ describe('insert', () => {
     });
     it('adds new receiver if not found', async () => {
       // const files = db.collection('domains');
-      const senderAddress = '0x0';
-      const receiverAddress = '0xabc';
-      const userBalance = 10;
-      const senderUser = new User({ address: senderAddress });
-      const newUser = new User({ address: receiverAddress });
-
+      const senderBalance = 10;
+      const sender = existingUserMock;
       user.dbGetUserByAlias.mockImplementation(
-        address => (address === senderAddress ? senderUser : null),
+        address => (address === sender.address ? sender : null),
       );
 
-      const addUser = jest.fn(() => newUser);
+      const addUser = jest.fn(() => newUserMock);
       user.dbAddUser.mockImplementation(addUser);
 
-      user.getUserBalance.mockResolvedValue(userBalance);
+      user.getUserBalance.mockResolvedValue(senderBalance);
 
       await sendNewTip({
         sender: '0x0',
         amount: 5,
-        receiver: receiverAddress,
+        receiver: newUserMock.alias,
         domain: 'GOV',
       });
       expect(addUser.mock.calls.length).toBe(1);
     });
     it('throws if sender balance is less than tip amount', async () => {
-      const senderAddress = '0x0';
-      const receiverAddress = '0xabc';
       const userBalance = 1;
-      const senderUser = new User({ address: senderAddress });
-      const newUser = new User({ address: receiverAddress });
-
+      const sender = existingUserMock;
+      const receiver = newUserMock;
       user.dbGetUserByAlias.mockImplementation(
-        address => (address === senderAddress ? senderUser : newUser),
+        address => (address === sender.address ? sender : receiver),
       );
 
       user.getUserBalance.mockResolvedValue(userBalance);
@@ -82,30 +89,28 @@ describe('insert', () => {
         await sendNewTip({
           sender: '0x0',
           amount: 5,
-          receiver: receiverAddress,
+          receiver: receiver.alias,
         });
       } catch (e) {
         expect(e.message).toMatch('No money no honey, sorry');
       }
     });
     it('create new task if not present and tips successfully', async () => {
-      const senderAddress = '0x0';
-      const receiverAddress = '0xabc';
       const userBalance = 10;
-      const senderUser = new User({ address: senderAddress });
-      const newUser = new User({ address: receiverAddress });
       const taskTitle = 'non existing task';
+      const sender = existingUserMock;
+      const receiver = newUserMock;
 
       user.dbGetUserByAlias.mockImplementation(
-        address => (address === senderAddress ? senderUser : newUser),
+        address => (address === sender.address ? sender : receiver),
       );
 
       user.getUserBalance.mockResolvedValue(userBalance);
 
-      await sendNewTip({
+      const resp = await sendNewTip({
         sender: '0x0',
         amount: 5,
-        receiver: receiverAddress,
+        receiver: receiver.alias,
         title: taskTitle,
         domain: 'GOV',
       });
@@ -114,6 +119,8 @@ describe('insert', () => {
       expect(savedTask.length).toEqual(1);
       const savedTip = await Tip.find({ task: savedTask });
       expect(savedTip.length).toEqual(1);
+
+      expect(resp.to.address).toEqual(undefined);
     });
   });
 });

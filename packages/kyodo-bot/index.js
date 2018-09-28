@@ -17,7 +17,7 @@ const { initDb } = require('@kyodo/backend/db');
 // If modifying these scopes, delete credentials.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const TOKEN_PATH = 'credentials.json';
-const { getUserBalance } = require('@kyodo/backend/user');
+const { getUserBalance, updateUserAddress } = require('@kyodo/backend/user');
 const { sendNewTip } = require('@kyodo/backend/tip');
 
 // Load client secrets from a local file.
@@ -125,6 +125,8 @@ function authenticated(auth) {
             handleTask(event, room, client, auth);
           } else if (command == '!balance') {
             handleBalance(event, room, client, auth);
+          } else if (command == '!address') {
+            handleAddress(event, room, client, auth);
           } else if (command == '!sheet') {
             client.sendTextMessage(
               roomId,
@@ -344,6 +346,27 @@ async function handleBalance(event, room, client, auth) {
   }
 }
 
+async function handleAddress(event, room, client, auth) {
+  const sender = event.getSender();
+  const message = event.getContent().body;
+  const roomId = await getOrCreatePrivateRoom(client, event);
+
+  try {
+    const splitMsg = message.toLowerCase().split(' ');
+    const address = splitMsg[1];
+    const user = await updateUserAddress({
+      alias: cutUserAlias(sender),
+      address,
+    });
+    client.sendTextMessage(
+      roomId,
+      `I have successfully updated your address to ${user.address}`,
+    );
+  } catch (e) {
+    client.sendTextMessage(roomId, e.message);
+  }
+}
+
 async function handleDish(event, room, client, auth) {
   const sender = event.getSender();
   const message = event.getContent().body;
@@ -450,6 +473,13 @@ either add this user to the room, or try again using the format @[userId]:[domai
         domain: type,
         title,
       });
+
+      if (tip.to.address === undefined) {
+        const message =
+          "You've been tipped, but we don't know your address. Please carefully provide it here using following syntax: `!address <your address>`";
+
+        client.sendTextMessage(roomId, message);
+      }
 
       client.sendTextMessage(
         room.roomId,
