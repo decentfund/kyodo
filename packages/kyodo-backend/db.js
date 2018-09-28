@@ -87,8 +87,16 @@ const getColonyById = async colonyId => {
 };
 
 const getCurrentUserPeriod = async (alias, periodId) => {
-  const { address } = await User.findOne({ alias });
-  return await Period.findOne({ address, periodId });
+  const user = await User.findOne({ alias });
+  const period = await Period.findOne({ address: user.address, periodId });
+  const sentTips = await Tip.find({ from: user, periodId });
+  const usedPoints = sentTips.reduce((sum, v) => sum + v.amount, 0);
+
+  return {
+    ...period,
+    initialBalance: period.balance,
+    balance: period.balance - usedPoints,
+  };
 };
 
 const getDomainByCode = async code => {

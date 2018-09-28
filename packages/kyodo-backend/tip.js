@@ -1,4 +1,4 @@
-const { Tip, getDomainByCode } = require('./db.js');
+const { Tip, getDomainByCode, Colony, getColonyById } = require('./db.js');
 const {
   changeUserBalance,
   currentPeriod,
@@ -64,6 +64,9 @@ exports.sendNewTip = async ({
   title,
   receiver,
 } = {}) => {
+  const colony = await Colony.findOne();
+  const currentPeriodId = colony.periodIds[colony.periodIds.length - 1];
+
   // Verify sender is present and has enough points
   if (!sender) throw Error('No sender specified');
   if (amount <= 0) {
@@ -110,7 +113,7 @@ exports.sendNewTip = async ({
     // potId: req.body.potId,
     dateCreated: Date.now(),
     // FIXME: Get period from colony
-    periodId: currentPeriod,
+    periodId: currentPeriodId,
   });
 
   await tip.save();
@@ -118,7 +121,9 @@ exports.sendNewTip = async ({
 };
 
 exports.getAllTips = async (req, res) => {
-  let tips = await Tip.find((err, tips) => {
+  const colony = await getColonyById(0);
+  const currentPeriodId = colony.periodIds[colony.periodIds.length - 1];
+  let tips = await Tip.find({ periodId: currentPeriodId }, (err, tips) => {
     if (err) return console.error(err);
   })
     .populate('task', 'taskTitle')
