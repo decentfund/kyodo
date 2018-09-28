@@ -169,6 +169,24 @@ export const getTipsToUser = createSelector(
   (tips, alias) => tips.filter(t => t.to === alias),
 );
 
+export const getTipsFromUser = createSelector(
+  [getTips, getCurrentUserAlias],
+  (tips, alias) => tips.filter(t => t.from === alias),
+);
+
+export const getUserTips = createSelector(
+  [getTips, getCurrentUserAlias],
+  (tips, alias) => tips.filter(t => t.to === alias || t.from === alias),
+);
+
+export const getTotalUserTips = createSelector(
+  [getTipsToUser, getTipsFromUser],
+  (toUser, fromUser) => ({
+    toUser: toUser.reduce((a, t) => a + t.amount, 0),
+    byUser: fromUser.reduce((a, t) => a + t.amount, 0),
+  }),
+);
+
 export const getTipsByDomain = createSelector(getTipsToUser, tips => {
   return tips.reduce(
     (a, { domain, amount }) => {

@@ -13,6 +13,7 @@ const WrapperCurrentPeriodStatus = styled.div`
   display: flex;
   flex-direction: column;
   padding-top: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 `;
 const StyledTop = styled.div`
   display: flex;
