@@ -51,9 +51,14 @@ class AddRiotID extends Component {
   constructor(props, context) {
     super(props, context);
     this.contracts = context.drizzle.contracts;
-    this.dataKey = this.contracts.KyodoDAO.methods.getAlias.cacheCall(
+  }
+
+  componentDidMount() {
+    const dataKey = this.contracts.KyodoDAO.methods.getAlias.cacheCall(
       this.props.account,
     );
+
+    this.setState({ dataKey });
   }
 
   state = {
@@ -70,10 +75,12 @@ class AddRiotID extends Component {
 
   render() {
     // TODO: Loading
-    if (!this.dataKey || !this.props.KyodoDAO.getAlias[this.dataKey])
-      return null;
+    if (!this.state.dataKey) return null;
 
-    const alias = this.props.KyodoDAO.getAlias[this.dataKey].value;
+    const alias =
+      this.props.KyodoDAO &&
+      this.props.KyodoDAO.getAlias[this.state.dataKey] &&
+      this.props.KyodoDAO.getAlias[this.state.dataKey].value;
 
     const { account: address } = this.props;
     return (

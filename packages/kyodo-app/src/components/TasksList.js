@@ -2,11 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
-import Input from './Input';
-import WhitelistedAddress from './WhitelistedAddress';
-import FormButton from './FormButton';
-import MembersHeaderIcons from './MembersHeaderIcons';
-import { isValidAddress } from '../helpers';
 import { loadPeriodTasks } from '../actions';
 
 const StyledHeader = styled.div`
