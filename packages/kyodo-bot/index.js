@@ -420,7 +420,7 @@ either add this user to the room, or try again using the format @[userId]:[domai
       throw userError;
     }
 
-    const taskId = message.toLowerCase().split('for')[1];
+    const title = message.toLowerCase().split('for')[1];
     // const reason = 'For' + message.toLowerCase().split('for')[1];
     const date = dayjs().format('DD-MMM-YYYY');
     const link = `https://riot.im/app/#/room/${room.roomId}/${event.getId()}`;
@@ -448,6 +448,7 @@ either add this user to the room, or try again using the format @[userId]:[domai
         receiver: cutUserAlias(receiver),
         amount,
         domain: type,
+        title,
       });
 
       client.sendTextMessage(
