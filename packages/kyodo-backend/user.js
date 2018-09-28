@@ -1,3 +1,4 @@
+const web3 = require('web3');
 const { User, getColonyById, getCurrentUserPeriod } = require('./db.js');
 
 const dbAddUser = async ({ address, alias, balance, domains, tasks }) => {
@@ -56,9 +57,11 @@ exports.getUserByAlias = async (req, res) => {
   await User.find({ alias: req.body.alias });
 };
 
-exports.dbGetUserByAlias = async alias => {
+const dbGetUserByAlias = async alias => {
   return await User.findOne({ alias });
 };
+
+exports.dbGetUserByAlias = dbGetUserByAlias;
 
 exports.getUserBalance = async alias => {
   const colony = await getColonyById(0);
@@ -90,3 +93,18 @@ exports.changeUserAlias = async (req, res) => {
   // TODO:
   // this.getUserByAlias(req.body.alias);
 };
+
+const updateUserAddress = async ({ alias, address }) => {
+  if (!web3.utils.isAddress(address))
+    throw Error('Address is incorrect, try again');
+  const user = await dbGetUserByAlias(alias);
+  if (!user) throw Error('Get some tips to get started');
+  if (user.address)
+    throw Error('Address is already set, I cannot change it by now');
+
+  user.address = address;
+  await user.save();
+  return user;
+};
+
+exports.updateUserAddress = updateUserAddress;
