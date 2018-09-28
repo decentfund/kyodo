@@ -7,6 +7,7 @@ import { createSelector } from 'reselect';
 import get from 'lodash/get';
 import rates, * as fromRates from './rates';
 import balances from './balances';
+import users from './users';
 import tips from './tips';
 import historical, * as fromHistorical from './historical';
 import { BASE_CURRENCY } from '../constants';
@@ -154,12 +155,43 @@ export const getHistoricalTokenPrice = createSelector(
   },
 );
 
+export const getCurrentUserAddress = state => state.accounts[0];
+export const getUserAliases = state => state.users.aliases;
+
+export const getCurrentUserAlias = createSelector(
+  [getCurrentUserAddress, getUserAliases],
+  (address, aliases) => aliases[address],
+);
+export const getTips = state => state.tips;
+
+export const getTipsToUser = createSelector(
+  [getTips, getCurrentUserAlias],
+  (tips, alias) => tips.filter(t => t.to === alias),
+);
+
+export const getTipsByDomain = createSelector(getTipsToUser, tips => {
+  return tips.reduce(
+    (a, { domain, amount }) => {
+      if (a[domain]) {
+        a[domain] = a[domain] + amount;
+      } else {
+        a[domain] = amount;
+      }
+
+      a.total += amount;
+      return a;
+    },
+    { total: 0 },
+  );
+});
+
 const reducer = combineReducers({
   routing: routerReducer,
   rates,
   balances,
   historical,
   tips,
+  users,
   ...drizzleReducers,
 });
 
