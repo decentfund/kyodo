@@ -6,7 +6,6 @@ import pointsIcon from './points_icon.svg';
 import { getTipsByDomain } from '../reducers';
 
 const StyledContainer = styled.div`
-  border-top: 1px solid rgba(0, 0, 0, 0.15);
   padding-top: 9px;
   font-size: 16px;
   margin-bottom: 40px;

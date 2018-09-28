@@ -16,6 +16,7 @@ import CurrentPeriodStatus from './components/CurrentPeriodStatus';
 import TotalSupplyChange from './components/TotalSupplyChange';
 import Earnings from './components/Earnings';
 import TasksList from './components/TasksList';
+import PeriodPointsDistribution from './components/PeriodPointsDistribution';
 import {
   getContract,
   getOwner,
@@ -184,6 +185,7 @@ class App extends Component {
           ) : null}
           <Earnings />
           <TasksList />
+          <PeriodPointsDistribution />
           {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
             <AddRiotID account={userAddress} />
           ) : null}
