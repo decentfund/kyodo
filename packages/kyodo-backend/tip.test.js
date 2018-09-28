@@ -112,7 +112,7 @@ describe('insert', () => {
 
       const savedTask = await Task.find({ taskTitle });
       expect(savedTask.length).toEqual(1);
-      const savedTip = await Tip.find({ taskId: savedTask });
+      const savedTip = await Tip.find({ task: savedTask });
       expect(savedTip.length).toEqual(1);
     });
   });

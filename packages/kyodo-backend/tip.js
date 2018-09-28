@@ -60,7 +60,7 @@ exports.sendTip = async (req, res) => {
 exports.sendNewTip = async ({
   sender,
   amount = 0,
-  domain,
+  domain: code,
   title,
   receiver,
 } = {}) => {
@@ -91,7 +91,7 @@ exports.sendNewTip = async ({
 
   // Getting domain
   // TODO: Throw error if domain is not found
-  const domainId = await getDomainByCode(domain);
+  const domain = await getDomainByCode(code);
 
   // TODO: Try to find task
   // FIXME: Find task in period
@@ -105,8 +105,8 @@ exports.sendNewTip = async ({
     from: senderUser,
     to: receiverUser,
     amount,
-    taskId: task,
-    domainId,
+    task,
+    domain,
     // potId: req.body.potId,
     dateCreated: Date.now(),
     // FIXME: Get period from colony
