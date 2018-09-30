@@ -1,7 +1,8 @@
 import MetamaskLogo from './metamask-logo-color.svg';
+import styled from 'styled-components';
 import { FramedLink } from '../styles/common';
 
-const UserAlias = FramedLink.extend`
+const UserAlias = styled(FramedLink)`
   cursor: pointer;
   height: 34px;
   max-width: 240px;
