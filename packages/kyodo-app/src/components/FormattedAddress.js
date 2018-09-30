@@ -19,8 +19,8 @@ const GrayTextSpan = styled.span`
   color: ${GRAY};
 `;
 
-const FormattedAddress = ({ children: value = '' }) => (
-  <StyledAddress>
+const FormattedAddress = ({ children: value = '', className }) => (
+  <StyledAddress className={className}>
     {value.slice(0, 6)}
     <GrayTextSpan>{value.slice(6, -4)}</GrayTextSpan>
     {value.slice(-4)}

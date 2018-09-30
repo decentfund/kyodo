@@ -11,6 +11,7 @@ import Logo from './logo.svg';
 import UserAlias from './UserAlias';
 import Subnav from './Subnav';
 import PeriodProgress from './PeriodProgress';
+import FormattedAddress from './FormattedAddress';
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -22,6 +23,7 @@ const StyledWrapper = styled.div`
 const StyledColonyName = styled.div`
   font-size: 20px;
   font-weight: bold;
+  text-transform: uppercase;
 `;
 
 const StyledMenuContainer = styled.div`
@@ -32,13 +34,13 @@ const StyledMenuContainer = styled.div`
   font-style: normal;
   line-height: normal;
   font-size: 20px;
-  text-transform: uppercase;
   margin-left: 18px;
   line-height: 33px;
 `;
 
 const StyledMenu = styled(Menu)`
   margin-left: 26px;
+  text-transform: uppercase;
 `;
 
 const StyledPeriodContainer = styled.div`
@@ -55,6 +57,10 @@ const StyledUserAlias = styled(UserAlias)`
   position: absolute;
 `;
 
+const StyledFormattedAddress = styled(FormattedAddress)`
+  display: inline;
+`;
+
 class Header extends Component {
   state = {};
 
@@ -66,8 +72,15 @@ class Header extends Component {
   componentDidMount() {
     const currentPeriodStartTimeKey = this.contracts.KyodoDAO.methods.currentPeriodStartTime.cacheCall();
     const periodDaysLengthKey = this.contracts.KyodoDAO.methods.periodDaysLength.cacheCall();
+    const userAliasKey = this.contracts.KyodoDAO.methods.getAlias.cacheCall(
+      this.props.userAddress,
+    );
 
-    this.setState({ currentPeriodStartTimeKey, periodDaysLengthKey });
+    this.setState({
+      currentPeriodStartTimeKey,
+      periodDaysLengthKey,
+      userAliasKey,
+    });
   }
 
   render() {
@@ -77,7 +90,9 @@ class Header extends Component {
         this.state.currentPeriodStartTimeKey
       ] ||
       !this.state.periodDaysLengthKey ||
-      !this.props.KyodoDAO.periodDaysLength[this.state.periodDaysLengthKey]
+      !this.props.KyodoDAO.periodDaysLength[this.state.periodDaysLengthKey] ||
+      !this.state.userAliasKey ||
+      !this.props.KyodoDAO.getAlias[this.state.userAliasKey]
     )
       return null;
 
@@ -89,6 +104,8 @@ class Header extends Component {
       this.state.periodDaysLengthKey
     ].value;
 
+    const alias = this.props.KyodoDAO.getAlias[this.state.userAliasKey].value;
+
     const { colonyName, userAddress } = this.props;
     return (
       <div>
@@ -97,7 +114,13 @@ class Header extends Component {
           <StyledMenuContainer>
             <StyledColonyName href="/">{colonyName}</StyledColonyName>
             <StyledMenu />
-            <StyledUserAlias to="/user">{userAddress}</StyledUserAlias>
+            <StyledUserAlias to="/user">
+              {alias ? (
+                alias
+              ) : (
+                <StyledFormattedAddress>{userAddress}</StyledFormattedAddress>
+              )}
+            </StyledUserAlias>
           </StyledMenuContainer>
         </StyledWrapper>
         <Route
