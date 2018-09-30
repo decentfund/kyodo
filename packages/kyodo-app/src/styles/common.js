@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 const FramedDiv = styled.div`
   background: #ffffff;
@@ -22,6 +23,6 @@ const FramedDiv = styled.div`
   text-overflow: ellipsis;
 `;
 
-const FramedLink = FramedDiv.withComponent('a');
+const FramedLink = FramedDiv.withComponent(Link);
 
 export { FramedDiv, FramedLink };

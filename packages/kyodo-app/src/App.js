@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import moment from 'moment';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled, { injectGlobal } from 'styled-components';
@@ -10,7 +10,6 @@ import Members from './components/Members';
 import MultisigBalance from './components/MultisigBalance';
 import MintTokens from './components/MintTokens';
 import UserBalance from './components/UserBalance';
-import PeriodProgress from './components/PeriodProgress';
 import FundStatistics from './components/FundStatistics';
 import CurrentPeriodStatus from './components/CurrentPeriodStatus';
 import TotalSupplyChange from './components/TotalSupplyChange';
@@ -161,45 +160,66 @@ class App extends Component {
       this.props.Token.symbol[this.state.tokenSymbolKey].value;
 
     return (
-      <div className="App">
-        <Header userAddress={userAddress} />
-        <StyledMainInfoContainer>
-          <PeriodProgress
-            startTime={moment.unix(currentPeriodStartTime)}
-            endTime={moment
-              .unix(currentPeriodStartTime)
-              .add(periodDaysLength, 'days')}
-          />
-          <div style={{ marginBottom: 50 }}>
-            <FundStatistics />
-            <UserBalance contractName="Token" account={userAddress} />
-            {prevBlock ? <TotalSupplyChange prevBlock={prevBlock} /> : null}
-          </div>
-          <br />
-          {prevBlock && colonyAddress ? (
-            <CurrentPeriodStatus
-              tokenSymbol={tokenSymbol}
-              prevBlock={prevBlock}
-              colonyAddress={colonyAddress}
+      <Router>
+        <div className="App">
+          <Header userAddress={userAddress} />
+          <StyledMainInfoContainer>
+            <Route
+              exact
+              path="/"
+              render={props => (
+                <div style={{ marginBottom: 50 }}>
+                  <FundStatistics />
+                  <UserBalance contractName="Token" account={userAddress} />
+                  {prevBlock ? (
+                    <TotalSupplyChange prevBlock={prevBlock} />
+                  ) : null}
+                </div>
+              )}
             />
-          ) : null}
-          <Earnings />
-          <TasksList />
-          <PeriodPointsDistribution />
-          {whitelistedAddresses.indexOf(userAddress) >= 0 ? (
-            <AddRiotID account={userAddress} />
-          ) : null}
-          {whitelistedAddresses.length > 0 || owner === userAddress ? (
-            <Members
-              canAdd={owner === userAddress}
-              address={address}
-              whitelistedAddresses={whitelistedAddresses}
+            <Route
+              path="/stats/tips"
+              render={props => (
+                <div style={{ marginBottom: 50 }}>
+                  <CurrentPeriodStatus
+                    tokenSymbol={tokenSymbol}
+                    prevBlock={prevBlock}
+                    colonyAddress={colonyAddress}
+                  />
+                  <Earnings />
+                  <TasksList />
+                </div>
+              )}
             />
-          ) : null}
-          {owner === userAddress ? <MintTokens /> : null}
-          <MultisigBalance />
-        </StyledMainInfoContainer>
-      </div>
+            <Route
+              path="/points"
+              render={props => <PeriodPointsDistribution />}
+            />
+            <Route
+              path="/user"
+              render={props =>
+                whitelistedAddresses.indexOf(userAddress) >= 0 ? (
+                  <AddRiotID account={userAddress} />
+                ) : null
+              }
+            />
+            <Route
+              path="/members"
+              render={props =>
+                whitelistedAddresses.length > 0 || owner === userAddress ? (
+                  <Members
+                    canAdd={owner === userAddress}
+                    address={address}
+                    whitelistedAddresses={whitelistedAddresses}
+                  />
+                ) : null
+              }
+            />
+            {owner === userAddress ? <MintTokens /> : null}
+            <Route exact path="/" render={props => <MultisigBalance />} />
+          </StyledMainInfoContainer>
+        </div>
+      </Router>
     );
   }
 }
