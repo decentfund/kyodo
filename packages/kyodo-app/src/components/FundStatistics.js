@@ -29,7 +29,7 @@ const FundStatistics = ({ balance, balanceEur, totalSupply }) => (
       <FormattedEur>{balanceEur / totalSupply}</FormattedEur>
     </StatisticsLabel>
     <StatisticsLabel label="FUND">
-      <ContractData contract="KyodoDAO" method="getMembersCount" /> members
+      <ContractData contract="Members" method="getMembersCount" /> members
     </StatisticsLabel>
   </FundStatisticsContainer>
 );

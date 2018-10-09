@@ -1,32 +1,42 @@
 var KyodoDAO = artifacts.require('./KyodoDAO.sol');
+var Registry = artifacts.require('./Registry.sol');
 var getColonyClient = require('./getColonyClient');
+var getKyodoInstance = require('./getKyodoInstance');
 var deployParameters = require('./deploy_parameters.json');
 
 module.exports = (deployer, network, accounts) => {
   deployer.then(async () => {
-    const Kyodo = KyodoDAO.at(KyodoDAO.address);
+    const kyodoInstance = await getKyodoInstance('1.0', Registry, KyodoDAO);
 
     const { domains } = deployParameters;
 
     // Get colony client
     const colonyNetworkClient = getColonyClient(network, accounts);
-    const colonyAddress = await Kyodo.Colony.call();
+    const colonyAddress = await kyodoInstance.colony();
     const colonyClient = await colonyNetworkClient.getColonyClientByAddress(
       colonyAddress,
     );
 
-    await colonyClient.setOwnerRole.send({ user: KyodoDAO.address });
+    const domainsAddress = await kyodoInstance.domains();
+
+    await colonyClient.setAdminRole.send({
+      user: domainsAddress,
+    });
+
+    await colonyClient.setOwnerRole.send({
+      user: kyodoInstance.address,
+    });
 
     // Generating necessary amount of domains and writing initial distribution
     const domainsCount = domains.length;
     for (var i = 0; i < domainsCount; i++) {
-      await Kyodo.addDomain(domains[i].code);
+      await kyodoInstance.addDomain(domains[i].code);
     }
 
     // Starting new period
-    await Kyodo.startNewPeriod();
+    await kyodoInstance.startNewPeriod();
 
     // Setting period lenght to 30 days
-    await Kyodo.setPeriodDaysLength(30);
+    await kyodoInstance.setPeriodDaysLength(30);
   });
 };

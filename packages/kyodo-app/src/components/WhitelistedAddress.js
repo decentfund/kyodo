@@ -51,9 +51,9 @@ class WhitelistedAddress extends Component {
     this.contracts = context.drizzle.contracts;
   }
   componentDidMount() {
-    const { KyodoDAO, Token } = this.contracts;
+    const { Members, Token } = this.contracts;
 
-    const aliasKey = KyodoDAO.methods.getAlias.cacheCall(this.props.value);
+    const aliasKey = Members.methods.getAlias.cacheCall(this.props.value);
     const balanceKey = Token.methods.balanceOf.cacheCall(this.props.value);
     const decimalsKey = Token.methods.decimals.cacheCall();
 
@@ -72,7 +72,7 @@ class WhitelistedAddress extends Component {
     let alias =
       this.state &&
       this.state.aliasKey &&
-      this.props.KyodoDAO.getAlias[this.state.aliasKey];
+      this.props.Members.getAlias[this.state.aliasKey];
     const { value, totalSupply } = this.props;
 
     const balance = formatDecimals(
@@ -101,7 +101,7 @@ const mapStateToProps = (state, { account }) => ({
   drizzleStatus: state.drizzleStatus,
   totalSupply: getTotalSupply(getContract('Token')(state)),
   Token: getContract('Token')(state),
-  KyodoDAO: getContract('KyodoDAO')(state),
+  Members: getContract('Members')(state),
 });
 
 export default drizzleConnect(WhitelistedAddress, mapStateToProps);
