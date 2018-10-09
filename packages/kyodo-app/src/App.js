@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import difference from 'lodash/difference';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled, { injectGlobal } from 'styled-components';
 // import Helloworld from './Helloworld.js';
 import Header from './components/Header';
+import KyodoDAO from '@kyodo/contracts/build/contracts/KyodoDAO.json';
 import AddRiotID from './components/AddRiotID';
 import Members from './components/Members';
 import MultisigBalance from './components/MultisigBalance';
@@ -16,14 +18,9 @@ import TotalSupplyChange from './components/TotalSupplyChange';
 import Earnings from './components/Earnings';
 import TasksList from './components/TasksList';
 import PeriodPointsDistribution from './components/PeriodPointsDistribution';
-import {
-  getContract,
-  getOwner,
-  getWhitelistedAddresses,
-  getCurrentPeriodStartTime,
-  getPeriodDaysLength,
-} from './reducers';
+import { getContract, getOwner, getWhitelistedAddresses } from './reducers';
 import { loadRate, loadMultiSigBalance } from './actions';
+import generateContractConfig from './helpers/contracts';
 
 injectGlobal`
 html,
@@ -69,25 +66,87 @@ class App extends Component {
     this.drizzle = context.drizzle;
   }
 
+  componentDidUpdate(lastProps) {
+    if (
+      this.props.Registry.events !== lastProps.Registry.events &&
+      this.props.Registry.events.length > 0
+    ) {
+      const proxyAddress = this.props.Registry.events[0].returnValues[1];
+      const contractConfig = {
+        contractName: 'KyodoDAO',
+        web3Contract: new this.drizzle.web3.eth.Contract(
+          KyodoDAO.abi,
+          proxyAddress,
+        ),
+      };
+      this.drizzle.addContract(contractConfig, [
+        {
+          eventName: 'DomainsAddressChanged',
+          eventOptions: {
+            fromBlock: 0,
+          },
+        },
+        {
+          eventName: 'PeriodsAddressChanged',
+          eventOptions: {
+            fromBlock: 0,
+          },
+        },
+        {
+          eventName: 'MembersAddressChanged',
+          eventOptions: {
+            fromBlock: 0,
+          },
+        },
+      ]);
+    }
+    if (
+      this.props.KyodoDAO &&
+      this.props.KyodoDAO.events &&
+      this.props.KyodoDAO.events.length > 0
+    ) {
+      const newEvents = difference(
+        this.props.KyodoDAO.events,
+        lastProps.KyodoDAO.events,
+      );
+      newEvents.forEach(({ event, returnValues }) => {
+        const proxyAddress = returnValues._address;
+
+        const contractConfig = generateContractConfig({
+          event,
+          web3: this.drizzle.web3,
+          address: proxyAddress,
+        });
+
+        if (contractConfig) this.drizzle.addContract(contractConfig);
+      });
+    }
+
+    if (this.drizzle.contracts.KyodoDAO && !this.state.colonyAddressKey) {
+      this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
+
+      const colonyAddressKey = this.drizzle.contracts.KyodoDAO.methods.colony.cacheCall();
+      this.setState({
+        colonyAddressKey,
+      });
+    }
+
+    if (this.drizzle.contracts.Periods && !this.state.prevBlockKey) {
+      const prevBlockKey = this.drizzle.contracts.Periods.methods.currentPeriodStartBlock.cacheCall();
+      this.setState({
+        prevBlockKey,
+      });
+    }
+
+    if (this.drizzle.contracts.Members) {
+      this.drizzle.contracts.Members.methods.getWhitelistedAddresses.cacheCall();
+    }
+  }
+
   componentDidMount() {
-    // FIXME: move load rate to loadMultisigBalance saga
+    // // FIXME: move load rate to loadMultisigBalance saga
     this.props.loadRate(['ETH', ...Object.keys(process.env.BALANCE)]);
     this.props.loadMultiSigBalance();
-    this.drizzle.contracts.KyodoDAO.methods.owner.cacheCall();
-
-    this.drizzle.contracts.KyodoDAO.methods.getWhitelistedAddresses.cacheCall();
-    this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartTime.cacheCall();
-    this.drizzle.contracts.KyodoDAO.methods.periodDaysLength.cacheCall();
-
-    const prevBlockKey = this.drizzle.contracts.KyodoDAO.methods.currentPeriodStartBlock.cacheCall();
-    const tokenSymbolKey = this.drizzle.contracts.Token.methods.symbol.cacheCall();
-    const colonyAddressKey = this.drizzle.contracts.KyodoDAO.methods.Colony.cacheCall();
-
-    this.setState({
-      prevBlockKey,
-      tokenSymbolKey,
-      colonyAddressKey,
-    });
   }
 
   addToWhitelist = () => {
@@ -125,31 +184,26 @@ class App extends Component {
 
   render() {
     const { address } = this.state;
-    const {
-      userAddress,
-      owner,
-      whitelistedAddresses,
-      currentPeriodStartTime,
-      periodDaysLength,
-    } = this.props;
+    const { userAddress, owner, whitelistedAddresses } = this.props;
     let prevBlock, colonyAddress;
 
     if (
       this.state.prevBlockKey &&
-      this.props.KyodoDAO.currentPeriodStartBlock[this.state.prevBlockKey]
+      this.props.Periods &&
+      this.props.Periods.currentPeriodStartBlock[this.state.prevBlockKey]
     ) {
       prevBlock =
         parseInt(
-          this.props.KyodoDAO.currentPeriodStartBlock[this.state.prevBlockKey]
+          this.props.Periods.currentPeriodStartBlock[this.state.prevBlockKey]
             .value,
         ) - 1;
     }
 
     if (
       this.state.colonyAddressKey &&
-      this.props.KyodoDAO.Colony[this.state.colonyAddressKey]
+      this.props.KyodoDAO.colony[this.state.colonyAddressKey]
     ) {
-      colonyAddress = this.props.KyodoDAO.Colony[this.state.colonyAddressKey]
+      colonyAddress = this.props.KyodoDAO.colony[this.state.colonyAddressKey]
         .value;
     }
 
@@ -158,6 +212,9 @@ class App extends Component {
       this.props.Token &&
       this.props.Token.symbol[this.state.tokenSymbolKey] &&
       this.props.Token.symbol[this.state.tokenSymbolKey].value;
+
+    if (!this.drizzle.contracts.Periods || !this.drizzle.contracts.Members)
+      return <div />;
 
     return (
       <Router>
@@ -181,11 +238,13 @@ class App extends Component {
               path="/stats/tips"
               render={props => (
                 <div style={{ marginBottom: 50 }}>
-                  <CurrentPeriodStatus
-                    tokenSymbol={tokenSymbol}
-                    prevBlock={prevBlock}
-                    colonyAddress={colonyAddress}
-                  />
+                  {colonyAddress ? (
+                    <CurrentPeriodStatus
+                      tokenSymbol={tokenSymbol}
+                      prevBlock={prevBlock}
+                      colonyAddress={colonyAddress}
+                    />
+                  ) : null}
                   <Earnings />
                   <TasksList />
                 </div>
@@ -227,14 +286,13 @@ class App extends Component {
 const mapStateToProps = state => ({
   userAddress: state.accounts[0],
   KyodoDAO: getContract('KyodoDAO')(state),
+  Registry: getContract('Registry')(state),
   Token: getContract('Token')(state),
+  Periods: getContract('Periods')(state),
+  Members: getContract('Members')(state),
   drizzleStatus: state.drizzleStatus,
   owner: getOwner(getContract('KyodoDAO')(state)),
-  whitelistedAddresses: getWhitelistedAddresses(getContract('KyodoDAO')(state)),
-  currentPeriodStartTime: getCurrentPeriodStartTime(
-    getContract('KyodoDAO')(state),
-  ),
-  periodDaysLength: getPeriodDaysLength(getContract('KyodoDAO')(state)),
+  whitelistedAddresses: getWhitelistedAddresses(getContract('Members')(state)),
 });
 
 App.contextTypes = {

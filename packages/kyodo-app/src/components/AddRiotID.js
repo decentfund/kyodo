@@ -54,7 +54,7 @@ class AddRiotID extends Component {
   }
 
   componentDidMount() {
-    const dataKey = this.contracts.KyodoDAO.methods.getAlias.cacheCall(
+    const dataKey = this.contracts.Members.methods.getAlias.cacheCall(
       this.props.account,
     );
 
@@ -70,7 +70,9 @@ class AddRiotID extends Component {
   };
 
   onSubmit = () => {
-    this.contracts.KyodoDAO.methods.setAlias.cacheSend(this.state.alias);
+    this.contracts.Members.methods.setAlias.cacheSend(this.state.alias, {
+      from: this.props.userAddress,
+    });
   };
 
   render() {
@@ -78,9 +80,9 @@ class AddRiotID extends Component {
     if (!this.state.dataKey) return null;
 
     const alias =
-      this.props.KyodoDAO &&
-      this.props.KyodoDAO.getAlias[this.state.dataKey] &&
-      this.props.KyodoDAO.getAlias[this.state.dataKey].value;
+      this.props.Members &&
+      this.props.Members.getAlias[this.state.dataKey] &&
+      this.props.Members.getAlias[this.state.dataKey].value;
 
     const { account: address } = this.props;
     return (
@@ -115,7 +117,8 @@ AddRiotID.contextTypes = {
 };
 
 const mapStateToProps = (state, { account }) => ({
-  KyodoDAO: getContract('KyodoDAO')(state),
+  Members: getContract('Members')(state),
+  userAddress: state.accounts[0],
 });
 
 export default drizzleConnect(AddRiotID, mapStateToProps);

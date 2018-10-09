@@ -1,10 +1,12 @@
-var KyodoDAO = artifacts.require('./KyodoDAO.sol');
 var Token = artifacts.require('./Token.sol');
+var KyodoDAO = artifacts.require('./KyodoDAO.sol');
+var Registry = artifacts.require('./Registry.sol');
 var getColonyClient = require('./getColonyClient');
+var getKyodoInstance = require('./getKyodoInstance');
 
 module.exports = (deployer, network, accounts) => {
   deployer.then(async () => {
-    const kyodoInstance = KyodoDAO.at(KyodoDAO.address);
+    const kyodoInstance = await getKyodoInstance('1.0', Registry, KyodoDAO);
 
     const colonyNetworkClient = getColonyClient(network, accounts);
     await colonyNetworkClient.init();

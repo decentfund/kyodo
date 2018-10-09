@@ -53,13 +53,13 @@ class CurrentPeriodStatus extends Component {
   }
 
   componentDidMount() {
-    const { Token, KyodoDAO } = this.contracts;
+    const { Token, Periods } = this.contracts;
     const balanceKey = Token.methods.balanceOf.cacheCall(
       this.props.colonyAddress,
     );
     const decimalsKey = Token.methods.decimals.cacheCall();
-    const currentPeriodStartTimeKey = KyodoDAO.methods.currentPeriodStartTime.cacheCall();
-    const periodLengthKey = KyodoDAO.methods.periodDaysLength.cacheCall();
+    const currentPeriodStartTimeKey = Periods.methods.currentPeriodStartTime.cacheCall();
+    const periodLengthKey = Periods.methods.periodDaysLength.cacheCall();
 
     this.setState({
       balanceKey,
@@ -76,11 +76,11 @@ class CurrentPeriodStatus extends Component {
       !this.state.decimalsKey ||
       !this.props.Token.decimals[this.state.decimalsKey] ||
       !this.state.currentPeriodStartTimeKey ||
-      !this.props.KyodoDAO.currentPeriodStartTime[
+      !this.props.Periods.currentPeriodStartTime[
         this.state.currentPeriodStartTimeKey
       ] ||
       !this.state.periodLengthKey ||
-      !this.props.KyodoDAO.periodDaysLength[this.state.periodLengthKey]
+      !this.props.Periods.periodDaysLength[this.state.periodLengthKey]
     )
       return null;
 
@@ -97,13 +97,13 @@ class CurrentPeriodStatus extends Component {
     );
 
     const periodStart = moment.unix(
-      this.props.KyodoDAO.currentPeriodStartTime[
+      this.props.Periods.currentPeriodStartTime[
         this.state.currentPeriodStartTimeKey
       ].value,
     );
 
     const periodEnd = moment(periodStart).add(
-      this.props.KyodoDAO.periodDaysLength[this.state.periodLengthKey].value,
+      this.props.Periods.periodDaysLength[this.state.periodLengthKey].value,
       'days',
     );
 
@@ -140,7 +140,7 @@ CurrentPeriodStatus.defaultProps = {
 CurrentPeriodStatus.propTypes = {
   periodName: PropTypes.string,
   Token: PropTypes.object,
-  KyodoDAO: PropTypes.object,
+  Periods: PropTypes.object,
   tokenPriceEUR: PropTypes.number,
   tokenPriceETH: PropTypes.number,
 };
@@ -151,7 +151,7 @@ CurrentPeriodStatus.contextTypes = {
 
 const mapStateToProps = state => ({
   Token: getContract('Token')(state),
-  KyodoDAO: getContract('KyodoDAO')(state),
+  Periods: getContract('Periods')(state),
   tokenPriceEUR: getRate(state, 'DF', 'EUR'),
   tokenPriceETH: getRate(state, 'DF', 'ETH'),
 });

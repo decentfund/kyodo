@@ -70,9 +70,9 @@ class Header extends Component {
   }
 
   componentDidMount() {
-    const currentPeriodStartTimeKey = this.contracts.KyodoDAO.methods.currentPeriodStartTime.cacheCall();
-    const periodDaysLengthKey = this.contracts.KyodoDAO.methods.periodDaysLength.cacheCall();
-    const userAliasKey = this.contracts.KyodoDAO.methods.getAlias.cacheCall(
+    const currentPeriodStartTimeKey = this.contracts.Periods.methods.currentPeriodStartTime.cacheCall();
+    const periodDaysLengthKey = this.contracts.Periods.methods.periodDaysLength.cacheCall();
+    const userAliasKey = this.contracts.Members.methods.getAlias.cacheCall(
       this.props.userAddress,
     );
 
@@ -86,25 +86,25 @@ class Header extends Component {
   render() {
     if (
       !this.state.currentPeriodStartTimeKey ||
-      !this.props.KyodoDAO.currentPeriodStartTime[
+      !this.props.Periods.currentPeriodStartTime[
         this.state.currentPeriodStartTimeKey
       ] ||
       !this.state.periodDaysLengthKey ||
-      !this.props.KyodoDAO.periodDaysLength[this.state.periodDaysLengthKey] ||
+      !this.props.Periods.periodDaysLength[this.state.periodDaysLengthKey] ||
       !this.state.userAliasKey ||
-      !this.props.KyodoDAO.getAlias[this.state.userAliasKey]
+      !this.props.Members.getAlias[this.state.userAliasKey]
     )
       return null;
 
-    const currentPeriodStartTime = this.props.KyodoDAO.currentPeriodStartTime[
+    const currentPeriodStartTime = this.props.Periods.currentPeriodStartTime[
       this.state.currentPeriodStartTimeKey
     ].value;
 
-    const periodDaysLength = this.props.KyodoDAO.periodDaysLength[
+    const periodDaysLength = this.props.Periods.periodDaysLength[
       this.state.periodDaysLengthKey
     ].value;
 
-    const alias = this.props.KyodoDAO.getAlias[this.state.userAliasKey].value;
+    const alias = this.props.Members.getAlias[this.state.userAliasKey].value;
 
     const { colonyName, userAddress } = this.props;
     return (
@@ -161,6 +161,7 @@ Header.contextTypes = {
   drizzle: PropTypes.object,
 };
 const mapStateToProps = state => ({
-  KyodoDAO: getContract('KyodoDAO')(state),
+  Periods: getContract('Periods')(state),
+  Members: getContract('Members')(state),
 });
 export default withRouter(drizzleConnect(Header, mapStateToProps));
