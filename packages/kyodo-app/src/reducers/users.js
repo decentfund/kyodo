@@ -1,7 +1,7 @@
 export default (state = { aliases: {} }, action) => {
   switch (action.type) {
     case 'GOT_CONTRACT_VAR':
-      if (action.name === 'KyodoDAO' && action.variable === 'getAlias') {
+      if (action.name === 'Members' && action.variable === 'getAlias') {
         return {
           ...state,
           aliases: {
