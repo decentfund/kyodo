@@ -1,29 +1,62 @@
 const Web3 = require('web3');
 const { Colony, User, Domain } = require('./db.js');
 // const provider = new Web3.providers.HttpProvider('http://127.0.0.1:8545');
-const provider = new Web3.providers.WebsocketProvider('ws://localhost:8545');
+const provider = new Web3.providers.WebsocketProvider(
+  process.env.WS_PROVIDER || 'ws://localhost:8545',
+);
 const TruffleContract = require('truffle-contract');
 const KyodoDAO = require('@kyodo/contracts/build/contracts/KyodoDAO.json');
+const Registry = require('@kyodo/contracts/build/contracts/Registry.json');
+const Members = require('@kyodo/contracts/build/contracts/MembersV1.json');
+const Domains = require('@kyodo/contracts/build/contracts/DomainsV1.json');
+const Periods = require('@kyodo/contracts/build/contracts/PeriodsV1.json');
 const { createColony } = require('./colony.js');
 const { dbAddUser, setUserAlias } = require('./user');
 const { initPeriod } = require('./period');
 const { dbAddDomain: addDomain } = require('./domain');
 
 let kyodo;
+let registry;
+let members;
+let domains;
+let periods;
 let colonyAddress;
 
+const getNewestVersionAddress = events =>
+  events.sort(
+    (a, b) =>
+      parseFloat(b.returnValues.version) - parseFloat(a.returnValue.version),
+  )[0];
+
 const initializeKyodo = async () => {
-  kyodo = TruffleContract(KyodoDAO);
-  kyodo.setProvider(provider);
-  const instance = await kyodo.deployed();
-  return instance;
+  registry = TruffleContract(Registry);
+  registry.setProvider(provider);
+  const registryInstance = await registry.deployed();
+  const pastEvents = await registryInstance.getPastEvents('VersionAdded', {
+    fromBlock: 0,
+    toBlock: 'latest',
+  });
+  const newestVersionAddress = getNewestVersionAddress(pastEvents).returnValues
+    .implementation;
+
+  const KyodoContract = TruffleContract(KyodoDAO);
+  KyodoContract.setProvider(provider);
+  const kyodo = await KyodoContract.at(newestVersionAddress);
+  return kyodo;
 };
 
 const updateUsers = async () => {
-  const whitelistedAddresses = await kyodo.getWhitelistedAddresses();
+  const membersAddress = await kyodo.members();
+
+  const MembersContract = TruffleContract(Members);
+  MembersContract.setProvider(provider);
+  members = await MembersContract.at(membersAddress);
+
+  const whitelistedAddresses = await members.getWhitelistedAddresses();
   const existingUsers = await User.find({
     address: { $in: whitelistedAddresses },
   });
+
   const existingAddresses = existingUsers.map(u => u.address);
   const nonExistingAddresses = whitelistedAddresses.filter(
     addr => existingAddresses.indexOf(addr) < 0,
@@ -54,7 +87,7 @@ const startListener = () => {
   initializeKyodo().then(async value => {
     kyodo = value;
 
-    colonyAddress = await kyodo.Colony();
+    colonyAddress = await kyodo.colony();
     let colony = await Colony.findOne({ colonyAddress });
     if (!colony) {
       colony = await createColony(colonyAddress);
@@ -63,11 +96,16 @@ const startListener = () => {
     // Updating current users state
     await updateUsers();
 
+    const periodsAddress = await kyodo.periods();
+    const PeriodsContract = TruffleContract(Periods);
+    PeriodsContract.setProvider(provider);
+    periods = await PeriodsContract.at(periodsAddress);
+
     // Options to get past events
     const options = { fromBlock: 0, toBlock: 'latest' };
 
     // Getting past periods
-    const pastNewPeriodsEvents = await kyodo.getPastEvents(
+    const pastNewPeriodsEvents = await periods.getPastEvents(
       'NewPeriodStart',
       options,
     );
@@ -81,13 +119,13 @@ const startListener = () => {
       });
 
     // Subscribe to new period events
-    kyodo.NewPeriodStart().on('data', async event => {
+    periods.NewPeriodStart().on('data', async event => {
       const { prevBlockNumber, periodId } = parseNewPeriodEvent(event);
       await initPeriod(prevBlockNumber, periodId, colony.colonyId);
     });
 
     // Getting past alias changes
-    const pastNewAliasSetEvents = await kyodo.getPastEvents(
+    const pastNewAliasSetEvents = await members.getPastEvents(
       'NewAliasSet',
       options,
     );
@@ -115,21 +153,26 @@ const startListener = () => {
     });
 
     // Subscribe to new alias set events
-    kyodo.NewAliasSet().on('data', async event => {
+    members.NewAliasSet().on('data', async event => {
       const { address, blockNumber, alias } = parseNewAliasSetEvent(event);
       const user = await User.findOne({ address });
       await setUserAlias({ user, alias, blockNumber });
     });
 
+    const domainsAddress = await kyodo.domains();
+    const DomainsContract = TruffleContract(Domains);
+    DomainsContract.setProvider(provider);
+    domains = await DomainsContract.at(domainsAddress);
+
     // Getting past domain added
-    const pastNewDomainAddedEvents = await kyodo.getPastEvents(
+    const pastNewDomainAddedEvents = await domains.getPastEvents(
       'NewDomainAdded',
       options,
     );
 
     // filter existing domains
-    const domains = await Domain.find();
-    const existingDomainsIds = domains.map(d => d.domainId);
+    const dbDomains = await Domain.find();
+    const existingDomainsIds = dbDomains.map(d => d.domainId);
     // Syncing past domain added
     pastNewDomainAddedEvents
       .map(parseNewDomainAddedEvent)
