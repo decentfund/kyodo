@@ -409,7 +409,7 @@ async function handleDish(event, room, client, auth) {
 
     // Fetching point types
     let point_types;
-    getPointTypes().then(data => {
+    await getPointTypes().then(data => {
       point_types = data;
     });
     if (!point_types.includes(type)) {
