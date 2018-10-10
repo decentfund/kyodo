@@ -6,7 +6,6 @@ const BigNumber = require('bignumber.js');
 const dayjs = require('dayjs');
 const axios = require('axios');
 const {
-  point_types,
   domains,
   max_points,
   sheet_id,
@@ -15,10 +14,11 @@ const {
 const { initDb } = require('@kyodo/backend/db');
 
 // If modifying these scopes, delete credentials.json.
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
-const TOKEN_PATH = 'credentials.json';
-const { getUserBalance, updateUserAddress } = require('@kyodo/backend/user');
-const { sendNewTip } = require('@kyodo/backend/tip');
+const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
+const TOKEN_PATH = "credentials.json";
+const { getUserBalance, updateUserAddress } = require("@kyodo/backend/user");
+const { sendNewTip } = require("@kyodo/backend/tip");
+const { getPointTypes } = require("@kyodo/backend/domain");
 
 // Load client secrets from a local file.
 fs.readFile('client_secret.json', (err, content) => {
@@ -178,7 +178,13 @@ function handleTask(event, room, client, auth) {
   const message = event.getContent().body;
 
   try {
-    const splitMsg = message.toLowerCase().split(' ');
+    // Fetching point types
+    let point_types;
+    getPointTypes().then(data => {
+      point_types = data;
+    });
+
+    const splitMsg = message.toLowerCase().split(" ");
     const type = splitMsg[1].toUpperCase();
     if (!point_types.includes(type)) {
       const typeError = new Error(
@@ -400,6 +406,12 @@ async function handleDish(event, room, client, auth) {
     }
 
     const type = splitMsg[2].toUpperCase();
+
+    // Fetching point types
+    let point_types;
+    getPointTypes().then(data => {
+      point_types = data;
+    });
     if (!point_types.includes(type)) {
       const typeError = new Error(
         `Invalid point type '${type}'. Please use one of ${point_types}.`,

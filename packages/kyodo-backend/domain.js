@@ -66,3 +66,9 @@ exports.getAllDomains = async (req, res) => {
 exports.getDomainById = async (req, res) => {
   //TODO: find domain by ID from DB
 };
+
+exports.getPointTypes = async () => {
+  const domains = await Domain.find();
+  const pointTypes = domains.map(d => d.domainTitle);
+  return pointTypes;
+};
