@@ -117,6 +117,8 @@ function authenticated(auth) {
             handleDish(event, room, client, auth);
           } else if (command == '!create') {
             handleTask(event, room, client, auth);
+          } else if (command == '!create') {
+            handleBalance(event, room, client, auth);
           } else if (command == '!sheet') {
             client.sendTextMessage(
               roomId,
@@ -277,6 +279,17 @@ function handleTask(event, room, client, auth) {
       );
     }
   }
+}
+
+function handleBalance(event, room, client) {
+  const sender = event.getSender();
+  try {
+    client.sendTextMessage(
+      room.roomId,
+      `Your balance is ${max_points}`,
+    );
+  } catch (err) {
+    console.log('handleBalance', err.message);
 }
 
 function handleDish(event, room, client, auth) {
