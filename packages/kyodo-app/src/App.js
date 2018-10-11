@@ -20,7 +20,10 @@ import TasksList from './components/TasksList';
 import PeriodPointsDistribution from './components/PeriodPointsDistribution';
 import { getContract, getOwner, getWhitelistedAddresses } from './reducers';
 import { loadRate, loadMultiSigBalance } from './actions';
-import generateContractConfig from './helpers/contracts';
+import {
+  generateContractConfigFromEvent,
+  generateContractConfigFromName,
+} from './helpers/contracts';
 
 injectGlobal`
 html,
@@ -58,12 +61,75 @@ const StyledMainInfoContainer = styled.div`
 class App extends Component {
   state = {
     whitelistedAddresses: [],
+    domainsAddress: process.env.REACT_DOMAINS_ADDRESS,
+    kyodoAddress: process.env.REACT_KYODO_ADDRESS,
+    membersAddress: process.env.REACT_MEMBERS_ADDRESS,
+    periodsAddress: process.env.REACT_PERIODS_ADDRESS,
   };
 
   constructor(props, context) {
     super(props);
 
     this.drizzle = context.drizzle;
+
+    if (process.env.REACT_APP_KYODODAO_CONTRACT_ADDRESS) {
+      const contractConfig = {
+        contractName: 'KyodoDAO',
+        web3Contract: new this.drizzle.web3.eth.Contract(
+          KyodoDAO.abi,
+          process.env.REACT_APP_KYODODAO_CONTRACT_ADDRESS,
+        ),
+      };
+      this.drizzle.addContract(contractConfig, [
+        {
+          eventName: 'DomainsAddressChanged',
+          eventOptions: {
+            fromBlock: 0,
+          },
+        },
+        {
+          eventName: 'PeriodsAddressChanged',
+          eventOptions: {
+            fromBlock: 0,
+          },
+        },
+        {
+          eventName: 'MembersAddressChanged',
+          eventOptions: {
+            fromBlock: 0,
+          },
+        },
+      ]);
+    }
+
+    const modules = [
+      {
+        name: 'Members',
+        address: process.env.REACT_APP_MEMBERS_CONTRACT_ADDRESS,
+      },
+      // {
+      // name: 'Domains',
+      // address: process.env.REACT_APP_DOMAINS_CONTRACT_ADDRESS,
+      // },
+      {
+        name: 'Periods',
+        address: process.env.REACT_APP_PERIODS_CONTRACT_ADDRESS,
+      },
+    ];
+
+    modules.forEach(({ name, address }) => {
+      if (address) {
+        const contractConfig = generateContractConfigFromName({
+          name,
+          web3: this.drizzle.web3,
+          address,
+        });
+
+        if (contractConfig && !this.drizzle.contracts[name]) {
+          const call = this.drizzle.addContract(contractConfig);
+        }
+      }
+    });
   }
 
   componentDidUpdate(lastProps) {
@@ -72,6 +138,8 @@ class App extends Component {
       this.props.Registry.events.length > 0
     ) {
       const proxyAddress = this.props.Registry.events[0].returnValues[1];
+      if (proxyAddress !== this.state.kyodoAddress)
+        console.log('error in kyodo address, take care!');
       const contractConfig = {
         contractName: 'KyodoDAO',
         web3Contract: new this.drizzle.web3.eth.Contract(
@@ -79,6 +147,7 @@ class App extends Component {
           proxyAddress,
         ),
       };
+
       this.drizzle.addContract(contractConfig, [
         {
           eventName: 'DomainsAddressChanged',
@@ -112,7 +181,7 @@ class App extends Component {
       newEvents.forEach(({ event, returnValues }) => {
         const proxyAddress = returnValues._address;
 
-        const contractConfig = generateContractConfig({
+        const contractConfig = generateContractConfigFromEvent({
           event,
           web3: this.drizzle.web3,
           address: proxyAddress,
