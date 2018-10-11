@@ -18,6 +18,7 @@ const StyledHeader = styled.div`
 const StyledTaskTitle = styled.div`
   margin-right: 20px;
   flex-grow: 1;
+  width: 157px;
 `;
 
 const StyledTaskId = styled.div`

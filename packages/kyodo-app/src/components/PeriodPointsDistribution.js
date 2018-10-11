@@ -24,6 +24,7 @@ const StyledTableHeader = styled.div`
 const StyledTaskTitle = styled.div`
   margin-right: 20px;
   flex-grow: 1;
+  width: 230px;
 `;
 
 const StyledTaskId = styled.div`
@@ -36,12 +37,12 @@ const StyledTaskId = styled.div`
 
 const StyledAssignee = styled.div`
   margin-right: 20px;
-  width: 100px;
+  width: 130px;
 `;
 
 const StyledDomainCode = styled.div`
   margin-right: 20px;
-  width: 190px;
+  width: 48px;
 `;
 
 const StyledSent = styled.div`

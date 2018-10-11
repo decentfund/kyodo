@@ -9,6 +9,7 @@ import Button from './Button';
 
 const StyledContainer = styled.div`
   position: relative;
+  width: 430px;
 `;
 
 const StyledHeader = styled.div`
