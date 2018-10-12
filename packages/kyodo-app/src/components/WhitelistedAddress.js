@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
 import FormattedAddress from './FormattedAddress';
-import { getContract, getTotalSupply } from '../reducers';
+import { getContract } from '../reducers';
 import { formatDecimals, formatCurrency } from '../helpers/format';
 
 const StyledContainer = styled.div`
@@ -56,8 +56,9 @@ class WhitelistedAddress extends Component {
     const aliasKey = Members.methods.getAlias.cacheCall(this.props.value);
     const balanceKey = Token.methods.balanceOf.cacheCall(this.props.value);
     const decimalsKey = Token.methods.decimals.cacheCall();
+    const totalSupplyKey = Token.methods.totalSupply.cacheCall();
 
-    this.setState({ aliasKey, balanceKey, decimalsKey });
+    this.setState({ aliasKey, balanceKey, decimalsKey, totalSupplyKey });
   }
   render() {
     // TODO: Loading
@@ -65,7 +66,9 @@ class WhitelistedAddress extends Component {
       !this.state.balanceKey ||
       !this.props.Token.balanceOf[this.state.balanceKey] ||
       !this.state.decimalsKey ||
-      !this.props.Token.decimals[this.state.decimalsKey]
+      !this.props.Token.decimals[this.state.decimalsKey] ||
+      !this.state.totalSupplyKey ||
+      !this.props.Token.totalSupply[this.state.totalSupplyKey]
     )
       return null;
 
@@ -73,7 +76,18 @@ class WhitelistedAddress extends Component {
       this.state &&
       this.state.aliasKey &&
       this.props.Members.getAlias[this.state.aliasKey];
-    const { value, totalSupply } = this.props;
+
+    let totalSupply =
+      this.state &&
+      this.state.totalSupplyKey &&
+      this.props.Token.totalSupply[this.state.totalSupplyKey].value;
+
+    totalSupply = formatDecimals(
+      this.props.Token.totalSupply[this.state.totalSupplyKey].value,
+      this.props.Token.decimals[this.state.decimalsKey].value,
+    );
+
+    const { value } = this.props;
 
     const balance = formatDecimals(
       this.props.Token.balanceOf[this.state.balanceKey].value,
@@ -99,7 +113,6 @@ WhitelistedAddress.contextTypes = {
 
 const mapStateToProps = (state, { account }) => ({
   drizzleStatus: state.drizzleStatus,
-  totalSupply: getTotalSupply(getContract('Token')(state)),
   Token: getContract('Token')(state),
   Members: getContract('Members')(state),
 });
