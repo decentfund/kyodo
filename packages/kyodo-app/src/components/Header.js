@@ -150,7 +150,7 @@ class Header extends Component {
   }
 }
 Header.defaultProps = {
-  colonyName: 'Colony Name',
+  colonyName: 'decent.fund',
   userAddress: '0x...',
 };
 Header.PropTypes = {
