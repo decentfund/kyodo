@@ -318,17 +318,17 @@ const isDirectChat = (room, user) => {
 
 const cutUserAlias = sender => sender.slice(1).split(':')[0];
 
-const getOrCreatePrivateRoom = async (client, event) => {
-  const sender = event.getSender();
+const getOrCreatePrivateRoom = async (client, event, alias = null) => {
+  const party = alias || event.getSender();
 
-  let userRoom = client.getRooms().find(r => isDirectChat(r, sender));
+  let userRoom = client.getRooms().find(r => isDirectChat(r, party));
   let roomId;
   if (userRoom) roomId = userRoom.roomId;
   if (!userRoom) {
     const newChat = await client.createRoom({
-      preset: 'trusted_private_chat',
-      invite: [sender],
-      is_direct: true,
+      preset: "trusted_private_chat",
+      invite: [party],
+      is_direct: true
     });
     roomId = newChat.room_id;
   }
@@ -460,8 +460,6 @@ either add this user to the room, or try again using the format @[userId]:[domai
     const date = dayjs().format('DD-MMM-YYYY');
     const link = `https://riot.im/app/#/room/${room.roomId}/${event.getId()}`;
 
-    const roomId = await getOrCreatePrivateRoom(client, event);
-
     // const values = [
     // [
     // receiver,
@@ -483,10 +481,11 @@ either add this user to the room, or try again using the format @[userId]:[domai
         receiver: cutUserAlias(receiver),
         amount,
         domain: type,
-        title,
+        title
       });
 
       if (tip.to.address === undefined) {
+        const roomId = await getOrCreatePrivateRoom(client, event, receiver);
         const message =
           "You've been tipped, but we don't know your address. Please carefully provide it here using following syntax: `!address <your address>`";
 
@@ -495,9 +494,10 @@ either add this user to the room, or try again using the format @[userId]:[domai
 
       client.sendTextMessage(
         room.roomId,
-        `${sender} dished ${amount} ${type} points to ${receiver}`,
+        `${sender} dished ${amount} ${type} points to ${receiver}`
       );
     } catch (e) {
+      const roomId = await getOrCreatePrivateRoom(client, event);
       client.sendTextMessage(roomId, e.message);
     }
   } catch (err) {
