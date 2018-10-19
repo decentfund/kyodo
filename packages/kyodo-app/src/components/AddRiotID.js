@@ -88,14 +88,14 @@ class AddRiotID extends Component {
     const { account: address } = this.props;
     return (
       <div>
-        <StyledHeader>Attach a nickname to your address</StyledHeader>
+        <StyledHeader>Attach a riot alias to your address</StyledHeader>
         <StyledContainer>
           <StyledAddressBox>
             <FormattedAddress>{address}</FormattedAddress>
           </StyledAddressBox>
           <StyledArc />
           <Input
-            label="your nickname:"
+            label="your riot alias:"
             value={this.state.changed ? this.state.alias : alias}
             onChange={this.onChange}
           />
