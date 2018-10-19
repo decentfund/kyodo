@@ -374,7 +374,10 @@ async function handleAddress(event, room, client, auth) {
 }
 
 const titleRegex = /for\s(.+)/;
-export const parseTitle = message => message.toLowerCase().split(titleRegex)[1];
+const parseTitle = message => message.toLowerCase().split(titleRegex)[1];
+module.exports = {
+  parseTitle
+};
 
 async function handleDish(event, room, client, auth) {
   const sender = event.getSender();
