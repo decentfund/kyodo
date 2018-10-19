@@ -373,6 +373,9 @@ async function handleAddress(event, room, client, auth) {
   }
 }
 
+const titleRegex = /for\s(.+)/;
+export const parseTitle = message => message.toLowerCase().split(titleRegex)[1];
+
 async function handleDish(event, room, client, auth) {
   const sender = event.getSender();
   const message = event.getContent().body;
@@ -455,7 +458,7 @@ either add this user to the room, or try again using the format @[userId]:[domai
       throw userError;
     }
 
-    const title = message.toLowerCase().split('for')[1];
+    const title = parseTitle(message);
     // const reason = 'For' + message.toLowerCase().split('for')[1];
     const date = dayjs().format('DD-MMM-YYYY');
     const link = `https://riot.im/app/#/room/${room.roomId}/${event.getId()}`;
