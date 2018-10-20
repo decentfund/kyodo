@@ -453,7 +453,13 @@ please specify the domain name of the user using the format @[userId]:[domain]`)
       userError.code = 'USER_MULTIPLE';
       throw userError;
     }
-
+    if (receiver === sender) {
+      const userError = new Error(
+        `Nice try ;) You little mummy's hacker, come BUIDL with us https://github.com/decentfund/kyodo/issues`,
+      );
+      userError.code = 'RECEIVER_IS_SENDER';
+      throw userError;
+    }
     if (!userInRoom) {
       const userError = new Error(`Username '${receiver}' does not exist in this room.
 either add this user to the room, or try again using the format @[userId]:[domain]`);
@@ -513,6 +519,7 @@ either add this user to the room, or try again using the format @[userId]:[domai
       'POINT_TYPE_DOES_NOT_EXIST',
       'MISSING_POINTS_TO',
       'USER_MULTIPLE',
+      'RECEIVER_IS_SENDER',
       'POINTS_ARE_NEGATIVE_OR_ZERO',
       'POINTS_OVER_MAXIMUM',
     ];
