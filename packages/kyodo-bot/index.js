@@ -447,6 +447,12 @@ async function handleDish(event, room, client, auth) {
       (userInRoom = true), (multipleUsers = false);
     }
 
+    if (receiver === sender) {
+      const userError = new Error('You cannot dish points to yourself');
+      userError.code = 'USER_SAME';
+      throw userError;
+    }
+
     if (multipleUsers) {
       const userError = new Error(`There are multiple users with the name '${receiver}' in this room.
 please specify the domain name of the user using the format @[userId]:[domain]`);
@@ -510,6 +516,7 @@ either add this user to the room, or try again using the format @[userId]:[domai
     const MANUAL_ERROR_CODES = [
       'POINTS_NOT_NUMBER',
       'USER_DOES_NOT_EXIST',
+      'USER_SAME',
       'POINT_TYPE_DOES_NOT_EXIST',
       'MISSING_POINTS_TO',
       'USER_MULTIPLE',
