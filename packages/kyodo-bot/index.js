@@ -14,11 +14,11 @@ const {
 const { initDb } = require('@kyodo/backend/db');
 
 // If modifying these scopes, delete credentials.json.
-const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
-const TOKEN_PATH = "credentials.json";
-const { getUserBalance, updateUserAddress } = require("@kyodo/backend/user");
-const { sendNewTip } = require("@kyodo/backend/tip");
-const { getPointTypes } = require("@kyodo/backend/domain");
+const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
+const TOKEN_PATH = 'credentials.json';
+const { getUserBalance, updateUserAddress } = require('@kyodo/backend/user');
+const { sendNewTip } = require('@kyodo/backend/tip');
+const { getPointTypes } = require('@kyodo/backend/domain');
 
 // Load client secrets from a local file.
 fs.readFile('client_secret.json', (err, content) => {
@@ -184,7 +184,7 @@ function handleTask(event, room, client, auth) {
       point_types = data;
     });
 
-    const splitMsg = message.toLowerCase().split(" ");
+    const splitMsg = message.toLowerCase().split(' ');
     const type = splitMsg[1].toUpperCase();
     if (!point_types.includes(type)) {
       const typeError = new Error(
@@ -326,9 +326,9 @@ const getOrCreatePrivateRoom = async (client, event, alias = null) => {
   if (userRoom) roomId = userRoom.roomId;
   if (!userRoom) {
     const newChat = await client.createRoom({
-      preset: "trusted_private_chat",
+      preset: 'trusted_private_chat',
       invite: [party],
-      is_direct: true
+      is_direct: true,
     });
     roomId = newChat.room_id;
   }
@@ -376,7 +376,7 @@ async function handleAddress(event, room, client, auth) {
 const titleRegex = /for\s(.+)/;
 const parseTitle = message => message.toLowerCase().split(titleRegex)[1];
 module.exports = {
-  parseTitle
+  parseTitle,
 };
 
 async function handleDish(event, room, client, auth) {
@@ -487,7 +487,7 @@ either add this user to the room, or try again using the format @[userId]:[domai
         receiver: cutUserAlias(receiver),
         amount,
         domain: type,
-        title
+        title,
       });
 
       if (tip.to.address === undefined) {
@@ -500,7 +500,7 @@ either add this user to the room, or try again using the format @[userId]:[domai
 
       client.sendTextMessage(
         room.roomId,
-        `${sender} dished ${amount} ${type} points to ${receiver}`
+        `${sender} dished ${amount} ${type} points to ${receiver}`,
       );
     } catch (e) {
       const roomId = await getOrCreatePrivateRoom(client, event);
