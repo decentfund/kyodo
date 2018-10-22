@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const { SystemError } = require('./errors');
+
 const Schema = mongoose.Schema;
 
 mongoose.connection.on('error', e => {
@@ -91,6 +93,8 @@ const getCurrentUserPeriod = async (alias, periodId) => {
   const period = await Period.findOne({ address: user.address, periodId });
   const sentTips = await Tip.find({ from: user, periodId });
   const usedPoints = sentTips.reduce((sum, v) => sum + v.amount, 0);
+
+  if (!period) throw new SystemError('Cannot find user current period');
 
   return {
     ...period,

@@ -64,60 +64,72 @@ exports.sendNewTip = async ({
   title,
   receiver,
 } = {}) => {
-  const colony = await Colony.findOne();
-  const currentPeriodId = colony.periodIds[colony.periodIds.length - 1];
+  try {
+    const colony = await Colony.findOne();
+    const currentPeriodId = colony.periodIds[colony.periodIds.length - 1];
 
-  // Verify sender is present and has enough points
-  if (!sender) throw Error('No sender specified');
-  if (amount <= 0) {
-    // TODO: Raise error
-    throw new Error('No money no honey, sorry');
+    // Verify sender is present and has enough points
+    if (!sender) throw Error('No sender specified');
+    if (amount <= 0) {
+      // TODO: Raise error
+      throw new Error('No money no honey, sorry');
+    }
+
+    // Throw error if sender is not present
+    const senderUser = await getUserByAlias(sender);
+    if (!senderUser) throw Error('Sender is not registered');
+
+    const senderBalance = await getUserBalance(sender);
+
+    // Get receiver if not present create a new one
+    let receiverUser = await getUserByAlias(receiver);
+    if (!receiverUser) {
+      receiverUser = await addUser({ alias: receiver });
+    }
+
+    if (!checkBalance(senderBalance, amount))
+      throw Error(
+        "You have 0 points. But don't worry! You can earn them by making contributions other people find useful. Or just by making me laugh.",
+      );
+
+    // await changeUserBalance(senderAddress, tipAmount);
+    // await changeUserBalance(receiverAddress, -tipAmount);
+    //
+
+    // Getting domain
+    // TODO: Throw error if domain is not found
+    const domain = await getDomainByCode(code);
+
+    // TODO: Try to find task
+    // FIXME: Find task in period
+    // If not available create a new one
+    let task = await getTaskByTitle(title);
+    if (!task) {
+      task = await createTask({ title });
+    }
+
+    let tip = new Tip({
+      from: senderUser,
+      to: receiverUser,
+      amount,
+      task,
+      domain,
+      // potId: req.body.potId,
+      dateCreated: Date.now(),
+      // FIXME: Get period from colony
+      periodId: currentPeriodId,
+    });
+
+    await tip.save();
+    return tip;
+  } catch (e) {
+    if (e.name === 'SystemError') {
+      throw new Error(
+        'Uh-oh! Something went wrong! Please contact admin from the chat and submit a ticket with details in the repo http://github.com/decentfund/kyodo',
+      );
+    }
+    throw e;
   }
-
-  // Throw error if sender is not present
-  const senderUser = await getUserByAlias(sender);
-  if (!senderUser) throw Error('Sender is not registered');
-  const senderBalance = await getUserBalance(sender);
-
-  // Get receiver if not present create a new one
-  let receiverUser = await getUserByAlias(receiver);
-  if (!receiverUser) {
-    receiverUser = await addUser({ alias: receiver });
-  }
-
-  if (!checkBalance(senderBalance, amount))
-    throw Error('No money no honey, sorry');
-
-  // await changeUserBalance(senderAddress, tipAmount);
-  // await changeUserBalance(receiverAddress, -tipAmount);
-  //
-
-  // Getting domain
-  // TODO: Throw error if domain is not found
-  const domain = await getDomainByCode(code);
-
-  // TODO: Try to find task
-  // FIXME: Find task in period
-  // If not available create a new one
-  let task = await getTaskByTitle(title);
-  if (!task) {
-    task = await createTask({ title });
-  }
-
-  let tip = new Tip({
-    from: senderUser,
-    to: receiverUser,
-    amount,
-    task,
-    domain,
-    // potId: req.body.potId,
-    dateCreated: Date.now(),
-    // FIXME: Get period from colony
-    periodId: currentPeriodId,
-  });
-
-  await tip.save();
-  return tip;
 };
 
 exports.getAllTips = async (req, res) => {
