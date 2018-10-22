@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { sendNewTip } from './tip';
 import { User, Task, Domain, Tip, Colony } from './db';
 import user from './user';
+import { SystemError } from './errors';
 jest.mock('./user');
 
 describe('insert', () => {
@@ -92,7 +93,9 @@ describe('insert', () => {
           receiver: receiver.alias,
         });
       } catch (e) {
-        expect(e.message).toMatch('No money no honey, sorry');
+        expect(e.message).toMatch(
+          "You have 0 points. But don't worry! You can earn them by making contributions other people find useful. Or just by making me laugh.",
+        );
       }
     });
     it('create new task if not present and tips successfully', async () => {
@@ -121,6 +124,33 @@ describe('insert', () => {
       expect(savedTip.length).toEqual(1);
 
       expect(resp.to.address).toEqual(undefined);
+    });
+    it('throws system error on get user balance and displays proper message in bot', async () => {
+      const taskTitle = 'non existing task';
+      const sender = existingUserMock;
+      const receiver = newUserMock;
+
+      user.dbGetUserByAlias.mockImplementation(
+        address => (address === sender.address ? sender : receiver),
+      );
+
+      user.getUserBalance.mockImplementation(() => {
+        throw new SystemError('Some system error');
+      });
+
+      try {
+        await sendNewTip({
+          sender: '0x0',
+          amount: 5,
+          receiver: receiver.alias,
+          title: taskTitle,
+          domain: 'GOV',
+        });
+      } catch (e) {
+        expect(e.message).toMatch(
+          'Uh-oh! Something went wrong! Please contact admin from the chat and submit a ticket with details in the repo http://github.com/decentfund/kyodo',
+        );
+      }
     });
   });
 });

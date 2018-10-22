@@ -1,7 +1,12 @@
 const { Period, Colony, getColonyById } = require('./db.js');
 const { dbGetAllUsers, getAllUsers, findUserByAddress } = require('./user.js');
 const { PERIOD_TIME } = require('./constants/periodTime.js');
-const { getBalance } = require('./token');
+
+let getBalance = () => 0;
+if (process.env.NODE_ENV !== 'test') {
+  const { getBalance: tokenGetBalance } = require('./token');
+  getBalance = tokenGetBalance;
+}
 
 let currentPeriod = 0;
 console.log('PERIOD', currentPeriod);
