@@ -1,0 +1,5 @@
+{
+  "dbConnectionUri": "mongodb://localhost/colony",
+  "migrationsDir": "db/migrations",
+  "es6": true
+}

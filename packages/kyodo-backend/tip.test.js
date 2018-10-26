@@ -3,7 +3,9 @@ import { sendNewTip } from './tip';
 import { User, Task, Domain, Tip, Colony } from './db';
 import user from './user';
 import { SystemError } from './errors';
+import period from './period';
 jest.mock('./user');
+jest.mock('./period');
 
 describe('insert', () => {
   let connection;
@@ -55,7 +57,7 @@ describe('insert', () => {
         expect(e.message).toMatch('Sender is not registered');
       }
     });
-    it('adds new receiver if not found', async () => {
+    it('adds new receiver and period if not found', async () => {
       // const files = db.collection('domains');
       const senderBalance = 10;
       const sender = existingUserMock;
@@ -66,6 +68,11 @@ describe('insert', () => {
       const addUser = jest.fn(() => newUserMock);
       user.dbAddUser.mockImplementation(addUser);
 
+      const createAndSaveNewUserPeriod = jest.fn();
+      period.createAndSaveNewUserPeriod.mockImplementation(
+        createAndSaveNewUserPeriod,
+      );
+
       user.getUserBalance.mockResolvedValue(senderBalance);
 
       await sendNewTip({
@@ -75,6 +82,12 @@ describe('insert', () => {
         domain: 'GOV',
       });
       expect(addUser.mock.calls.length).toBe(1);
+      expect(createAndSaveNewUserPeriod.mock.calls.length).toBe(1);
+      expect(createAndSaveNewUserPeriod.mock.calls[0][0]).toEqual({
+        periodId: 0,
+        balance: 0,
+        user: newUserMock,
+      });
     });
     it('throws if sender balance is less than tip amount', async () => {
       const userBalance = 1;

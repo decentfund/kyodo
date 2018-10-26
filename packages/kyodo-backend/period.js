@@ -22,19 +22,35 @@ const initPeriod = async (blockNumber, periodId, colonyId) => {
 
   users.map(async el => {
     const balance = await getBalance(el.address, blockNumber);
-    let period = new Period({
-      // TODO: Period title
-      title: 'My new period',
+    await createAndSaveNewUserPeriod({
       address: el.address,
       periodId: currentPeriod,
-      // TODO: Fetch user balance
       balance, //current user balance
       tips: 0,
     });
-    await period.save(err => {
-      if (err) return console.error(err);
-    });
   });
+};
+
+const createAndSaveNewUserPeriod = async ({
+  address,
+  periodId,
+  balance,
+  tips,
+  user,
+}) => {
+  let period = new Period({
+    // TODO: Period title
+    title: 'My new period',
+    address,
+    periodId,
+    balance, //current user balance
+    user,
+    tips,
+  });
+  await period.save(err => {
+    if (err) return console.error(err);
+  });
+  return period;
 };
 
 const initiateNewPeriod = async (req, res) => {
@@ -51,6 +67,7 @@ const initiateNewPeriod = async (req, res) => {
       periodId: currentPeriod,
       balance: el.balance, //current user balance
       tips: 0,
+      user: el,
     });
     await period.save((err, el) => {
       if (err) return console.error(err);
@@ -123,4 +140,5 @@ module.exports = {
   changeUserBalance,
   beginTheColonyCountdown,
   initPeriod,
+  createAndSaveNewUserPeriod,
 };
