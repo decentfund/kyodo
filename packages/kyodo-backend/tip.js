@@ -3,6 +3,7 @@ const {
   changeUserBalance,
   currentPeriod,
   getUserByAddressInPeriod,
+  createAndSaveNewUserPeriod,
 } = require('./period');
 const {
   getUserBalance,
@@ -85,16 +86,19 @@ exports.sendNewTip = async ({
     let receiverUser = await getUserByAlias(receiver);
     if (!receiverUser) {
       receiverUser = await addUser({ alias: receiver });
+
+      // Creating new period for user
+      await createAndSaveNewUserPeriod({
+        periodId: colony.currentPeriodId,
+        balance: 0,
+        user: receiverUser,
+      });
     }
 
     if (!checkBalance(senderBalance, amount))
       throw Error(
         "You have 0 points. But don't worry! You can earn them by making contributions other people find useful. Or just by making me laugh.",
       );
-
-    // await changeUserBalance(senderAddress, tipAmount);
-    // await changeUserBalance(receiverAddress, -tipAmount);
-    //
 
     // Getting domain
     // TODO: Throw error if domain is not found

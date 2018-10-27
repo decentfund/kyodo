@@ -44,6 +44,8 @@
   "devDependencies": {
     "husky": "^0.14.3",
     "jest": "^23.6.0",
+    "lodash": "^4.17.11",
+    "migrate-mongoose": "https://github.com/gonza-lito/migrate-mongoose",
     "mongodb": "3.1.6",
     "mongodb-memory-server": "^2.2.0",
     "nodemon": "^1.17.5",
