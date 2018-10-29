@@ -46,6 +46,7 @@ contract KyodoDAO is Ownable {
   function initialize(address owner) public {
     require(!_initialized);
     setOwner(owner);
+    // TODO: Find a proper place to define inflation rate
     inflationRate = 5;
     _initialized = true;
   }
