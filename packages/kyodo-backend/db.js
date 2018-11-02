@@ -4,6 +4,7 @@ import { SystemError } from './errors';
 import Period from './models/Period';
 import User from './models/User';
 import Tip from './models/Tip';
+import Point from './models/Point';
 
 mongoose.connection.on('error', e => {
   if (e.message.code === 'ETIMEDOUT') {
@@ -32,7 +33,7 @@ const taskSchema = new mongoose.Schema({
   // skillId: Number
 });
 
-const colonySchema = new mongoose.Schema({
+export const colonySchema = new mongoose.Schema({
   colonyName: String,
   colonyId: String,
   colonyAddress: String,
@@ -48,7 +49,7 @@ colonySchema.virtual('currentPeriodId').get(function() {
   return this.periodIds[this.periodIds.length - 1];
 });
 
-const domainSchema = new Schema({
+export const domainSchema = new Schema({
   domainId: Number,
   domainTitle: String,
   localSkillId: Number,
@@ -68,13 +69,21 @@ export const getCurrentUserPeriod = async (alias, periodId) => {
   const period = await Period.findOne({ user: user._id, periodId });
   const sentTips = await Tip.find({ from: user, periodId });
   const usedPoints = sentTips.reduce((sum, v) => sum + v.amount, 0);
+  const receivedPoints = (await Point.find({
+    owner: user,
+    used: false,
+  })).reduce((sum, v) => sum + v.amount, 0);
+  const delegatedPoints = (await Point.find({ delegatee: user })).reduce(
+    (sum, v) => sum + v.amount,
+    0,
+  );
 
   if (!period) throw new SystemError('Cannot find user current period');
 
   return {
     ...period,
     initialBalance: period.balance,
-    balance: period.balance - usedPoints,
+    balance: period.balance + receivedPoints - delegatedPoints - usedPoints,
   };
 };
 
@@ -85,4 +94,4 @@ export const getDomainByCode = async code => {
   return domain;
 };
 
-export { Tip, User, Period };
+export { Tip, Point, Period, User };
