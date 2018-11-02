@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "jest",
-    "start": "./node_modules/.bin/nodemon app.js",
+    "start": "./node_modules/.bin/nodemon --exec ./node_modules/.bin/babel-node -- app.js",
     "precise-commits": "precise-commits",
     "precommit": "npm run precise-commits"
   },
@@ -42,6 +42,11 @@
     "web3": "^1.0.0-beta.36"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-jest": "^23.6.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-2": "^6.24.1",
     "husky": "^0.14.3",
     "jest": "^23.6.0",
     "lodash": "^4.17.11",

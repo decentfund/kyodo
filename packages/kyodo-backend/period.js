@@ -1,6 +1,6 @@
-const { Period, Colony, getColonyById } = require('./db.js');
-const { dbGetAllUsers, getAllUsers, findUserByAddress } = require('./user.js');
-const { PERIOD_TIME } = require('./constants/periodTime.js');
+import { Period, Colony, getColonyById } from './db.js';
+import { dbGetAllUsers, getAllUsers, findUserByAddress } from './user.js';
+import { PERIOD_TIME } from './constants/periodTime.js';
 
 let getBalance = () => 0;
 if (process.env.NODE_ENV !== 'test') {
@@ -11,7 +11,7 @@ if (process.env.NODE_ENV !== 'test') {
 let currentPeriod = 0;
 console.log('PERIOD', currentPeriod);
 
-const initPeriod = async (blockNumber, periodId, colonyId) => {
+export const initPeriod = async (blockNumber, periodId, colonyId) => {
   const colony = await getColonyById(colonyId);
   const users = await dbGetAllUsers();
   currentPeriod = periodId;
@@ -31,7 +31,7 @@ const initPeriod = async (blockNumber, periodId, colonyId) => {
   });
 };
 
-const createAndSaveNewUserPeriod = async ({
+export const createAndSaveNewUserPeriod = async ({
   address,
   periodId,
   balance,
@@ -53,7 +53,7 @@ const createAndSaveNewUserPeriod = async ({
   return period;
 };
 
-const initiateNewPeriod = async (req, res) => {
+export const initiateNewPeriod = async (req, res) => {
   // verify all users are present in db
   // fetching users from smart contract
 
@@ -80,7 +80,7 @@ const initiateNewPeriod = async (req, res) => {
     );
 };
 
-const getAllPeriods = async (req, res) => {
+export const getAllPeriods = async (req, res) => {
   let periods = await Period.find((err, periods) => {
     if (err) return console.error(err);
     res.send(`ALL THE PERIODS: ${periods}`);
@@ -88,14 +88,14 @@ const getAllPeriods = async (req, res) => {
   return periods;
 };
 
-const getCurrentPeriod = async (req, res) => {
+export const getCurrentPeriod = async (req, res) => {
   await Period.find({ periodId: currentPeriod });
   res.status(200).send(currentPeriod);
 };
 
 // exports.getUserPeriodBalance = async () => {};
 
-const getUserByAddressInPeriod = async address => {
+export const getUserByAddressInPeriod = async address => {
   let user = await Period.find(
     {
       address: address,
@@ -108,7 +108,7 @@ const getUserByAddressInPeriod = async address => {
   return user;
 };
 
-const changeUserBalance = async (address, tip) => {
+export const changeUserBalance = async (address, tip) => {
   let sender = await Period.find({
     address: address,
   });
@@ -123,7 +123,7 @@ const changeUserBalance = async (address, tip) => {
 };
 
 //MEGA CRON
-const beginTheColonyCountdown = async (req, res) => {
+export const beginTheColonyCountdown = async (req, res) => {
   setTimeout(async () => {
     await initiateNewPeriod(req, res);
   }, PERIOD_TIME);
@@ -131,14 +131,4 @@ const beginTheColonyCountdown = async (req, res) => {
 
 //TODO: startNewPeriod
 
-module.exports = {
-  currentPeriod,
-  getAllPeriods,
-  getCurrentPeriod,
-  getUserByAddressInPeriod,
-  initiateNewPeriod,
-  changeUserBalance,
-  beginTheColonyCountdown,
-  initPeriod,
-  createAndSaveNewUserPeriod,
-};
+export { currentPeriod };

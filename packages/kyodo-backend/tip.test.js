@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import { sendNewTip } from './tip';
 import { User, Task, Domain, Tip, Colony } from './db';
-import user from './user';
+import * as user from './user';
 import { SystemError } from './errors';
-import period from './period';
+import * as period from './period';
 jest.mock('./user');
 jest.mock('./period');
 

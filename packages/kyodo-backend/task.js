@@ -1,7 +1,7 @@
-const { generateIpfsHash, getTaskSpecification } = require('./ipfs.js');
-const { getColonyInstanceFromId } = require('./colony');
-const { initiateNetwork } = require('./network.js');
-const { Task } = require('./db.js');
+import { generateIpfsHash, getTaskSpecification } from './ipfs.js';
+import { getColonyInstanceFromId } from './colony';
+import { initiateNetwork } from './network.js';
+import { Task } from './db.js';
 
 const getTaskFromChain = async id => {
   const networkClient = await initiateNetwork();
@@ -11,7 +11,7 @@ const getTaskFromChain = async id => {
   return task;
 };
 
-const dbCreateTask = async ({ title }) => {
+export const dbCreateTask = async ({ title }) => {
   let task = await new Task({
     taskTitle: title,
     dateCreated: Date.now(),
@@ -24,9 +24,7 @@ const dbCreateTask = async ({ title }) => {
   return task;
 };
 
-exports.dbCreateTask = dbCreateTask;
-
-exports.createTask = async (req, res) => {
+export const createTask = async (req, res) => {
   let networkClient = await initiateNetwork();
   let colonyClient = await getColonyInstanceFromId(76);
   let hash = await generateIpfsHash(req.body);
@@ -55,19 +53,19 @@ exports.createTask = async (req, res) => {
   res.end(`{"success" : Added and ${hash} Successfully, "status" : 200}`);
 };
 
-exports.getTaskById = async (req, res) => {
+export const getTaskById = async (req, res) => {
   await Task.find({ id: req.body.address });
 };
 
-exports.getTaskByTitle = async title => {
+export const getTaskByTitle = async title => {
   return await Task.findOne({ taskTitle: title });
 };
 
-exports.modifyTask = (req, res) => {
+export const modifyTask = (req, res) => {
   //TODO: find the task by id, modify fields, both on chain and in DB??
 };
 
-exports.getTasks = async (req, res) => {
+export const getTasks = async (req, res) => {
   let tasks = await Task.find((err, tasks) => {
     if (err) return console.error(err);
     console.log(tasks);

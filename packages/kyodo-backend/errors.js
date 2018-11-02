@@ -6,6 +6,4 @@ const SystemError = function SystemError(message) {
 SystemError.prototype = new Error();
 SystemError.prototype.constructor = SystemError;
 
-module.exports = {
-  SystemError,
-};
+export { SystemError };

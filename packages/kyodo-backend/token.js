@@ -1,9 +1,9 @@
-const Web3 = require('web3');
+import Web3 from 'web3';
 const provider = new Web3.providers.WebsocketProvider(
   process.env.WS_PROVIDER || 'ws://localhost:8545',
 );
-const TruffleContract = require('truffle-contract');
-const Token = require('@kyodo/contracts/build/contracts/Token.json');
+import TruffleContract from 'truffle-contract';
+import Token from '@kyodo/contracts/build/contracts/Token.json';
 
 let token;
 
@@ -16,7 +16,9 @@ const initializeToken = async () => {
   return token;
 };
 
-const getBalance = async (address, blockNumber) => {
+export { initializeToken as getToken };
+
+export const getBalance = async (address, blockNumber) => {
   if (!token) token = await initializeToken();
   const balance = await token.balanceOf(address, blockNumber);
   const decimals = await token.decimals();
@@ -24,8 +26,3 @@ const getBalance = async (address, blockNumber) => {
 };
 
 initializeToken();
-
-module.exports = {
-  getToken: initializeToken,
-  getBalance,
-};
