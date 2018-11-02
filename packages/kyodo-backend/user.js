@@ -1,7 +1,13 @@
-const web3 = require('web3');
-const { User, getColonyById, getCurrentUserPeriod } = require('./db.js');
+import web3 from 'web3';
+import { User, getColonyById, getCurrentUserPeriod } from './db.js';
 
-const dbAddUser = async ({ address, alias, balance, domains, tasks }) => {
+export const dbAddUser = async ({
+  address,
+  alias,
+  balance,
+  domains,
+  tasks,
+}) => {
   const user = new User({
     address,
     alias,
@@ -18,9 +24,7 @@ const dbAddUser = async ({ address, alias, balance, domains, tasks }) => {
   return user;
 };
 
-exports.dbAddUser = dbAddUser;
-
-exports.addUser = async (req, res) => {
+export const addUser = async (req, res) => {
   const user = dbAddUser(req.body);
 
   if (user) {
@@ -31,7 +35,7 @@ exports.addUser = async (req, res) => {
   }
 };
 
-const dbGetAllUsers = async () => {
+export const dbGetAllUsers = async () => {
   return await User.find((err, users) => {
     if (err) {
       console.log(err);
@@ -41,36 +45,32 @@ const dbGetAllUsers = async () => {
   });
 };
 
-exports.getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res) => {
   let users = await dbGetAllUsers();
   res.status(200).send(users);
   return users;
 };
 
-exports.dbGetAllUsers = dbGetAllUsers;
-
-exports.getUserByAddress = async (req, res) => {
+export const getUserByAddress = async (req, res) => {
   await User.find({ address: req.body.address });
 };
 
-exports.getUserByAlias = async (req, res) => {
+export const getUserByAlias = async (req, res) => {
   await User.find({ alias: req.body.alias });
 };
 
-const dbGetUserByAlias = async alias => {
+export const dbGetUserByAlias = async alias => {
   return await User.findOne({ alias });
 };
 
-exports.dbGetUserByAlias = dbGetUserByAlias;
-
-exports.getUserBalance = async alias => {
+export const getUserBalance = async alias => {
   const colony = await getColonyById(0);
   const currentPeriodId = colony.periodIds[colony.periodIds.length - 1];
   const { balance } = await getCurrentUserPeriod(alias, currentPeriodId);
   return balance;
 };
 
-exports.setUserAlias = async ({ user, alias, blockNumber }) => {
+export const setUserAlias = async ({ user, alias, blockNumber }) => {
   user.alias = alias;
   user.aliasSet = blockNumber;
 
@@ -81,20 +81,20 @@ exports.setUserAlias = async ({ user, alias, blockNumber }) => {
   return user;
 };
 
-exports.addDomainToUser = async (req, res) => {
+export const addDomainToUser = async (req, res) => {
   // TODO:
 };
 
-exports.addTaskToUser = async (req, res) => {
+export const addTaskToUser = async (req, res) => {
   // TODO:
 };
 
-exports.changeUserAlias = async (req, res) => {
+export const changeUserAlias = async (req, res) => {
   // TODO:
   // this.getUserByAlias(req.body.alias);
 };
 
-const updateUserAddress = async ({ alias, address }) => {
+export const updateUserAddress = async ({ alias, address }) => {
   if (!web3.utils.isAddress(address))
     throw Error('Address is incorrect, try again');
   const user = await dbGetUserByAlias(alias);
@@ -106,5 +106,3 @@ const updateUserAddress = async ({ alias, address }) => {
   await user.save();
   return user;
 };
-
-exports.updateUserAddress = updateUserAddress;

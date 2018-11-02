@@ -1,18 +1,18 @@
-const { Tip, getDomainByCode, Colony, getColonyById } = require('./db.js');
-const {
+import { Tip, getDomainByCode, Colony, getColonyById } from './db.js';
+import {
   changeUserBalance,
   currentPeriod,
   getUserByAddressInPeriod,
   createAndSaveNewUserPeriod,
-} = require('./period');
-const {
+} from './period';
+import {
   getUserBalance,
-  dbGetUserByAlias: getUserByAlias,
-  dbAddUser: addUser,
-} = require('./user');
-const { dbCreateTask: createTask, getTaskByTitle } = require('./task');
+  dbGetUserByAlias as getUserByAlias,
+  dbAddUser as addUser,
+} from './user';
+import { dbCreateTask as createTask, getTaskByTitle } from './task';
 
-exports.sendTip = async (req, res) => {
+export const sendTip = async (req, res) => {
   // TODO: colonyClient integration
   // transfer.send({ destinationAddress, amount }, options)
   // transferFrom.send({ sourceAddress, destinationAddress, amount }, options)
@@ -58,7 +58,7 @@ exports.sendTip = async (req, res) => {
     );
 };
 
-exports.sendNewTip = async ({
+export const sendNewTip = async ({
   sender,
   amount = 0,
   domain: code,
@@ -136,7 +136,7 @@ exports.sendNewTip = async ({
   }
 };
 
-exports.getAllTips = async (req, res) => {
+export const getAllTips = async (req, res) => {
   const colony = await getColonyById(0);
   const currentPeriodId = colony.periodIds[colony.periodIds.length - 1];
   let tips = await Tip.find({ periodId: currentPeriodId }, (err, tips) => {
@@ -150,9 +150,7 @@ exports.getAllTips = async (req, res) => {
   return tips;
 };
 
-const checkBalance = (balance, amount) => {
+export const checkBalance = (balance, amount) => {
   if (amount <= balance && amount > 0) return true;
   return false;
 };
-
-exports.checkBalance = checkBalance;

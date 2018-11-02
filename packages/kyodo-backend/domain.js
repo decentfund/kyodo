@@ -1,8 +1,8 @@
-const { initiateNetwork } = require('./network.js');
-const { getColonyInstanceFromId } = require('./colony');
-const { Domain } = require('./db.js');
+import { initiateNetwork } from './network.js';
+import { getColonyInstanceFromId } from './colony';
+import { Domain } from './db.js';
 
-const dbAddDomain = async ({
+export const dbAddDomain = async ({
   id,
   title,
   parentSkillId,
@@ -24,7 +24,7 @@ const dbAddDomain = async ({
   return domain;
 };
 
-exports.addDomain = async (req, res) => {
+export const addDomain = async (req, res) => {
   // TODO: colonyClient integration
   const networkClient = await initiateNetwork();
   const colonyClient = await getColonyInstanceFromId(76);
@@ -53,9 +53,7 @@ exports.addDomain = async (req, res) => {
   res.end(`{"success" : Added ${domain} Successfully, "status" : 200}`);
 };
 
-exports.dbAddDomain = dbAddDomain;
-
-exports.getAllDomains = async (req, res) => {
+export const getAllDomains = async (req, res) => {
   let domains = await Domain.find((err, domains) => {
     if (err) return console.error(err);
     console.log(domains);
@@ -63,11 +61,11 @@ exports.getAllDomains = async (req, res) => {
   });
 };
 
-exports.getDomainById = async (req, res) => {
+export const getDomainById = async (req, res) => {
   //TODO: find domain by ID from DB
 };
 
-exports.getPointTypes = async () => {
+export const getPointTypes = async () => {
   const domains = await Domain.find();
   const pointTypes = domains.map(d => d.domainTitle);
   return pointTypes;

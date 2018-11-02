@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import mongoose, { Schema } from 'mongoose';
 
 const tipSchema = new Schema({
   from: { type: Schema.Types.ObjectId, ref: 'User' },
@@ -13,5 +12,4 @@ const tipSchema = new Schema({
 });
 
 const Tip = mongoose.model('Tip', tipSchema);
-
-module.exports = Tip;
+export default Tip;

@@ -1,19 +1,19 @@
-const Web3 = require('web3');
-const { Colony, User, Domain } = require('./db.js');
+import Web3 from 'web3';
+import { Colony, User, Domain } from './db.js';
 // const provider = new Web3.providers.HttpProvider('http://127.0.0.1:8545');
 const provider = new Web3.providers.WebsocketProvider(
   process.env.WS_PROVIDER || 'ws://localhost:8545',
 );
-const TruffleContract = require('truffle-contract');
-const KyodoDAO = require('@kyodo/contracts/build/contracts/KyodoDAO.json');
-const Registry = require('@kyodo/contracts/build/contracts/Registry.json');
-const Members = require('@kyodo/contracts/build/contracts/MembersV1.json');
-const Domains = require('@kyodo/contracts/build/contracts/DomainsV1.json');
-const Periods = require('@kyodo/contracts/build/contracts/PeriodsV1.json');
-const { createColony } = require('./colony.js');
-const { dbAddUser, setUserAlias } = require('./user');
-const { initPeriod } = require('./period');
-const { dbAddDomain: addDomain } = require('./domain');
+import TruffleContract from 'truffle-contract';
+import KyodoDAO from '@kyodo/contracts/build/contracts/KyodoDAO.json';
+import Registry from '@kyodo/contracts/build/contracts/Registry.json';
+import Members from '@kyodo/contracts/build/contracts/MembersV1.json';
+import Domains from '@kyodo/contracts/build/contracts/DomainsV1.json';
+import Periods from '@kyodo/contracts/build/contracts/PeriodsV1.json';
+import { createColony } from './colony.js';
+import { dbAddUser, setUserAlias } from './user';
+import { initPeriod } from './period';
+import { dbAddDomain as addDomain } from './domain';
 
 let kyodo;
 let registry;
@@ -186,4 +186,4 @@ const startListener = () => {
   });
 };
 
-module.exports = startListener;
+export default startListener;

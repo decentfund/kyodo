@@ -1,13 +1,13 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
 
-const { initiateNetwork } = require('./network.js');
-const { initiateIpfs } = require('./ipfs.js');
-const startListener = require('./ethereumListener');
-const { initDb } = require('./db');
+import { initiateNetwork } from './network.js';
+import { initiateIpfs } from './ipfs.js';
+import startListener from './ethereumListener';
+import { initDb } from './db';
 
-const router = require('./router.js');
+import router from './router.js';
 
 const app = express();
 

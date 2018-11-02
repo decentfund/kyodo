@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import mongoose, { Schema } from 'mongoose';
 
 const periodSchema = new Schema({
   title: String,
@@ -10,4 +9,4 @@ const periodSchema = new Schema({
 });
 
 const Period = mongoose.model('Period', periodSchema);
-module.exports = Period;
+export default Period;
