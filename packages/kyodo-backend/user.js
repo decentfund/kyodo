@@ -1,5 +1,9 @@
 import web3 from 'web3';
-import { User, getColonyById, getCurrentUserPeriod } from './db.js';
+import { Colony, getColonyById, getCurrentUserPeriod } from './db';
+import User from './models/User';
+import { createAndSaveNewUserPeriod } from './period';
+const Point = require('./models/Point');
+const { ModelError } = require('./errors');
 
 export const dbAddUser = async ({
   address,
@@ -17,22 +21,22 @@ export const dbAddUser = async ({
     dateCreated: Date.now(),
   });
 
-  user.save(err => {
+  await user.save(err => {
     if (err) return null;
   });
 
   return user;
 };
 
-export const addUser = async (req, res) => {
-  const user = dbAddUser(req.body);
-
-  if (user) {
-    res.status(200).send({
-      user,
-      message: 'ALL GOOD! User saved successfully. Have a beer',
-    });
-  }
+export const addUser = async ({ alias }) => {
+  const colony = await Colony.findOne();
+  const user = await dbAddUser({ alias });
+  await createAndSaveNewUserPeriod({
+    periodId: colony.currentPeriodId,
+    balance: 0,
+    user,
+  });
+  return user;
 };
 
 export const dbGetAllUsers = async () => {
@@ -60,7 +64,53 @@ export const getUserByAlias = async (req, res) => {
 };
 
 export const dbGetUserByAlias = async alias => {
-  return await User.findOne({ alias });
+  const user = await User.findOne({ alias });
+
+  if (!user) {
+    throw new ModelError('Not found', 'user', alias);
+  }
+  return user;
+};
+
+export const getOrCreateUser = async ({ alias }) => {
+  let user;
+  try {
+    user = await dbGetUserByAlias(alias);
+  } catch (e) {
+    if (e.message === 'Not found') {
+      user = await addUser({ alias });
+    }
+  }
+  return user;
+};
+
+export const delegatePoints = async ({ amount, sender, receiver }) => {
+  // Verify sender is present and has enough points
+  if (!sender) throw Error('No sender specified');
+  // Throw error if sender is not present
+  const senderUser = await dbGetUserByAlias(sender);
+
+  const balance = await getUserBalance(sender);
+
+  if (balance < amount)
+    throw Error(
+      `Naaah, you don't have so much points. Your current point balance is ${balance}`,
+    );
+
+  // Get receiver if not present create a new one
+  const receiverUser = await getOrCreateUser({ alias: receiver });
+
+  // Create points and pass to user
+  const points = new Point({
+    amount,
+    used: false,
+    delegatee: senderUser,
+    owner: receiverUser,
+  });
+
+  await points.save();
+
+  return points;
 };
 
 export const getUserBalance = async alias => {

@@ -4,8 +4,9 @@ import { User, Task, Domain, Tip, Colony } from './db';
 import * as user from './user';
 import { SystemError } from './errors';
 import * as period from './period';
-jest.mock('./user');
-jest.mock('./period');
+// jest.mock('./user');
+// jest.mock('./period');
+// import tip from './tip';
 
 describe('insert', () => {
   let connection;
@@ -61,19 +62,27 @@ describe('insert', () => {
       // const files = db.collection('domains');
       const senderBalance = 10;
       const sender = existingUserMock;
-      user.dbGetUserByAlias.mockImplementation(
-        address => (address === sender.address ? sender : null),
-      );
+      const originalGetByAlias = user.dbGetUserByAlias;
+      user.dbGetUserByAlias = jest.fn(originalGetByAlias);
+      user.dbGetUserByAlias.mockImplementation(address => {
+        return address === sender.address ? sender : null;
+      });
 
-      const addUser = jest.fn(() => newUserMock);
-      user.dbAddUser.mockImplementation(addUser);
+      user.getOrCreateUser = jest.fn(() => newUserMock);
 
-      const createAndSaveNewUserPeriod = jest.fn();
-      period.createAndSaveNewUserPeriod.mockImplementation(
-        createAndSaveNewUserPeriod,
-      );
+      newUserMock.save = jest.fn();
 
-      user.getUserBalance.mockResolvedValue(senderBalance);
+      User.constructor = jest.fn(() => newUserMock);
+      // User.save.mockImplementation(address => {
+      // console.log(address);
+      // console.log('address');
+      // console.log(sender.address);
+      // return address === sender.address ? sender : null;
+      // });
+
+      period.createAndSaveNewUserPeriod = jest.fn();
+
+      user.getUserBalance = jest.fn(() => senderBalance);
 
       await sendNewTip({
         sender: '0x0',
@@ -81,13 +90,14 @@ describe('insert', () => {
         receiver: newUserMock.alias,
         domain: 'GOV',
       });
-      expect(addUser.mock.calls.length).toBe(1);
-      expect(createAndSaveNewUserPeriod.mock.calls.length).toBe(1);
-      expect(createAndSaveNewUserPeriod.mock.calls[0][0]).toEqual({
-        periodId: 0,
-        balance: 0,
-        user: newUserMock,
-      });
+      expect(user.getOrCreateUser.mock.calls.length).toBe(1);
+      // TODO: Move to user test
+      // expect(period.createAndSaveNewUserPeriod.mock.calls.length).toBe(1);
+      // expect(period.createAndSaveNewUserPeriod.mock.calls[0][0]).toEqual({
+      // periodId: 0,
+      // balance: 0,
+      // user: newUserMock,
+      // });
     });
     it('throws if sender balance is less than tip amount', async () => {
       const userBalance = 1;

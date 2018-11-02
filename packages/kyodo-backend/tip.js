@@ -5,11 +5,7 @@ import {
   getUserByAddressInPeriod,
   createAndSaveNewUserPeriod,
 } from './period';
-import {
-  getUserBalance,
-  dbGetUserByAlias as getUserByAlias,
-  dbAddUser as addUser,
-} from './user';
+import { getUserBalance, dbGetUserByAlias, getOrCreateUser } from './user';
 import { dbCreateTask as createTask, getTaskByTitle } from './task';
 
 export const sendTip = async (req, res) => {
@@ -69,33 +65,20 @@ export const sendNewTip = async ({
     const colony = await Colony.findOne();
     const currentPeriodId = colony.periodIds[colony.periodIds.length - 1];
 
-    // Verify sender is present and has enough points
+    // Verify sender is specified
     if (!sender) throw Error('No sender specified');
-    if (amount <= 0) {
-      // TODO: Raise error
-      throw new Error('No money no honey, sorry');
-    }
+
+    // Throw error if amount is not specified
+    if (amount <= 0) throw new Error('No money no honey, sorry');
 
     // Throw error if sender is not present
-    const senderUser = await getUserByAlias(sender);
-    if (!senderUser) throw Error('Sender is not registered');
-
-    const senderBalance = await getUserBalance(sender);
+    const senderUser = await dbGetUserByAlias(sender);
 
     // Get receiver if not present create a new one
-    let receiverUser = await getUserByAlias(receiver);
-    if (!receiverUser) {
-      receiverUser = await addUser({ alias: receiver });
+    const receiverUser = await getOrCreateUser({ alias: receiver });
 
-      // Creating new period for user
-      await createAndSaveNewUserPeriod({
-        periodId: colony.currentPeriodId,
-        balance: 0,
-        user: receiverUser,
-      });
-    }
-
-    if (!checkBalance(senderBalance, amount))
+    const balance = await getUserBalance(sender);
+    if (!checkBalance(balance, amount))
       throw Error(
         "You have 0 points. But don't worry! You can earn them by making contributions other people find useful. Or just by making me laugh.",
       );
@@ -131,6 +114,11 @@ export const sendNewTip = async ({
       throw new Error(
         'Uh-oh! Something went wrong! Please contact admin from the chat and submit a ticket with details in the repo http://github.com/decentfund/kyodo',
       );
+    }
+    if (e.message === 'Not found') {
+      if (sender === e.value) {
+        throw Error('Sender is not registered');
+      }
     }
     throw e;
   }
