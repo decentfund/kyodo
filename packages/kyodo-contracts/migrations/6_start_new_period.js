@@ -2,7 +2,7 @@ var KyodoDAO = artifacts.require('./KyodoDAO.sol');
 var Registry = artifacts.require('./Registry.sol');
 var getColonyClient = require('./getColonyClient');
 var getKyodoInstance = require('./getKyodoInstance');
-var deployParameters = require('./deploy_parameters.json');
+var deployParameters = require('./getDeployParameters');
 
 module.exports = (deployer, network, accounts) => {
   deployer.then(async () => {
@@ -12,6 +12,7 @@ module.exports = (deployer, network, accounts) => {
 
     // Get colony client
     const colonyNetworkClient = getColonyClient(network, accounts);
+    await colonyNetworkClient.init();
     const colonyAddress = await kyodoInstance.colony();
     const colonyClient = await colonyNetworkClient.getColonyClientByAddress(
       colonyAddress,

@@ -26,6 +26,15 @@ cd kyodo
 yarn
 ```
 
+### Add initial distribution (optional)
+
+```
+# Create initial distribution of tokens
+# Change `deploy_parameters.json` to reflect the initial distribution you want or leave the accounts section empty.
+cp migrations/deploy_parameters.example.json migrations/deploy_parameters.json
+```
+
+
 ### Setup contracts
 
 ```bash
@@ -33,10 +42,6 @@ cd packages/kyodo-contracts
 
 # Start ganache cli with necessary parameters
 yarn start-ganache
-
-# Create initial distribution of tokens
-# Change `deploy_parameters.json` to reflect the initial distribution you want or leave the accounts section empty.
-cp migrations/deploy_parameters.example.json migrations/deploy_parameters.json
 
 # Compile smart contracts
 yarn deploy-contracts

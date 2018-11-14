@@ -1,9 +1,9 @@
 var Token = artifacts.require('./Token.sol');
 var KyodoDAO = artifacts.require('./KyodoDAO.sol');
 var Registry = artifacts.require('./Registry.sol');
-var deployParameters = require('./deploy_parameters.json');
 var getKyodoInstance = require('./getKyodoInstance');
 var tokenInstance;
+var deployParameters = require('./getDeployParameters');
 
 module.exports = deployer => {
   deployer.then(async () => {
