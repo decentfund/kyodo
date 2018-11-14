@@ -1,4 +1,4 @@
-pragma solidity 0.4.24;
+pragma solidity ^0.4.23;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../lib/colonyNetwork/contracts/IColony.sol";
@@ -24,11 +24,11 @@ contract DomainsV1 is Ownable {
    * @param _code Domain code to store
    */
   function addDomain(string _code) external onlyOwner {
-    // uint domainId = domains.length.add(1);
-    // Domain memory domain = Domain(_code, domainId);
-    // domains.push(domain);
+    uint domainId = domains.length.add(1);
+    Domain memory domain = Domain(_code, domainId);
+    domains.push(domain);
 
-    emit NewDomainAdded(_code, 1);
+    emit NewDomainAdded(_code, domainId);
   }
 
   function initialize(address owner) public {

@@ -24,7 +24,7 @@
   "scripts": {
     "start-ganache": "sh scripts/start_ganache.sh",
     "truffle:test": "scripts/test.sh",
-    "setup-colony": "sh scripts/setup_colony.sh",
+    "postinstall": "sh scripts/postinstall.sh",
     "deploy-contracts": "./scripts/deploy_colony.sh && ./scripts/deploy_kyodo.sh",
     "deploy-contracts-ropsten": "./scripts/deploy_colony.sh ropsten && ./scripts/deploy_kyodo.sh ropsten",
     "deploy-contracts-rinkeby": "./scripts/deploy_kyodo.sh rinkeby"

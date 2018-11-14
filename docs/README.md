@@ -2,8 +2,76 @@
 
 # Kyodo
 
-**Kyodo**
-Ethereum blockchain based web app, the cross-platform incentive tool for building the crypto economy for DAO based on Impression revenue model. We build Kyodo to run Decent.Fund.
+## Installation
+
+This is a monorepo for Kyodo project consisting of 3 modules:
+
+- Kyodo web app to setup colony, sign final tips, get your balance and view tasks progress
+- Kyodo backend to run mongodb server and tipping watch within a period
+- Kyodo bot to run riot bot for task creation and instant tipping
+
+## Get started
+
+### Prerequisites
+
+- Yarn
+- Docker
+- Node 9.10
+
+### To setup monorepo packages and its dependencies
+
+```
+git clone https://github.com/decentfund/kyodo.git
+cd kyodo
+yarn
+```
+
+### Setup contracts
+
+```bash
+cd packages/kyodo-contracts
+
+# Start ganache cli with necessary parameters
+yarn start-ganache
+
+# Create initial distribution of tokens
+# Change `deploy_parameters.json` to reflect the initial distribution you want or leave the accounts section empty.
+cp migrations/deploy_parameters.example.json migrations/deploy_parameters.json
+
+# Compile smart contracts
+yarn deploy-contracts
+```
+
+### Start frontend app
+
+```
+yarn start
+```
+
+Don't forget to switch Metamask network to localhost:8545
+
+### Testing
+
+```bash
+# Truffle tests
+yarn truffle:test
+
+# App tests
+yarn jest
+```
+
+### Smart-contracts
+
+We implement an ERC-20 token contract to bootstrap app based on OpenZeppelin ERC20 Mintable token and Ownable contracts, for working with strings we utilize strings.sol library.
+
+### Setting up arbitrary token balances
+
+If you need to specify additional token balances, you can do so by creating a `balances.json` file in the root of the kyodo package
+Tokens should be specified in the form of `TICKER: BALANCE`, like `BTC: 1`
+
+## Description
+
+**Kyodo** is Ethereum blockchain based web app, the cross-platform incentive tool for building the crypto economy for DAO based on Impression revenue model. We build Kyodo to run Decent.Fund.
 As an organizational structure, it's defined as Adhocracy
 As governance, it has two models Democracy and Meritocracy.
 
@@ -39,14 +107,6 @@ There are two opposite models of the Task management in Kyodo:
    Everybody can initiate task by staking DF token.
    The process:
    stake task → add task description → assign roles → define an amount of DF token to stake to participate → define reward tasks → open task
-
-## Installation
-
-This is a monorepo for Kyodo project consisting of 3 modules:
-
-- Kyodo web app to setup colony, sign final tips, get your balance and view tasks progress
-- Kyodo backend to run mongodb server and tipping watch within a period
-- Kyodo bot to run riot bot for task creation and instant tipping
 
 # **Tokenomics**
 
@@ -159,57 +219,3 @@ The voting topics of the Gov domain are:
 - Approving a new member / NFT minting
 - Creating a new domain
 - Disputes from other domains
-
-### To setup monorepo packages and its dependencies
-
-```
-git clone https://github.com/decentfund/kyodo.git
-cd kyodo
-yarn
-```
-
-### Setup contracts
-
-```bash
-cd packages/kyodo-contracts
-
-# Start ganache cli with necessary parameters
-yarn start-ganache
-
-# Setup colonyNetwork and its dependencies
-yarn setup-colony
-
-# Create initial distribution of tokens
-# Change `deploy_parameters.json` to reflect the initial distribution you want or leave the accounts section empty.
-cp migrations/deploy_parameters.example.json migrations/deploy_parameters.json
-
-# Compile smart contracts
-yarn deploy-contracts
-```
-
-### Start frontend app
-
-```
-yarn start
-```
-
-Don't forget to switch Metamask network to localhost:8545
-
-### Testing
-
-```bash
-# Truffle tests
-npm run truffle:test
-
-# App tests
-npm run jest
-```
-
-### Smart-contracts
-
-We implement an ERC-20 token contract to bootstrap app based on OpenZeppelin ERC20 Mintable token and Ownable contracts, for working with strings we utilize strings.sol library.
-
-### Setting up arbitrary token balances
-
-If you need to specify additional token balances, you can do so by creating a `balances.json` file in the root of the kyodo package
-Tokens should be specified in the form of `TICKER: BALANCE`, like `BTC: 1`
