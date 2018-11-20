@@ -1,9 +1,10 @@
-import { Tip, getDomainByCode, Colony, getColonyById } from './db.js';
+import map from 'lodash/map';
+import sum from 'lodash/sum';
+import { Tip, Domain, getDomainByCode, Colony, getColonyById } from './db.js';
 import {
   changeUserBalance,
   currentPeriod,
   getUserByAddressInPeriod,
-  createAndSaveNewUserPeriod,
 } from './period';
 import { getUserBalance, dbGetUserByAlias, getOrCreateUser } from './user';
 import { dbCreateTask as createTask, getTaskByTitle } from './task';
@@ -44,7 +45,7 @@ export const sendTip = async (req, res) => {
     periodId: currentPeriod,
   });
 
-  tip.save((err, tip) => {
+  tip.save(err => {
     if (err) return console.error(err);
   });
   res
@@ -124,18 +125,61 @@ export const sendNewTip = async ({
   }
 };
 
-export const getAllTips = async (req, res) => {
+export const getColonyCurrentPeriodId = async () => {
   const colony = await getColonyById(0);
   const currentPeriodId = colony.periodIds[colony.periodIds.length - 1];
-  let tips = await Tip.find({ periodId: currentPeriodId }, (err, tips) => {
+  return currentPeriodId;
+};
+
+export const getAllTips = async () => {
+  const currentPeriodId = await getColonyCurrentPeriodId();
+  let tips = await Tip.find({ periodId: currentPeriodId }, err => {
     if (err) return console.error(err);
   })
     .populate('task', 'taskTitle')
     .populate('domain', 'domainTitle')
     .populate('from')
     .populate('to');
-  res.send(tips);
   return tips;
+};
+
+export const getUserTips = async ({ user, periodId, direction }) => {
+  const tips = await Tip.find(
+    { periodId: periodId, [direction]: user._id },
+    err => {
+      if (err) return console.error(err);
+    },
+  )
+    .populate('task', 'taskTitle')
+    .populate('domain', 'domainTitle')
+    .populate('from')
+    .populate('to');
+
+  return tips;
+};
+
+export const getAllUserTips = async ({ user, periodId = null }) => {
+  const _periodId = periodId || (await getColonyCurrentPeriodId());
+  const fromTips = await getUserTips({
+    user,
+    periodId: _periodId,
+    direction: 'from',
+  });
+  const toTips = await getUserTips({
+    user,
+    periodId: _periodId,
+    direction: 'to',
+  });
+  return [...fromTips, ...toTips];
+};
+
+export const getAllTipsInDomain = async domain => {
+  const govDomain = await Domain.find({ domainTitle: domain });
+  const tips = await Tip.find({ domain: govDomain });
+  return {
+    total: sum(map(tips, 'amount')),
+    tips,
+  };
 };
 
 export const checkBalance = (balance, amount) => {
