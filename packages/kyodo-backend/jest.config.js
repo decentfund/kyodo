@@ -1,5 +1,6 @@
 module.exports = {
-  globalSetup: './setup.js',
-  globalTeardown: './teardown.js',
   testEnvironment: './mongo-environment.js',
+  transform: {
+    '^.+\\.js?$': '<rootDir>/node_modules/babel-jest',
+  },
 };

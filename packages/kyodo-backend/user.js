@@ -21,16 +21,14 @@ export const dbAddUser = async ({
     dateCreated: Date.now(),
   });
 
-  await user.save(err => {
-    if (err) return null;
-  });
-
+  await user.save();
   return user;
 };
 
 export const addUser = async ({ alias }) => {
   const colony = await Colony.findOne();
   const user = await dbAddUser({ alias });
+
   await createAndSaveNewUserPeriod({
     periodId: colony.currentPeriodId,
     balance: 0,
@@ -93,7 +91,7 @@ export const delegatePoints = async ({ amount, sender, receiver }) => {
   const balance = await getUserBalance(sender);
 
   if (balance < amount)
-    throw Error(
+    throw new Error(
       `Naaah, you don't have so much points. Your current point balance is ${balance}`,
     );
 
@@ -124,10 +122,7 @@ export const setUserAlias = async ({ user, alias, blockNumber }) => {
   user.alias = alias;
   user.aliasSet = blockNumber;
 
-  user.save(err => {
-    if (err) return null;
-  });
-
+  await user.save();
   return user;
 };
 

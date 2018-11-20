@@ -1,5 +1,5 @@
-import { Period, Colony, getColonyById } from './db.js';
-import { dbGetAllUsers, getAllUsers, findUserByAddress } from './user.js';
+import { Period, getColonyById } from './db.js';
+import { dbGetAllUsers, getAllUsers } from './user.js';
 import { PERIOD_TIME } from './constants/periodTime.js';
 
 let getBalance = () => 0;
@@ -16,9 +16,7 @@ export const initPeriod = async (blockNumber, periodId, colonyId) => {
   const users = await dbGetAllUsers();
   currentPeriod = periodId;
   colony.periodIds.push(currentPeriod);
-  await colony.save(err => {
-    if (err) return console.error(err);
-  });
+  await colony.save();
 
   users.map(async el => {
     const balance = await getBalance(el.address, blockNumber);
@@ -47,9 +45,7 @@ export const createAndSaveNewUserPeriod = async ({
     user,
     tips,
   });
-  await period.save(err => {
-    if (err) return console.error(err);
-  });
+  await period.save();
   return period;
 };
 
@@ -69,9 +65,7 @@ export const initiateNewPeriod = async (req, res) => {
       tips: 0,
       user: el,
     });
-    await period.save((err, el) => {
-      if (err) return console.error(err);
-    });
+    await period.save();
   });
   res
     .status(200)
