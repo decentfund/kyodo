@@ -116,3 +116,111 @@ describe('send new tip', () => {
   });
 });
 
+describe('generates final activity tasks properly', async () => {
+  let govDomain;
+  let user;
+  let user2;
+
+  beforeEach(async () => {
+    await createColony();
+    govDomain = await createDomain();
+
+    // Setting test users
+    user = await addUserWithBalance('igor');
+    user2 = await addUserWithBalance('pasha');
+
+    await addTip({
+      domain: govDomain,
+      sender: user,
+      receiver: user2,
+      amount: 5,
+    });
+    await addTip({
+      domain: govDomain,
+      sender: user,
+      receiver: user2,
+      amount: 3,
+    });
+    await addTip({
+      domain: govDomain,
+      sender: user,
+      receiver: user2,
+      amount: 1,
+    });
+    await addTip({
+      domain: govDomain,
+      sender: user2,
+      receiver: user,
+      amount: 3,
+    });
+  });
+
+  it('generated tips properly', async () => {
+    const tips = await Tip.find();
+    expect(tips.length).toBe(4);
+  });
+
+  it('works correctly', async () => {
+    const specificationHash = '4b2d678840918a007bb0751e09370ba1053ebf52';
+    const taskId = 1;
+    const taskPotId = 2;
+    // mock generateIpfsHash
+    const originalGenerateIpfsHash = ipfs.generateIpfsHash;
+    ipfs.generateIpfsHash = jest.fn(() => specificationHash);
+
+    // mock
+    const originalGetColony = colony.getColony;
+    colony.getColony = jest.fn(originalGetColony);
+    const colonyMock = {
+      createTask: {
+        send: jest.fn(async () => ({ eventData: { taskId } })),
+      },
+      getTask: {
+        call: jest.fn(async () => ({ potId: taskPotId })),
+      },
+      moveFundsBetweenPots: {
+        send: jest.fn(),
+      },
+      getPotBalance: {
+        call: jest.fn(async () => ({ balance: 100000 })),
+      },
+    };
+    colony.getColony.mockImplementation(async () => colonyMock);
+
+    await generateFinalUserActivityTasks(user);
+
+    const ipfsParams = ipfs.generateIpfsHash.mock.calls[0][0];
+
+    expect(
+      map(ipfsParams, tip =>
+        pick(tip, [
+          'amount',
+          'domain.domainTitle',
+          'from.alias',
+          'from.balance',
+          'from.address',
+          'to.alias',
+          'to.balance',
+          'to.address',
+        ]),
+      ),
+    ).toMatchSnapshot();
+
+    const createTaskParams = colonyMock.createTask.send.mock.calls[0][0];
+    expect(createTaskParams).toEqual({ domainId: 1, specificationHash });
+
+    const getTaskParams = colonyMock.getTask.call.mock.calls[0][0];
+    expect(getTaskParams).toEqual({ taskId });
+
+    const moveFundsBetweenPotsParams =
+      colonyMock.moveFundsBetweenPots.send.mock.calls[0][0];
+    expect(moveFundsBetweenPotsParams).toEqual({
+      fromPot: 1, // Gov domain pot describe in beforeAll
+      toPot: taskPotId,
+      amount: 25000,
+    });
+
+    ipfs.generateIpfsHash = originalGenerateIpfsHash;
+    colony.getColony = originalGetColony;
+  });
+});

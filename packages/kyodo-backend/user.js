@@ -1,9 +1,14 @@
 import web3 from 'web3';
-import { Colony, getColonyById, getCurrentUserPeriod } from './db';
+import groupBy from 'lodash/groupBy';
+import { Colony, Domain, getColonyById, getCurrentUserPeriod } from './db';
 import User from './models/User';
 import { createAndSaveNewUserPeriod } from './period';
-const Point = require('./models/Point');
-const { ModelError } = require('./errors');
+import Point from './models/Point';
+import { ModelError } from './errors';
+import { getAllUserTips, getAllTipsInDomain } from './tip';
+import Token from '@kyodo/contracts/build/contracts/Token.json';
+import * as ipfs from './ipfs';
+import { getColony } from './web3/colony';
 
 export const dbAddUser = async ({
   address,
@@ -51,6 +56,55 @@ export const getAllUsers = async (req, res) => {
   let users = await dbGetAllUsers();
   res.status(200).send(users);
   return users;
+};
+
+export const generateFinalUserActivityTasks = async user => {
+  // Getting user tips
+  const userTips = await getAllUserTips({ user });
+  const tipsByDomain = groupBy(userTips, 'domain.domainTitle');
+
+  // Get colony
+  const colony = await getColony();
+
+  for (const domain in tipsByDomain) {
+    // Get tokens in domain
+    const { total: totalInDomain } = await getAllTipsInDomain(domain);
+
+    const tipsInDomain = tipsByDomain[domain]
+      .filter(tip => tip.to._id.toString() === user._id.toString())
+      .reduce((a, { amount }) => a + amount, 0);
+
+    // Get domain id
+    // TODO: Get domain data from blockchain
+    const { domainId, potId: domainPotId } = await Domain.findOne({
+      domainTitle: domain,
+    });
+
+    // Get domain pot balance
+    const { balance: domainPotBalance } = await colony.getPotBalance.call({
+      potId: domainPotId,
+      token: Token.address,
+    });
+
+    // FIXME: decimals!!!
+    const tokensToReceive = (tipsInDomain / totalInDomain) * domainPotBalance;
+    const specificationHash = await ipfs.generateIpfsHash(tipsByDomain[domain]);
+
+    // Create task for user using tips sent and received within domain and domain id
+    const {
+      eventData: { taskId },
+    } = await colony.createTask.send({ specificationHash, domainId });
+
+    const task = await colony.getTask.call({ taskId });
+
+    // Move tokens from domain on new task
+    await colony.moveFundsBetweenPots.send({
+      fromPot: domainPotId,
+      toPot: task.potId,
+      amount: tokensToReceive,
+      token: Token.address,
+    });
+  }
 };
 
 export const getUserByAddress = async (req, res) => {
