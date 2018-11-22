@@ -56,6 +56,9 @@ yarn start
 
 Don't forget to switch Metamask network to localhost:8545
 
+### Starting backend
+Refer to [documentation](../packages/kyodo-backend/README.md) in backend package
+
 ### Testing
 
 ```bash
