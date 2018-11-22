@@ -7,7 +7,7 @@ var Registry = artifacts.require('./Registry.sol');
 var OwnedUpgradeabilityProxy = artifacts.require(
   './OwnedUpgradeabilityProxy.sol',
 );
-var deployParameters = require('./deploy_parameters.json');
+var deployParameters = require('./getDeployParameters');
 var getColonyClient = require('./getColonyClient');
 var encodeCall = require('./encodeCall');
 

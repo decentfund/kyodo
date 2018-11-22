@@ -13,4 +13,4 @@ else
   ./node_modules/.bin/truffle migrate --compile-all --reset
 fi
 
-cp -rf ./build/ ../../
+cp -Rf ./build ../../
