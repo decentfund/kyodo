@@ -60,13 +60,10 @@ Don't forget to switch Metamask network to localhost:8545
 Refer to [documentation](../packages/kyodo-backend/README.md) in backend package
 
 ### Testing
+All packages are having necesary test suites and could be invoked using next call:
 
 ```bash
-# Truffle tests
-yarn truffle:test
-
-# App tests
-yarn jest
+yarn test
 ```
 
 ### Smart-contracts
