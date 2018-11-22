@@ -50,6 +50,7 @@ yarn deploy-contracts
 ### Start frontend app
 
 ```
+cd packages/kyodo-app
 yarn start
 ```
 
