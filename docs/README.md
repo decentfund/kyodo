@@ -72,16 +72,17 @@ We implement an ERC-20 token contract to bootstrap app based on OpenZeppelin ERC
 
 ### Setting up arbitrary token balances
 
-If you need to specify additional token balances, you can do so by creating a `balances.json` file in the root of the kyodo package
+If you need to specify additional token balances, you can do so by creating a `balances.json` file in the root of the kyodo package.
 Tokens should be specified in the form of `TICKER: BALANCE`, like `BTC: 1`
 
 ## Description
 
 **Kyodo** is Ethereum blockchain based web app, the cross-platform incentive tool for building the crypto economy for DAO based on Impression revenue model. We build Kyodo to run Decent.Fund.
-As an organizational structure, it's defined as Adhocracy
+As an organizational structure, it's defined as Adhocracy.
 As governance, it has two models Democracy and Meritocracy.
 
 Colony: Decent.Fund
+
 **Decent.Fund mission** is to contribute to the mass adoption of the decentralized solutions, making the concepts of the new crypto economy closer to the unchained world. According to the mission Decent.Fund focuses on following activities:
 
 1. UI/UX design
@@ -122,7 +123,7 @@ The Kyodo has a two-token model / continuous:
 
 **DF token**
 
-_Tech layer_ - ERC 20 Blockchain native token
+_Tech layer_ - ERC-20 Blockchain native token
 
 _Purposes:_
 Cryptocurrency. DF token is intended to be a medium of exchange and store of value for the Decent.Fund activity. DF token is tied to the fund of the community, which is under the GOV domain.
@@ -157,8 +158,8 @@ Utility token - closely tied to functionality / internal currency / Grants owner
 
 How to earn: Buy on a decentralized exchange or Fund management domain
 
-**DFMerit**
-_Tech layer_ - NFT Blockchain native token
+**DF Merit**\
+_Tech layer_ - NFT Blockchain native token\
 _Purpose:_
 Network token - not intended to be cryptocurrency, has the functionality within the system:
 
@@ -174,7 +175,7 @@ _Legal status_ - Utility token
 
 How to earn: owners are defined in Gov domain. The dispute could be initiated by a member who wants the merit. The decision is made by voting within Gov domain.
 
-**Incentives**
+**Incentives**\
 Incentives involve both monetary and non-monetary rewards and punishments:
 
 - pay-for-performance reward in points which are converted to DF token every period (completing tasks, voting)
