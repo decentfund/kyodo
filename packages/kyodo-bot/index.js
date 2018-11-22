@@ -19,6 +19,7 @@ const TOKEN_PATH = 'credentials.json';
 const { getUserBalance, updateUserAddress } = require('@kyodo/backend/user');
 const { sendNewTip } = require('@kyodo/backend/tip');
 const { getPointTypes } = require('@kyodo/backend/domain');
+const { parseTitle } = require('./utils/strings');
 
 // Load client secrets from a local file.
 fs.readFile('client_secret.json', (err, content) => {
@@ -372,12 +373,6 @@ async function handleAddress(event, room, client, auth) {
     client.sendTextMessage(roomId, e.message);
   }
 }
-
-const titleRegex = /for\s(.+)/;
-const parseTitle = message => message.toLowerCase().split(titleRegex)[1];
-module.exports = {
-  parseTitle,
-};
 
 async function handleDish(event, room, client, auth) {
   const sender = event.getSender();
