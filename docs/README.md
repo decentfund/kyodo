@@ -31,6 +31,7 @@ yarn
 ```
 # Create initial distribution of tokens
 # Change `deploy_parameters.json` to reflect the initial distribution you want or leave the accounts section empty.
+cd packages/kyodo-contracts
 cp migrations/deploy_parameters.example.json migrations/deploy_parameters.json
 ```
 
@@ -38,8 +39,6 @@ cp migrations/deploy_parameters.example.json migrations/deploy_parameters.json
 ### Setup contracts
 
 ```bash
-cd packages/kyodo-contracts
-
 # Start ganache cli with necessary parameters
 yarn start-ganache
 
@@ -50,7 +49,6 @@ yarn deploy-contracts
 ### Start frontend app
 
 ```
-cd packages/kyodo-app
 yarn start
 ```
 
