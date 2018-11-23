@@ -7,6 +7,9 @@ require('chai')
   .should();
 
 const KyodoDAO = artifacts.require('KyodoDAO');
+const DomainsV1 = artifacts.require('DomainsV1');
+const MembersV1 = artifacts.require('MembersV1');
+const PeriodsV1 = artifacts.require('PeriodsV1');
 const Token = artifacts.require('Token');
 const EtherRouter = artifacts.require('EtherRouter');
 const IColonyNetwork = artifacts.require('IColonyNetwork');
@@ -17,6 +20,9 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
   let colonyNetwork;
   let token;
   let kyodo;
+  let domains;
+  let periods;
+  let members;
   let colony;
   let authority;
 
@@ -37,61 +43,71 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
     const tokenArgs = getTokenArgs();
     token = await Token.new(...tokenArgs);
     token.mint(1000);
-    kyodo = await KyodoDAO.new(token.address);
+    kyodo = await KyodoDAO.new(owner);
+    await kyodo.initialize(owner);
     const { logs } = await colonyNetwork.createColony(token.address);
     const { colonyAddress } = logs[0].args;
+    domains = await DomainsV1.new();
+    await domains.initialize(kyodo.address);
+    periods = await PeriodsV1.new();
+    await periods.initialize(kyodo.address);
+    members = await MembersV1.new();
+    await members.initialize(kyodo.address);
     await kyodo.setColonyAddress(colonyAddress);
+    await kyodo.setTokenAddress(token.address);
+    await kyodo.setDomainsAddress(domains.address);
+    await kyodo.setPeriodsAddress(periods.address);
+    await kyodo.setMembersAddress(members.address);
     await token.setOwner(colonyAddress);
     colony = await IColony.at(colonyAddress);
     const authorityAddress = await colony.authority();
     authority = await Authority.at(authorityAddress);
-    for (var i = 0; i < 4; i++) {
-      await colony.addDomain(1);
-    }
+    await colony.setAdminRole(domains.address);
     await colony.setOwnerRole(kyodo.address);
   });
   describe('sets alias', function() {
     describe('add alias', function() {
       it('reverts for unwhitelisted', async function() {
-        await assertRevert(kyodo.setAlias('aaa'));
+        await assertRevert(members.setAlias('aaa'));
       });
       it('reverts for existing nick', async function() {
-        await kyodo.addToWhitelist(owner);
-        await kyodo.setAlias('aaa');
-        let usedAliases = await kyodo.getUsedAliasesLength();
+        // FIXME: Implement single add to whitelist function in kyodo contract
+        await kyodo.addManyToWhitelist([owner]);
+        await members.setAlias('aaa');
+        let usedAliases = await members.getUsedAliasesLength();
         assert.equal(usedAliases, 1);
-        await kyodo.setAlias('bbb');
-        usedAliases = await kyodo.getUsedAliasesLength();
+        await members.setAlias('bbb');
+        usedAliases = await members.getUsedAliasesLength();
         assert.equal(usedAliases, 1);
-        await assertRevert(kyodo.setAlias('bbb', { from: anotherAccount }));
-        usedAliases = await kyodo.getUsedAliasesLength();
+        await assertRevert(members.setAlias('bbb', { from: anotherAccount }));
+        usedAliases = await members.getUsedAliasesLength();
         assert.equal(usedAliases, 1);
       });
       describe('finishes successfully for whitelisted and get', function() {
         let setAliasTx;
         beforeEach(async function() {
-          await kyodo.addToWhitelist(owner);
-          const tx = await kyodo.setAlias('aaa');
+          await kyodo.addManyToWhitelist([owner]);
+          const tx = await members.setAlias('aaa');
           setAliasTx = tx;
         });
         it('empty address', async function() {
           truffleAssert.eventEmitted(setAliasTx, 'NewAliasSet', ev => {
             return ev._address === owner && ev._alias === 'aaa';
           });
-          const alias = await kyodo.getAlias(anotherAccount, {
+          const alias = await members.getAlias(anotherAccount, {
             from: anotherAccount,
           });
           assert.equal(alias, '');
         });
         it('proper alias', async function() {
-          const alias = await kyodo.getAlias(owner);
+          const alias = await members.getAlias(owner);
           assert.equal(alias, 'aaa');
         });
       });
       describe('alias setting', async function() {
         it('should allow to set back alias', async () => {
-          await kyodo.addToWhitelist(owner);
-          const tx = await kyodo.setAlias('igor');
+          await kyodo.addManyToWhitelist([owner]);
+          const tx = await members.setAlias('igor');
           truffleAssert.eventEmitted(
             tx,
             'NewAliasSet',
@@ -100,9 +116,9 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
             },
             'should allow to set address for whitelisted',
           );
-          let usedAliasesLength = await kyodo.getUsedAliasesLength();
+          let usedAliasesLength = await members.getUsedAliasesLength();
           assert.equal(usedAliasesLength, 1, 'Alias is not stored');
-          const tx2 = await kyodo.setAlias('igorz');
+          const tx2 = await members.setAlias('igorz');
           truffleAssert.eventEmitted(
             tx2,
             'NewAliasSet',
@@ -111,9 +127,9 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
             },
             'should allow to set another free alias for whitelisted',
           );
-          usedAliasesLength = await kyodo.getUsedAliasesLength();
+          usedAliasesLength = await members.getUsedAliasesLength();
           assert.equal(usedAliasesLength, 1, 'Alias is not deleted');
-          const tx3 = await kyodo.setAlias('igor');
+          const tx3 = await members.setAlias('igor');
           truffleAssert.eventEmitted(
             tx3,
             'NewAliasSet',
@@ -122,7 +138,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
             },
             'should allow to set back original alias',
           );
-          usedAliasesLength = await kyodo.getUsedAliasesLength();
+          usedAliasesLength = await members.getUsedAliasesLength();
           assert.equal(usedAliasesLength, 1, 'Alias is not added');
         });
       });
@@ -131,7 +147,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
   describe('initial distribution', function() {
     beforeEach(async function() {
       await kyodo.addManyToWhitelist([owner, anotherAccount]);
-      await kyodo.setAlias('aaa');
+      await members.setAlias('aaa');
     });
     // it('happen on start called by owner', async function() {
     // let totalSupply = await this.token.totalSupply();
@@ -148,28 +164,34 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
   describe('returns proper members count', function() {
     it('for 2 whitelisted addresses', async function() {
       await kyodo.addManyToWhitelist([owner, anotherAccount]);
-      const colonyMembers = await kyodo.getMembersCount();
+      const colonyMembers = await members.getMembersCount();
       assert.equal(colonyMembers, 2);
     });
     it('for empty whitelist', async function() {
-      const colonyMembers = await kyodo.getMembersCount();
+      const colonyMembers = await members.getMembersCount();
       assert.equal(colonyMembers, 0);
     });
   });
   describe('sets period days length', function() {
     it('works', async function() {
       await kyodo.setPeriodDaysLength(4);
-      let periodDaysLength = await kyodo.periodDaysLength();
+      let periodDaysLength = await periods.periodDaysLength();
       assert.equal(periodDaysLength, 4);
       await kyodo.setPeriodDaysLength(10);
-      periodDaysLength = await kyodo.periodDaysLength();
+      periodDaysLength = await periods.periodDaysLength();
       assert.equal(periodDaysLength, 10);
     });
   });
   describe('starts new period', function() {
     it('for new colony', async function() {
+      // We have to add these domains due to hardcoded distribution by now
+      const domainNames = ['FIRST', 'SECOND', 'THIRD', 'FOURTH'];
+      for (var i = 0; i < 4; i++) {
+        await kyodo.addDomain(domainNames[i]);
+      }
+
       const ownerRole = 0;
-      const currentBlock = await web3.eth.getBlock('latest').number;
+      let currentBlock = await web3.eth.getBlock('latest').number;
 
       let hasRole = await authority.hasUserRole(kyodo.address, ownerRole);
       let tokenOwner = await token.owner();
@@ -179,10 +201,28 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
       let parentPotBalance = await domainBalance(1, token.address, colony);
       assert.equal(parentPotBalance, 0, 'parent domain pot is not empty');
 
+      await kyodo.setPeriodDaysLength(1);
+      const callback = () => {};
+      await web3.currentProvider.sendAsync(
+        {
+          jsonrpc: '2.0',
+          method: 'evm_increaseTime',
+          params: [86401], // 86400 seconds in a day
+          id: new Date().getTime(),
+        },
+        callback,
+      );
+
+      currentBlock = await web3.eth.getBlock('latest').number;
       await kyodo.startNewPeriod();
 
-      // Get the total supply of tokens
       let totalSupply = await token.totalSupply();
+
+      let currentPeriodStartBlock = await periods.currentPeriodStartBlock();
+      assert.equal(currentPeriodStartBlock.toNumber(), currentBlock + 1);
+
+      // Get the total supply of tokens
+      totalSupply = await token.totalSupply();
       assert.equal(totalSupply.toNumber(), 1050);
 
       parentPotBalance = await domainBalance(1, token.address, colony);
@@ -199,22 +239,39 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         'first domain pot is not correct',
       );
 
-      const currentPeriodStartBlock = await kyodo.currentPeriodStartBlock();
+      currentPeriodStartBlock = await periods.currentPeriodStartBlock();
       assert.equal(currentPeriodStartBlock.toNumber(), currentBlock + 1);
 
       const count = await colony.getDomainCount.call();
       assert.equal(count.toNumber(), 5, 'Should have 5 domains in colony');
     });
     it('reverts on immediate time new period start', async function() {
+      // We have to add these domains due to hardcoded distribution by now
+      const domainNames = ['FIRST', 'SECOND', 'THIRD', 'FOURTH'];
+      for (var i = 0; i < 4; i++) {
+        await kyodo.addDomain(domainNames[i]);
+      }
+
       await kyodo.startNewPeriod();
       await assertRevert(kyodo.startNewPeriod());
     });
     it('works after passing time', async function() {
+      // We have to add these domains due to hardcoded distribution by now
+      const domainNames = ['FIRST', 'SECOND', 'THIRD', 'FOURTH'];
+      for (var i = 0; i < 4; i++) {
+        await kyodo.addDomain(domainNames[i]);
+      }
+
+      let domainsLength = await domains.getDomainsLength();
+      assert.equal(domainsLength, 4, "Domains weren't added");
+
       let currentBlock = await web3.eth.getBlock('latest').number;
+
       await kyodo.startNewPeriod();
-      let currentPeriodStartBlock = await kyodo.currentPeriodStartBlock();
+      let currentPeriodStartBlock = await periods.currentPeriodStartBlock();
       assert.equal(currentPeriodStartBlock, currentBlock + 1);
       await assertRevert(kyodo.startNewPeriod());
+
       await kyodo.setPeriodDaysLength(1);
       const callback = () => {};
       await web3.currentProvider.sendAsync(
@@ -227,27 +284,67 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         callback,
       );
       currentBlock = await web3.eth.getBlock('latest').number;
+
       await kyodo.startNewPeriod();
-      currentPeriodStartBlock = await kyodo.currentPeriodStartBlock();
+      currentPeriodStartBlock = await periods.currentPeriodStartBlock();
+      assert.equal(currentPeriodStartBlock, currentBlock + 1);
+    });
+    it('works after period days length change', async function() {
+      // We have to add these domains due to hardcoded distribution by now
+      const domainNames = ['FIRST', 'SECOND', 'THIRD', 'FOURTH'];
+      for (var i = 0; i < 4; i++) {
+        await kyodo.addDomain(domainNames[i]);
+      }
+
+      let currentBlock = await web3.eth.getBlock('latest').number;
+      await kyodo.startNewPeriod();
+      let currentPeriodStartBlock = await periods.currentPeriodStartBlock();
+      assert.equal(currentPeriodStartBlock, currentBlock + 1);
+      const callback = () => {};
+      await web3.currentProvider.sendAsync(
+        {
+          jsonrpc: '2.0',
+          method: 'evm_increaseTime',
+          params: [86400 * 29 + 1], // 86400 seconds in a day
+          id: new Date().getTime(),
+        },
+        callback,
+      );
+      await kyodo.setPeriodDaysLength(45);
+      await assertRevert(kyodo.startNewPeriod());
+      await kyodo.setPeriodDaysLength(40);
+      await assertRevert(kyodo.startNewPeriod());
+      await web3.currentProvider.sendAsync(
+        {
+          jsonrpc: '2.0',
+          method: 'evm_increaseTime',
+          params: [86401 * 11], // 86400 seconds in a day
+          id: new Date().getTime(),
+        },
+        callback,
+      );
+      currentBlock = await web3.eth.getBlock('latest').number;
+      await kyodo.startNewPeriod();
+      currentPeriodStartBlock = await periods.currentPeriodStartBlock();
       assert.equal(currentPeriodStartBlock, currentBlock + 1);
     });
   });
   describe('domain adding', function() {
     it('works as expected', async function() {
-      let domainsLength = await kyodo.getDomainsLength();
+      let domainsLength = await domains.getDomainsLength();
       assert.equal(domainsLength, 0, 'Domains are empty');
 
       const firstDomain = 'GOV';
       const secondDomain = 'FUND';
 
       let tx = await kyodo.addDomain(firstDomain);
-      domainsLength = await kyodo.getDomainsLength();
+      domainsLength = (await domains.getDomainsLength()).toNumber();
       assert.equal(
         domainsLength,
         1,
         'Domains length is not correct after adding of first domain',
       );
-      let domain = await kyodo.getDomain(0);
+      let domain = await domains.getDomain(0);
       assert.equal(
         domain[0],
         firstDomain,
@@ -258,18 +355,19 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         1,
         'First domain id is stored incorrectly',
       );
+      truffleAssert.prettyPrintEmittedEvents(tx);
       truffleAssert.eventEmitted(tx, 'NewDomainAdded', ev => {
         return ev._code === firstDomain && ev._id.toNumber() === 1;
       });
 
       tx = await kyodo.addDomain(secondDomain);
-      domainsLength = await kyodo.getDomainsLength();
+      domainsLength = await domains.getDomainsLength();
       assert.equal(
         domainsLength,
         2,
         'Domains length is not correct after adding of second domain',
       );
-      domain = await kyodo.getDomain(1);
+      domain = await domains.getDomain(1);
       assert.equal(
         domain[0],
         secondDomain,
