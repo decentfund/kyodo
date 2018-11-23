@@ -52,6 +52,7 @@ if ganache_running; then
 else
   echo "Starting our own ganache instance"
   start_ganache
+  ./scripts/deploy_colony.sh && ./scripts/deploy_kyodo.sh
 fi
 
 if [ "$SOLC_NIGHTLY" = true ]; then
