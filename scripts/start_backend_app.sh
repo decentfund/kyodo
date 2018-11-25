@@ -3,5 +3,5 @@
 # Move to kyodo-app directory
 cd packages/kyodo-backend
 
-# Start Frontend App
+# Start Backend App
 yarn start
