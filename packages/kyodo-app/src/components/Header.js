@@ -32,7 +32,6 @@ const StyledMenuContainer = styled.div`
   display: flex;
   font-family: Roboto Mono;
   font-style: normal;
-  line-height: normal;
   font-size: 20px;
   margin-left: 18px;
   line-height: 33px;
@@ -153,7 +152,7 @@ Header.defaultProps = {
   colonyName: 'decent.fund',
   userAddress: '0x...',
 };
-Header.PropTypes = {
+Header.propTypes = {
   colonyName: PropTypes.string,
   userAddress: PropTypes.string,
 };
