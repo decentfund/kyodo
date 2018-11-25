@@ -48,8 +48,8 @@ const PeriodProgress = ({ periodName, endTime, startTime, className }) => {
 
 PeriodProgress.propTypes = {
   periodName: PropTypes.string,
-  endTime: moment,
-  startTime: moment,
+  endTime: PropTypes.instanceOf(moment),
+  startTime: PropTypes.instanceOf(moment),
 };
 
 PeriodProgress.defaultProps = {
