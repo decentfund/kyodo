@@ -13,7 +13,7 @@ import store from './store';
 ReactDOM.render(
   <DrizzleProvider options={drizzleOptions} store={store}>
     <IntlProvider locale="en">
-      <Metamask>
+      <Metamask requiredNetwork={['Rinkeby', 'Private', 'Development']}>
         <App />
       </Metamask>
     </IntlProvider>
