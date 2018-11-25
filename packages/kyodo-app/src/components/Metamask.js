@@ -51,7 +51,7 @@ class LoadingMetamask extends Component {
   static defaultProps = {
     requiredNetwork: [
       'Mainnet',
-      'Unknown', // allow local RPC for testing
+      'Development', // allow local RPC for testing
     ],
   };
 

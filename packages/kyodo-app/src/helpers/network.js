@@ -6,6 +6,6 @@ export const getNetworkName = (network) => {
     case 4: return 'Rinkeby';
     case 42: return 'Kovan';
     case 5777: return 'Private';
-    default: return 'Unknown';
+    default: return 'Development';
   }
 };
