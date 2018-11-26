@@ -6,4 +6,3 @@ lerna-debug.log
 **/build/*
 **/ganache-accounts.json
 yarn-error.log
-yarn.lock
