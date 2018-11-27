@@ -53,7 +53,11 @@ function* watchLoadRate() {
 
 function* loadBalance() {
   try {
-    const address = process.env.REACT_APP_MULTISIG_ADDRESS;
+    // Use env multisig address or default decentfund.eth (0xba7590098ad09ca35fde9ede64e58b72552bb10c)
+    const address =
+      process.env.REACT_APP_MULTISIG_ADDRESS ||
+      '0xba7590098ad09ca35fde9ede64e58b72552bb10c';
+
     const apiURI = `http://api.ethplorer.io/getAddressInfo/${address}?apiKey=freekey`;
 
     const eventLoad = yield call(axios.get, apiURI);
