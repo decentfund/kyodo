@@ -115,8 +115,8 @@ function* watchLoadHistoricalRates() {
 
 function* loadPeriodTasks() {
   try {
-    console.log(process.env.REACT_APP_BACKEND_URI);
-    const apiURI = `${process.env.REACT_APP_BACKEND_URI}/tips`;
+    const apiURI = `${process.env.REACT_APP_BACKEND_URI ||
+      'http://kyodo.decent.fund:3666'}/tips`;
 
     const { data } = yield call(axios.get, apiURI);
     const tasks = data.map(t => ({

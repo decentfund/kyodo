@@ -46,6 +46,12 @@ yarn start-ganache
 yarn deploy-contracts
 ```
 
+### Starting backend
+> If you want to use local development backend with proper database in the frontend app, start backend first
+```
+yarn start-backend
+```
+
 ### Start frontend app
 
 ```
@@ -53,9 +59,6 @@ yarn start
 ```
 
 Don't forget to switch Metamask network to localhost:8545
-
-### Starting backend
-Refer to [documentation](../packages/kyodo-backend/README.md) in backend package
 
 ### Testing
 All packages are having necesary test suites and could be invoked using next call:
