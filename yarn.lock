@@ -12823,7 +12823,7 @@ mongoose-legacy-pluralize@1.0.2:
   resolved "https://registry.yarnpkg.com/mongoose-legacy-pluralize/-/mongoose-legacy-pluralize-1.0.2.tgz#3ba9f91fa507b5186d399fb40854bff18fb563e4"
   integrity sha512-Yo/7qQU4/EyIS8YDFSeenIvXxZN+ld7YdV9LqFVQJzTLye8unujAWPZ4NWKfFA+RNjh+wvTWKY9Z3E5XM6ZZiQ==
 
-mongoose@^5.1.6:
+mongoose@^5.3.10:
   version "5.3.13"
   resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.3.13.tgz#043d6fd387ea5c13db857b20cf59088f9f393af6"
   integrity sha512-Vly1oiMpB6vxZ3KklTSmDVDzQQ5nGeU/VTCix6tGqI0B3AJL+ssUr4Vc5YqwmLDLoDO9HGiBIVu4AoACab+h2Q==
@@ -18342,10 +18342,10 @@ trim@0.0.1:
   resolved "https://registry.yarnpkg.com/trim/-/trim-0.0.1.tgz#5858547f6b290757ee95cccc666fb50084c460dd"
   integrity sha1-WFhUf2spB1fulczMZm+1AITEYN0=
 
-truffle-assertions@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/truffle-assertions/-/truffle-assertions-0.5.0.tgz#afae9d87efc1324d11a3fa27a517049004d23a02"
-  integrity sha512-6/lyMkmGe0dOKxz17eGNB9bKnT4hhgCnRnHKGgv0j5aeyWC/V9QX6iLk6DcAjRvNiW8xVh0oEhZy8i6xRy0saA==
+truffle-assertions@^0.6.3:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/truffle-assertions/-/truffle-assertions-0.6.3.tgz#519c00ea80b5cefe609af78645d8e72c98708250"
+  integrity sha512-0j8WU7tc4tDhQauiGqgRFOQtH0QLlc/T/jd2KjSrw3kvJxu4IZU0KAdosohN2nFAnrGHF/O4K1da/yEQjwgH7g==
   dependencies:
     assertion-error "^1.1.0"
     web3 "^1.0.0-beta.35"
@@ -18399,6 +18399,11 @@ truffle-contract@^3.0.5:
     truffle-contract-schema "^2.0.1"
     truffle-error "^0.0.3"
     web3 "0.20.6"
+
+truffle-deploy-registry@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/truffle-deploy-registry/-/truffle-deploy-registry-0.4.2.tgz#5c10eab4c66003716e93bff35373ab84b29e6bc6"
+  integrity sha512-SXUniHFVcJs3pIP4E+U45ZizKkZ7gZ68c6TuWBfjdG5TyybEyTUSKI+LvP8299/GJLBciZDxAEesdm8CXh5IYg==
 
 truffle-error@^0.0.3:
   version "0.0.3"
@@ -19094,11 +19099,6 @@ watch@~0.18.0:
   dependencies:
     exec-sh "^0.2.0"
     minimist "^1.2.0"
-
-watchman@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/watchman/-/watchman-1.0.0.tgz#a800f815957952ed9229c54610fb4a26897d2c21"
-  integrity sha512-f7sP6DSVQzNUAXIBctvYyJyq6/j/FtWoEn6yh/Ot/E14a3am7JMH0tygWt6iE+T+DT+BNOUAT3hM/gZ7W9Ycmw==
 
 watchpack@^1.4.0, watchpack@^1.5.0:
   version "1.6.0"
