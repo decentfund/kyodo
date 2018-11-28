@@ -325,11 +325,7 @@ class App extends Component {
             />
             <Route
               path="/user"
-              render={props =>
-                whitelistedAddresses.indexOf(userAddress) >= 0 ? (
-                  <AddRiotID account={userAddress} />
-                ) : null
-              }
+              render={props => <AddRiotID account={userAddress} />}
             />
             <Route
               path="/members"
