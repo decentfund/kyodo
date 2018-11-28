@@ -27,5 +27,5 @@ yarn
 
 # Compiling contracts and applying registry
 cd ../../
-truffle compile
+./node_modules/.bin/truffle compile
 ./node_modules/.bin/apply-registry build/contracts
