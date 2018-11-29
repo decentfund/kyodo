@@ -119,11 +119,9 @@ export const getUserByAddressInPeriod = async address => {
 };
 
 export const changeUserBalance = async (address, tip) => {
-  let sender = await Period.find({
-    address: address,
-  });
+  let sender = await Period.find({ address, periodId: currentPeriod });
   await Period.update(
-    { address: address },
+    { address, periodId: currentPeriod },
     { $set: { balance: sender[0].balance - tip } },
     (err, res) => {
       if (err) console.log(err);
