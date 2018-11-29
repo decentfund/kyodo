@@ -37,7 +37,7 @@ class Members extends Component {
     if (state.drizzleStatus.initialized) {
       // Unable to use cacheSend function due to external function drizzle smartcontract handling
       this.drizzle.contracts.KyodoDAO.methods
-        .addToWhitelist(this.state.address)
+        .addManyToWhitelist([this.state.address])
         .send({ from: userAddress });
     }
   };
