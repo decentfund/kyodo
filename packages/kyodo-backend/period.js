@@ -67,7 +67,7 @@ export const initiateNewPeriod = async (req, res) => {
       title: req.body.title,
       address: user.address,
       periodId: currentPeriod,
-      balance: user.balance, // current user balance
+      balance: user.balance, // TODO: get the real user's balance and put it here
       initialBalance: user.balance,
       tips: 0,
       user,
