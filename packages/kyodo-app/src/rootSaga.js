@@ -53,7 +53,11 @@ function* watchLoadRate() {
 
 function* loadBalance() {
   try {
-    const address = process.env.REACT_APP_MULTISIG_ADDRESS;
+    // Use env multisig address or default decentfund.eth (0xba7590098ad09ca35fde9ede64e58b72552bb10c)
+    const address =
+      process.env.REACT_APP_MULTISIG_ADDRESS ||
+      '0xba7590098ad09ca35fde9ede64e58b72552bb10c';
+
     const apiURI = `http://api.ethplorer.io/getAddressInfo/${address}?apiKey=freekey`;
 
     const eventLoad = yield call(axios.get, apiURI);
@@ -111,8 +115,8 @@ function* watchLoadHistoricalRates() {
 
 function* loadPeriodTasks() {
   try {
-    console.log(process.env.REACT_APP_BACKEND_URI);
-    const apiURI = `${process.env.REACT_APP_BACKEND_URI}/tips`;
+    const apiURI = `${process.env.REACT_APP_BACKEND_URI ||
+      'http://kyodo.decent.fund:3666'}/tips`;
 
     const { data } = yield call(axios.get, apiURI);
     const tasks = data.map(t => ({

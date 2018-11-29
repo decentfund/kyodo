@@ -1,0 +1,27 @@
+[
+  {
+    "contractName": "KyodoDAO",
+    "address": "0xa4873d014cc3a0fcb650acfc645aee841e296036",
+    "transactionHash": "0xb44c4cb11011df18f63fa470777236f6c193d6908627fef086f5f17938ba5832"
+  },
+  {
+    "contractName": "MembersV1",
+    "address": "0x2a2a1d7c648738f93c816b57a19c704231bcc041",
+    "transactionHash": "0xbc3acd3839969d6ef14272d9a5eb51a498c72a272d381ffa787417b2e6be4464"
+  },
+  {
+    "contractName": "PeriodsV1",
+    "address": "0x64d1bd1ff2bb95d9857246b273ddf4da0b6379e4",
+    "transactionHash": "0xb36d23dfe17c39fb223d1418928232f7aeb38fd3b55163fe2cd074fe58a89d56"
+  },
+  {
+    "contractName": "Registry",
+    "address": "0x5cb120300bc3f6c28d5bb533c4b412d1972a98f8",
+    "transactionHash": "0xccf2714c3b936b0c9676d367a92cd49c7873f4696fef032269ec77621cd67577"
+  },
+  {
+    "contractName": "Token",
+    "address": "0xf5460c1f9a5cdc8e00d1feaf92e8965b14e73450",
+    "transactionHash": "0x9b1765e41de68c59b230a3dd155582845214aa4bfe65e8bf3da2c6e5e4fc3a85"
+  }
+]

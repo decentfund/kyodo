@@ -1,11 +1,10 @@
 // TODO: For production we need to export interfaces in kyodo-contracts folder and work with abi and deployed addresses
-import KyodoDAO from '@kyodo/contracts/build/contracts/KyodoDAO.json';
 import Registry from '@kyodo/contracts/build/contracts/Registry.json';
 import Token from '@kyodo/contracts/build/contracts/Token.json';
 
 const drizzleOptions = {
   web3: {
-    ignoreMetamask: true,
+    // ignoreMetamask: true,
     block: false,
     fallback: {
       type: 'ws',
