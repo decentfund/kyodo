@@ -187,8 +187,8 @@ export const getTotalUserTips = createSelector(
   }),
 );
 
-export const getTipsByDomain = createSelector(getTipsToUser, tips => {
-  return tips.reduce(
+const formatTipsPerDoman = tips =>
+  tips.reduce(
     (a, { domain, amount }) => {
       if (a[domain]) {
         a[domain] = a[domain] + amount;
@@ -201,6 +201,13 @@ export const getTipsByDomain = createSelector(getTipsToUser, tips => {
     },
     { total: 0 },
   );
+
+export const getTipsByDomain = createSelector(getTipsToUser, tips => {
+  return formatTipsPerDoman(tips);
+});
+
+export const getPointsDistribution = createSelector(getTips, tips => {
+  return formatTipsPerDoman(tips);
 });
 
 const reducer = combineReducers({
