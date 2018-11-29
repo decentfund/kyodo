@@ -1650,13 +1650,6 @@ async-mqtt@^1.0.1:
     in-array "^0.1.2"
     mqtt "^2.3.1"
 
-async@2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/async/-/async-2.4.0.tgz#4990200f18ea5b837c2cc4f8c031a6985c385611"
-  integrity sha1-SZAgDxjqW4N8LMT4wDGmmFw4VhE=
-  dependencies:
-    lodash "^4.14.0"
-
 async@2.6.1, async@^2.0.0, async@^2.0.1, async@^2.1.2, async@^2.1.4, async@^2.1.5, async@^2.4.0, async@^2.4.1, async@^2.5.0, async@^2.6.0, async@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
@@ -7929,12 +7922,12 @@ get-value@^2.0.3, get-value@^2.0.6:
   resolved "https://registry.yarnpkg.com/get-value/-/get-value-2.0.6.tgz#dc15ca1c672387ca76bd37ac0a395ba2042a2c28"
   integrity sha1-3BXKHGcjh8p2vTesCjlbogQqLCg=
 
-getos@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/getos/-/getos-3.1.0.tgz#db3aa4df15a3295557ce5e81aa9e3e5cdfaa6567"
-  integrity sha512-i9vrxtDu5DlLVFcrbqUqGWYlZN/zZ4pGMICCAcZoYsX3JA54nYp8r5EThw5K+m2q3wszkx4Th746JstspB0H4Q==
+getos@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/getos/-/getos-3.1.1.tgz#967a813cceafee0156b0483f7cffa5b3eff029c5"
+  integrity sha512-oUP1rnEhAr97rkitiszGP9EgDVYnmchgFzfqRzSkgtfv7ai6tEi7Ko8GgjNXts7VLWEqrTWyhsOKLe5C5b/Zkg==
   dependencies:
-    async "2.4.0"
+    async "2.6.1"
 
 getpass@^0.1.1:
   version "0.1.7"
@@ -12042,7 +12035,7 @@ lodash@=3.10.1, "lodash@>3.0 <4.0", lodash@^3.6.0:
   resolved "http://registry.npmjs.org/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
   integrity sha1-W/Rejkm6QYnhfUgnid/RW9FAt7Y=
 
-lodash@^4.14.0, lodash@^4.17.11:
+lodash@^4.17.11:
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
   integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
@@ -12766,17 +12759,17 @@ mongodb-core@3.1.9:
   optionalDependencies:
     saslprep "^1.0.0"
 
-mongodb-memory-server@^2.2.0:
-  version "2.7.2"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-2.7.2.tgz#929f2e32f33463a00af8619b5eada0495ca599a8"
-  integrity sha512-qT/iSiQf2cpBrz7Bln5Va2+rd2evkTPTO2HbQW5eZwaShPcSxkL9xhUHuemG/9+0ALUjrF9Dq+Mxvur2YRF24Q==
+mongodb-memory-server@^2.7.0:
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-2.7.3.tgz#b01d7c73d9e9ed6c07e9daa4aa87767d096021dc"
+  integrity sha512-VZ7jECwVgXacKgUM3OHP2h1UToQpYDkCb9KLTdoC4I/6kDHTRIGEXUBfk4sw0YcDCELxhDPi4TBwHW2M9K5txw==
   dependencies:
     "@babel/runtime" "^7.1.2"
     debug "^4.1.0"
     decompress "^4.2.0"
     find-cache-dir "^2.0.0"
     get-port "^4.0.0"
-    getos "^3.1.0"
+    getos "^3.1.1"
     https-proxy-agent "^2.2.1"
     lockfile "^1.0.4"
     md5-file "^4.0.0"
@@ -12823,10 +12816,10 @@ mongoose-legacy-pluralize@1.0.2:
   resolved "https://registry.yarnpkg.com/mongoose-legacy-pluralize/-/mongoose-legacy-pluralize-1.0.2.tgz#3ba9f91fa507b5186d399fb40854bff18fb563e4"
   integrity sha512-Yo/7qQU4/EyIS8YDFSeenIvXxZN+ld7YdV9LqFVQJzTLye8unujAWPZ4NWKfFA+RNjh+wvTWKY9Z3E5XM6ZZiQ==
 
-mongoose@^5.3.10:
-  version "5.3.13"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.3.13.tgz#043d6fd387ea5c13db857b20cf59088f9f393af6"
-  integrity sha512-Vly1oiMpB6vxZ3KklTSmDVDzQQ5nGeU/VTCix6tGqI0B3AJL+ssUr4Vc5YqwmLDLoDO9HGiBIVu4AoACab+h2Q==
+mongoose@^5.1.6:
+  version "5.3.14"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.3.14.tgz#14fb782423561187e8e4264deb9e213156ca3ea6"
+  integrity sha512-Vt7uC0+/SuPb+x6IwbtXl4tkUER1xU9INlfrDK1RdfsvvEMfG3FJUGNPVGeTWQaj8xqMBtZKIdUNt58rIAsCYg==
   dependencies:
     async "2.6.1"
     bson "~1.1.0"
@@ -18342,10 +18335,10 @@ trim@0.0.1:
   resolved "https://registry.yarnpkg.com/trim/-/trim-0.0.1.tgz#5858547f6b290757ee95cccc666fb50084c460dd"
   integrity sha1-WFhUf2spB1fulczMZm+1AITEYN0=
 
-truffle-assertions@^0.6.3:
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/truffle-assertions/-/truffle-assertions-0.6.3.tgz#519c00ea80b5cefe609af78645d8e72c98708250"
-  integrity sha512-0j8WU7tc4tDhQauiGqgRFOQtH0QLlc/T/jd2KjSrw3kvJxu4IZU0KAdosohN2nFAnrGHF/O4K1da/yEQjwgH7g==
+truffle-assertions@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/truffle-assertions/-/truffle-assertions-0.5.0.tgz#afae9d87efc1324d11a3fa27a517049004d23a02"
+  integrity sha512-6/lyMkmGe0dOKxz17eGNB9bKnT4hhgCnRnHKGgv0j5aeyWC/V9QX6iLk6DcAjRvNiW8xVh0oEhZy8i6xRy0saA==
   dependencies:
     assertion-error "^1.1.0"
     web3 "^1.0.0-beta.35"

@@ -5,8 +5,6 @@ const provider = new Web3.providers.WebsocketProvider(
   process.env.WS_PROVIDER || 'ws://localhost:8545',
 );
 import TruffleContract from 'truffle-contract';
-import KyodoDAO from '@kyodo/contracts/build/contracts/KyodoDAO.json';
-import Registry from '@kyodo/contracts/build/contracts/Registry.json';
 import Members from '@kyodo/contracts/build/contracts/MembersV1.json';
 import Domains from '@kyodo/contracts/build/contracts/DomainsV1.json';
 import Periods from '@kyodo/contracts/build/contracts/PeriodsV1.json';
@@ -14,38 +12,15 @@ import { createColony } from './colony.js';
 import { dbAddUser, setUserAlias } from './user';
 import { initPeriod } from './period';
 import { dbAddDomain as addDomain } from './domain';
+import { getKyodo } from './web3/kyodo';
+import { getColony } from './web3/colony';
 
-let kyodo;
-let registry;
 let members;
 let domains;
 let periods;
-let colonyAddress;
-
-const getNewestVersionAddress = events =>
-  events.sort(
-    (a, b) =>
-      parseFloat(b.returnValues.version) - parseFloat(a.returnValue.version),
-  )[0];
-
-const initializeKyodo = async () => {
-  registry = TruffleContract(Registry);
-  registry.setProvider(provider);
-  const registryInstance = await registry.deployed();
-  const pastEvents = await registryInstance.getPastEvents('VersionAdded', {
-    fromBlock: 0,
-    toBlock: 'latest',
-  });
-  const newestVersionAddress = getNewestVersionAddress(pastEvents).returnValues
-    .implementation;
-
-  const KyodoContract = TruffleContract(KyodoDAO);
-  KyodoContract.setProvider(provider);
-  const kyodo = await KyodoContract.at(newestVersionAddress);
-  return kyodo;
-};
 
 const updateUsers = async () => {
+  const kyodo = await getKyodo();
   const membersAddress = await kyodo.members();
 
   const MembersContract = TruffleContract(Members);
@@ -84,10 +59,8 @@ const parseNewDomainAddedEvent = event => ({
 });
 
 const startListener = () => {
-  initializeKyodo().then(async value => {
-    kyodo = value;
-
-    colonyAddress = await kyodo.colony();
+  getKyodo().then(async kyodo => {
+    const colonyAddress = await getColony();
     let colony = await Colony.findOne({ colonyAddress });
     if (!colony) {
       colony = await createColony(colonyAddress);
