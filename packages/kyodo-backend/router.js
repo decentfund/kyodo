@@ -1,16 +1,17 @@
 import express from 'express';
 
 import { createColony, getColonies } from './colony';
-import { createTask, modifyTask, getTasks } from './task.js';
-import { sendTip, getAllTips } from './tip.js';
-import { addDomain, getAllDomains, getDomainById } from './domain.js';
-import { addUser, getAllUsers } from './user.js';
+import { createTask, modifyTask, getTasks } from './task';
+import { sendTip, getAllTips } from './tip';
+import { addDomain, getAllDomains, getDomainById } from './domain';
+import { addUser, getAllUsers } from './user';
 
 import {
   initiateNewPeriod,
   getAllPeriods,
   getCurrentPeriod,
-} from './period.js';
+  getCurrentPeriodTotalBalance,
+} from './period';
 
 const router = express.Router();
 
@@ -20,6 +21,9 @@ router
   })
   .get('/period', (req, res) => {
     getCurrentPeriod(req, res);
+  })
+  .get('/period/totalBalance', (req, res) => {
+    getCurrentPeriodTotalBalance(req, res);
   })
   .get('/periods', (req, res) => {
     getAllPeriods(req, res);
