@@ -60,7 +60,8 @@ const parseNewDomainAddedEvent = event => ({
 
 const startListener = () => {
   getKyodo().then(async kyodo => {
-    const colonyAddress = await getColony();
+    const colonyContract = await getColony();
+    const colonyAddress = colonyContract.address;
     let colony = await Colony.findOne({ colonyAddress });
     if (!colony) {
       colony = await createColony(colonyAddress);
