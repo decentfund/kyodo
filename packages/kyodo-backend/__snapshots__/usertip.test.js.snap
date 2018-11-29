@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`get user tips returns all tips in domain 1`] = `
+Array [
+  Object {
+    "amount": 2,
+    "periodId": 0,
+  },
+  Object {
+    "amount": 3,
+    "periodId": 0,
+  },
+]
+`;
+
+exports[`get user tips returns all user tips 1`] = `
+Array [
+  Object {
+    "amount": 2,
+    "domain": Object {
+      "domainTitle": "GOV",
+    },
+    "from": Object {
+      "alias": "igor",
+    },
+    "periodId": 0,
+    "task": Object {
+      "taskTitle": "yes",
+    },
+    "to": Object {
+      "alias": "someone",
+    },
+  },
+  Object {
+    "amount": 3,
+    "domain": Object {
+      "domainTitle": "GOV",
+    },
+    "from": Object {
+      "alias": "alina",
+    },
+    "periodId": 0,
+    "task": Object {
+      "taskTitle": "hey!",
+    },
+    "to": Object {
+      "alias": "igor",
+    },
+  },
+]
+`;
