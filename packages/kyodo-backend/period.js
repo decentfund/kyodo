@@ -52,7 +52,7 @@ export const createAndSaveNewUserPeriod = async ({
 };
 
 export const clearPeriods = async () => {
-  return Period.remove();
+  return Period.deleteMany();
 };
 
 export const initiateNewPeriod = async (req, res) => {
