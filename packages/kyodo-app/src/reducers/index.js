@@ -189,15 +189,15 @@ export const getTotalUserTips = createSelector(
 
 const formatTipsPerDoman = tips =>
   tips.reduce(
-    (a, { domain, amount }) => {
-      if (a[domain]) {
-        a[domain] = a[domain] + amount;
+    (memo, { domain, amount }) => {
+      if (memo[domain]) {
+        memo[domain] = memo[domain] + amount;
       } else {
-        a[domain] = amount;
+        memo[domain] = amount;
       }
 
-      a.total += amount;
-      return a;
+      memo.total += amount;
+      return memo;
     },
     { total: 0 },
   );
