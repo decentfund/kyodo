@@ -1,3 +1,4 @@
+var tdr = require('truffle-deploy-registry');
 var KyodoDAO = artifacts.require('./KyodoDAO.sol');
 var Token = artifacts.require('./Token.sol');
 var MembersV1 = artifacts.require('./MembersV1.sol');
@@ -7,7 +8,7 @@ var Registry = artifacts.require('./Registry.sol');
 var OwnedUpgradeabilityProxy = artifacts.require(
   './OwnedUpgradeabilityProxy.sol',
 );
-var deployParameters = require('./deploy_parameters.json');
+var deployParameters = require('./getDeployParameters');
 var getColonyClient = require('./getColonyClient');
 var encodeCall = require('./encodeCall');
 
@@ -35,7 +36,11 @@ module.exports = (deployer, network, accounts) => {
     const colonyNetworkClient = getColonyClient(network, accounts);
     await colonyNetworkClient.init();
 
-    await deployer.deploy(Registry);
+    const registryInstance = await deployer.deploy(Registry);
+
+    if (!tdr.isDryRunNetworkName(network)) {
+      await tdr.appendInstance(registryInstance);
+    }
 
     // data to set owner to publisher
     const initializeData = encodeCall('initialize', ['address'], [accounts[0]]);

@@ -23,7 +23,7 @@ export default (
       return {
         ...state,
         ETH:
-          action.data.ETH.balance > state.ETH
+          !state.ETH || action.data.ETH.balance > state.ETH
             ? action.data.ETH.balance
             : state.ETH,
         ...tokenBalances,

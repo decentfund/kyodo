@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { drizzleConnect } from 'drizzle-react';
 import { LoadingContainer } from 'drizzle-react-components';
 import MetamaskLogo from './metamask-logo-color.svg';
+import { getNetworkName } from '../helpers/network';
 
 const MetamaskWrapper = styled.div`
   display: flex;
@@ -38,19 +39,40 @@ const Metamask = () => (
   </MetamaskWrapper>
 );
 
+const WrongNetwork = (props) => (
+  <MetamaskWrapper>
+    <Title>Wrong network</Title>
+    <StyledLogo src={MetamaskLogo} />
+    <p>{props.children}</p>
+  </MetamaskWrapper>
+);
+
 class LoadingMetamask extends Component {
+  static defaultProps = {
+    requiredNetwork: [
+      'Mainnet',
+      'Development', // allow local RPC for testing
+    ],
+  };
+
   render() {
-    if (this.props.web3.status === 'failed') {
-      if (this.props.errorComp) {
+    const { web3, errorComp, accounts, requiredNetwork } = this.props;
+
+    if (web3.status === 'failed') {
+      if (errorComp) {
         return <LoadingContainer {...this.props} />;
       }
       return <Metamask />;
     }
 
-    if (
-      this.props.web3.status === 'initialized' &&
-      Object.keys(this.props.accounts).length === 0
-    ) {
+    if (web3.status === 'initialized' && web3.networkId) {
+      const network = getNetworkName(web3.networkId);
+      if (!requiredNetwork.includes(network)) {
+        return <WrongNetwork>{requiredNetwork[0]} Test Net is your choice</WrongNetwork>;
+      }
+    }
+
+    if (web3.status === 'initialized' && !Object.keys(accounts).length) {
       return <Metamask />;
     }
 

@@ -1,4 +1,4 @@
-pragma solidity 0.4.24;
+pragma solidity ^0.4.23;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../lib/BokkyPooBahsDateTimeLibrary/contracts/BokkyPooBahsDateTimeLibrary.sol";
@@ -28,11 +28,13 @@ contract KyodoDAO is Ownable {
   event PeriodsAddressChanged(address _address);
   event MembersAddressChanged(address _address);
   event TokenAddressChanged(address _address);
+  event NewDomainAdded(string _code, uint _id);
 
   function addDomain(string _code) external onlyOwner {
     IColony(colony).addDomain(1);
 
     DomainsV1(domains).addDomain(_code);
+    // emit NewDomainAdded(_code, 1);
   }
 
   /**

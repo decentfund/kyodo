@@ -21,6 +21,9 @@ const state = {
     ETH: 400,
     EUR: 1,
   },
+  balances: {
+    EUR: 50,
+  },
 };
 
 describe("Get's contract preop", function() {

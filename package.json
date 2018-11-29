@@ -7,5 +7,12 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "scripts": {
+    "start-ganache": "bash scripts/start_ganache.sh",
+    "deploy-contracts": "bash scripts/deploy_contracts.sh",
+    "start": "bash scripts/start_frontend_app.sh",
+    "start-backend": "bash scripts/start_backend_app.sh",
+    "test": "lerna run test"
+  }
 }
