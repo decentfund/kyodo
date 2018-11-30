@@ -18,6 +18,7 @@ import TotalSupplyChange from './components/TotalSupplyChange';
 import Earnings from './components/Earnings';
 import TasksList from './components/TasksList';
 import PeriodPointsDistribution from './components/PeriodPointsDistribution';
+import CurrentPeriodBalanceStatus from './components/CurrentPeriodBalanceStatus';
 import { getContract, getOwner, getWhitelistedAddresses } from './reducers';
 import { loadRate, loadMultiSigBalance } from './actions';
 import {
@@ -332,6 +333,7 @@ class App extends Component {
               }
             />
             <Route
+              exact
               path="/members"
               render={props =>
                 whitelistedAddresses.length > 0 || owner === userAddress ? (
@@ -342,6 +344,14 @@ class App extends Component {
                   />
                 ) : null
               }
+            />
+            <Route
+              path="/members/balances"
+              render={props => (
+                <div style={{ marginBottom: 50 }}>
+                  <CurrentPeriodBalanceStatus/>
+                </div>
+              )}
             />
             {owner === userAddress ? <MintTokens /> : null}
             <Route exact path="/" render={props => <MultisigBalance />} />

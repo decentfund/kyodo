@@ -3,8 +3,8 @@ import { LOAD_CURRENT_PERIOD_INFO_SUCCESS } from '../constants';
 const initialState = {
   currentPeriod: {
     periodTitle: '',
-    initialBalance: null,
-    currentBalance: null,
+    initialBalance: 0,
+    currentBalance: 0,
   }
 };
 

@@ -139,6 +139,20 @@ class Header extends Component {
             </Subnav>
           )}
         />
+        <Route
+          path="(/|/members)"
+          render={({ match }) => (
+            <Subnav>
+              <NavLink to="/members" exact>
+                Members
+              </NavLink>
+              {` 🞄 `}
+              <NavLink to="/members/balances" exact>
+                Balances
+              </NavLink>
+            </Subnav>
+          )}
+        />
         <StyledPeriodContainer>
           <StyledPeriodProgress
             { ...currentPeriod }
