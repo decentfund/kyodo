@@ -14,6 +14,8 @@ import {
   LOAD_RATE_SUCCESS,
   LOAD_PERIOD_TASKS_REQUEST,
   LOAD_PERIOD_TASKS_SUCCESS,
+  LOAD_CURRENT_PERIOD_INFO_REQUEST,
+  LOAD_CURRENT_PERIOD_INFO_SUCCESS,
   LOAD_HISTORICAL_RATES_REQUEST,
   LOAD_HISTORICAL_RATES_SUCCESS,
   LOAD_MULTISIG_BALANCE_REQUEST,
@@ -21,6 +23,8 @@ import {
 } from './constants';
 import { BASE_CURRENCY } from './constants';
 import * as fromActions from './actions';
+
+const BACKEND_URI = process.env.REACT_APP_BACKEND_URI || 'http://kyodo.decent.fund:3666';
 
 function* loadRate({ currency }) {
   try {
@@ -115,8 +119,7 @@ function* watchLoadHistoricalRates() {
 
 function* loadPeriodTasks() {
   try {
-    const apiURI = `${process.env.REACT_APP_BACKEND_URI ||
-      'http://kyodo.decent.fund:3666'}/tips`;
+    const apiURI = `${BACKEND_URI}/tips`;
 
     const { data } = yield call(axios.get, apiURI);
     const tasks = data.map(t => ({
@@ -141,6 +144,24 @@ function* watchLoadTasks() {
   yield takeLatest(LOAD_PERIOD_TASKS_REQUEST, loadPeriodTasks);
 }
 
+function* loadPeriodInfo() {
+  try {
+    const apiURI = `${BACKEND_URI}/period/summary`;
+    const { data } = yield call(axios.get, apiURI);
+
+    yield put({
+      type: LOAD_CURRENT_PERIOD_INFO_SUCCESS,
+      data,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+function* watchLoadCurrentPeriodInfo() {
+  yield takeLatest(LOAD_CURRENT_PERIOD_INFO_REQUEST, loadPeriodInfo);
+}
+
 export default function* root() {
   yield all([
     ...drizzleSagas.map(saga => fork(saga)),
@@ -148,5 +169,6 @@ export default function* root() {
     watchLoadRate(),
     watchLoadHistoricalRates(),
     watchLoadTasks(),
+    watchLoadCurrentPeriodInfo(),
   ]);
 }

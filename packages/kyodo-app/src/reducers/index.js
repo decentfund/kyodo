@@ -10,6 +10,7 @@ import balances from './balances';
 import users from './users';
 import tips from './tips';
 import historical, * as fromHistorical from './historical';
+import periods from './periods';
 import { BASE_CURRENCY } from '../constants';
 
 const moment = extendMoment(Moment);
@@ -210,6 +211,8 @@ export const getPointsDistribution = createSelector(getTips, tips => {
   return formatTipsPerDoman(tips);
 });
 
+export const getCurrentPeriodInfo = state => state.periods.currentPeriod;
+
 const reducer = combineReducers({
   routing: routerReducer,
   rates,
@@ -217,6 +220,7 @@ const reducer = combineReducers({
   historical,
   tips,
   users,
+  periods,
   ...drizzleReducers,
 });
 
