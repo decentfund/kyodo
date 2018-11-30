@@ -94,13 +94,27 @@ export const getCurrentPeriod = async (req, res) => {
   res.status(200).send(period);
 };
 
-export const getCurrentPeriodTotalBalance = async (req, res) => {
-  const period = await Period.aggregate([
+export const getCurrentPeriodBalanceInfo = async (req, res) => {
+  const periodInfo = await Period.findOne({ periodId: currentPeriod });
+  const periodBalance = await Period.aggregate([
     { $match: { periodId: currentPeriod } },
-    { $group: { _id : null, balance: { $sum: "$initialBalance" } } },
-    { $project: { _id: 0, balance: 1 } }
+    { $group: {
+        _id : null,
+        initialBalance: { $sum: "$initialBalance" },
+        currentBalance: { $sum: "$balance" },
+      }
+    },
+    { $project: { _id: 0, initialBalance: 1, currentBalance: 1 } }
   ]);
-  res.status(200).send(period[0] || {});
+
+  const balanceInfo = periodBalance[0] || {};
+  const periodTitle = periodInfo ? periodInfo.title : '';
+  const result = {
+    periodTitle,
+    initialBalance: balanceInfo.initialBalance || 0,
+    currentBalance: balanceInfo.currentBalance || 0,
+  };
+  res.status(200).send(result);
 };
 
 // exports.getUserPeriodBalance = async () => {};
