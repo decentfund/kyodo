@@ -76,6 +76,13 @@ We implement an ERC-20 token contract to bootstrap app based on OpenZeppelin ERC
 If you need to specify additional token balances, you can do so by creating a `balances.json` file in the root of the kyodo package.
 Tokens should be specified in the form of `TICKER: BALANCE`, like `BTC: 1`
 
+## Mockups
+
+Kyodo design is done in figma.
+We have next mockups published:
+- [Kyodo Main](https://www.figma.com/file/BVOa95pI3f9OVc1N0EQXXvPY/kyodo)
+- [Kyodo Leader Board and points distribution](https://www.figma.com/file/PQ0V8nsuQg8oiKu41TNCCM7I/K2)
+
 ## Description
 
 **Kyodo** is Ethereum blockchain based web app, the cross-platform incentive tool for building the crypto economy for DAO based on Impression revenue model. We build Kyodo to run Decent.Fund.
