@@ -2,7 +2,7 @@ import { LOAD_CURRENT_PERIOD_INFO_SUCCESS } from '../constants';
 
 const initialState = {
   currentPeriod: {
-    title: '',
+    periodTitle: '',
     initialBalance: null,
     currentBalance: null,
   }

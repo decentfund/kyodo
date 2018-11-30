@@ -107,8 +107,8 @@ class Header extends Component {
 
     const alias = this.props.Members.getAlias[this.state.userAliasKey].value;
 
-    const { colonyName, userAddress } = this.props;
-    console.log(this.props.currentPeriod);
+    const { colonyName, userAddress, currentPeriod = {} } = this.props;
+
     return (
       <div>
         <StyledWrapper>
@@ -141,6 +141,7 @@ class Header extends Component {
         />
         <StyledPeriodContainer>
           <StyledPeriodProgress
+            { ...currentPeriod }
             startTime={moment.unix(currentPeriodStartTime)}
             endTime={moment
               .unix(currentPeriodStartTime)
