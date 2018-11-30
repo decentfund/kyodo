@@ -94,7 +94,7 @@ export const getCurrentPeriod = async (req, res) => {
   res.status(200).send(period);
 };
 
-export const getCurrentPeriodBalanceInfo = async (req, res) => {
+export const getCurrentPeriodSummary = async (req, res) => {
   const periodInfo = await Period.findOne({ periodId: currentPeriod });
   const periodBalance = await Period.aggregate([
     { $match: { periodId: currentPeriod } },

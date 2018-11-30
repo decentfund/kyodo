@@ -10,7 +10,7 @@ import {
   initiateNewPeriod,
   getAllPeriods,
   getCurrentPeriod,
-  getCurrentPeriodBalanceInfo,
+  getCurrentPeriodSummary,
 } from './period';
 
 const router = express.Router();
@@ -22,8 +22,8 @@ router
   .get('/period', (req, res) => {
     getCurrentPeriod(req, res);
   })
-  .get('/period/balance', (req, res) => {
-    getCurrentPeriodBalanceInfo(req, res);
+  .get('/period/summary', (req, res) => {
+    getCurrentPeriodSummary(req, res);
   })
   .get('/periods', (req, res) => {
     getAllPeriods(req, res);
