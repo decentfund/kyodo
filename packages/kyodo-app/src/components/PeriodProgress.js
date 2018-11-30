@@ -27,7 +27,7 @@ const StyledRelativeTime = styled.span`
   font-weight: 300;
 `;
 
-const PeriodProgress = ({ periodTitle, periodSummary, endTime, startTime, className }) => {
+const PeriodProgress = ({ periodTitle, endTime, startTime, className }) => {
   const fraction = moment().diff(startTime) / endTime.diff(startTime);
   const daysLeft = moment(endTime).diff(moment.now(), 'days');
 
