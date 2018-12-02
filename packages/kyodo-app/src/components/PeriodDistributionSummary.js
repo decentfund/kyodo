@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
-import { getCurrentPeriodInfo } from '../reducers';
+import { getContract, getCurrentPeriodInfo } from '../reducers';
 
 const Wrapper = styled.div``;
 
@@ -32,11 +32,53 @@ const Percent = styled.div`
   margin-top: 4px;
 `;
 
-const PeriodsDistribution = styled.div``;
+const DomainsDistribution = styled.div``;
 
-class CurrentPeriodBalanceStatus extends Component {
+class PeriodDistributionSummary extends Component {
+  state = {
+    domainsLengthKey: null,
+    domainsLength: null,
+    domains: [],
+    domainsKeys: [],
+  };
+
+  constructor(props, context) {
+    super(props, context);
+    this.contracts = context.drizzle.contracts;
+    console.log('contracts', this.contracts);
+  }
+
+  componentDidMount() {
+    const domainsLengthKey = this.contracts.Domains.methods.getDomainsLength.cacheCall();
+    console.log('domainsLengthKey', domainsLengthKey);
+    this.setState({ domainsLengthKey });
+  }
+
+  componentDidUpdate() {
+    const { Domains } = this.props;
+    const { domainsLengthKey, domainsLength, domains, domainsKeys } = this.state;
+
+    if (domainsLength === null && domainsLengthKey && Domains && Domains.getDomainsLength[domainsLengthKey]){
+      const domainsLength = Number(Domains.getDomainsLength[domainsLengthKey].value);
+      const domainsKeysData = [];
+      for (let i = 0; i < domainsLength; ++i) {
+        domainsKeysData.push(this.contracts.Domains.methods.getDomain.cacheCall(i));
+      }
+      this.setState({ domainsLength, domainsKeys: domainsKeysData });
+    }
+
+    if (domainsLength && !domains.length && Domains.getDomain && Object.keys(Domains.getDomain).length === domainsLength) {
+      const domainsData = [];
+      for (let i = 0; i < domainsLength; ++i) {
+        domainsData.push(Domains.getDomain[domainsKeys[i]].value);
+      }
+      this.setState({ domains: domainsData });
+    }
+  }
+
   render() {
     const { currentPeriod } = this.props;
+    const { domainsLength, domains, domainsKeys } = this.state;
     const { currentBalance, initialBalance, periodTitle} = currentPeriod;
     const distributed = initialBalance - currentBalance;
     const fraction = (initialBalance > 0) ? distributed / initialBalance : 0;
@@ -49,6 +91,10 @@ class CurrentPeriodBalanceStatus extends Component {
       {title: 'FUND', used: 366, unused: total - 366},
       {title: 'GOV', used: 548, unused: total - 548},
     ];
+
+    console.log('currentDomains', domains);
+    console.log('domainsLength', domainsLength);
+    console.log('domainsKeys', domainsKeys);
 
     /*
     my thoughts about how to build figures:
@@ -74,22 +120,23 @@ class CurrentPeriodBalanceStatus extends Component {
           </ProgressBarWrapper>
           <Percent>{inPercent}%</Percent>
         </Summary>
-        <PeriodsDistribution>
+        <DomainsDistribution>
           {domainsData.map(data => (
-            <div>{data.title}</div>
+            <div key={data.title}>{data.title}</div>
           ))}
-        </PeriodsDistribution>
+        </DomainsDistribution>
       </Wrapper>
     );
   }
 }
 
-CurrentPeriodBalanceStatus.contextTypes = {
+PeriodDistributionSummary.contextTypes = {
   drizzle: PropTypes.object,
 };
 
 const mapStateToProps = state => ({
   currentPeriod: getCurrentPeriodInfo(state),
+  Domains: getContract('Domains')(state),
 });
 
-export default drizzleConnect(CurrentPeriodBalanceStatus, mapStateToProps);
+export default drizzleConnect(PeriodDistributionSummary, mapStateToProps);
