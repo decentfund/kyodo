@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { getContract, getCurrentPeriodInfo, getPointsDistribution } from '../reducers';
 import { loadPeriodTasks } from '../actions';
 
-const Wrapper = styled.div``;
+const PageWrapper = styled.div``;
 
 const Summary = styled.div`
   font-size: 24px;
@@ -33,7 +33,61 @@ const Percent = styled.div`
   margin-top: 4px;
 `;
 
-const DomainsDistribution = styled.div``;
+const DomainsDistributionWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const DomainDistributionWrapper = styled.div`
+  margin-top: 50px;
+  margin-right: 100px;
+`;
+
+const DomainTitle = styled.div`
+  font-size: 18px;
+  margin-bottom: 20px;
+`;
+
+const DomainDistributionGrid = styled.div`
+  width: ${props => props.elementsPerRow * 11}px;
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const UsedBlock = styled.div`
+  width: 10px;
+  height: 10px;
+  margin-right: 1px;
+  margin-bottom: 1px;
+  background-color: #bd6fd8;
+`;
+
+const UnusedBlock = styled.div`
+  width: 10px;
+  height: 10px;
+  margin-right: 1px;
+  margin-bottom: 1px;
+  background-color: #f0f0f0;
+`;
+
+// TODO: move to separate component (?)
+const DomainDistribution = ({ title, used, unused }) => {
+  const pointsPerBlock = 5;
+  const usedBlocks = Math.round(used / pointsPerBlock);
+  const unusedBlocks = Math.round(unused / pointsPerBlock);
+  const totalBlocks = usedBlocks + unusedBlocks;
+  const elementsPerRow = Math.ceil(Math.sqrt(totalBlocks));
+
+  return (
+    <DomainDistributionWrapper>
+      <DomainTitle>{title} {used} / {unused}</DomainTitle>
+      <DomainDistributionGrid elementsPerRow={elementsPerRow}>
+        {usedBlocks > 0 && [...Array(usedBlocks)].map((_, i) => <UsedBlock key={`used${i}`} />)}
+        {unusedBlocks > 0 && [...Array(unusedBlocks)].map((_, i) => <UnusedBlock key={`unused${i}`} />)}
+      </DomainDistributionGrid>
+    </DomainDistributionWrapper>
+  )
+};
 
 class PeriodDistributionSummary extends Component {
   state = {
@@ -78,42 +132,28 @@ class PeriodDistributionSummary extends Component {
 
   render() {
     const { currentPeriod, pointsDistribution } = this.props;
-    const { domainsLength, domains, domainsKeys } = this.state;
+    const { domains, domainsLength } = this.state;
     const { currentBalance, initialBalance, periodTitle} = currentPeriod;
     const distributed = initialBalance - currentBalance;
     const fraction = (initialBalance > 0) ? distributed / initialBalance : 0;
     const inPercent = parseFloat(fraction * 100).toFixed(2);
-    const total = 4800;
+    const total = Number(initialBalance);
 
-    const domainsData = [
-      {title: 'BUILD', used: 743, unused: total - 743},
-      {title: 'SOCIAL', used: 614, unused: total - 614},
-      {title: 'FUND', used: 366, unused: total - 366},
-      {title: 'GOV', used: 548, unused: total - 548},
-    ];
-
-    console.log('currentDomains', domains);
-    console.log('pointsDistribution', pointsDistribution);
-    // console.log('domainsLength', domainsLength);
-    // console.log('domainsKeys', domainsKeys);
-
-    /*
-    my thoughts about how to build figures:
-    say, one 10x10 pixel block = 5 points
-    we have 2000 pts in the BUIDL domain
-    2000 pts = 400 blocks
-    bar side size = square root of 400 = 20, which is integer, no problems
-    then we have 1000 pts in the SOCIAL domain
-    1000 pts = 200 blocks
-    bar side size = square root of 200 = 14.14
-    Math.round() to 14
-    increase the first multiplier, then the second multiplier, until the result exceeds 200:
-    15x14 = 210 blocks
-    draw bar 15 by 14 blocks, remove 10 blocks in the end
-    */
+    const domainsData = domains
+      .filter(domain => pointsDistribution[domain[0]] !== undefined)
+      .map(domain => {
+        const domainName = domain[0];
+        const used = pointsDistribution[domainName] || 0;
+        const unused = total - used;
+        return {
+          title: domain[0],
+          used,
+          unused,
+        }
+      });
 
     return (
-      <Wrapper>
+      <PageWrapper>
         <Summary>
           {distributed} of {initialBalance} points distributed in {periodTitle}
           <ProgressBarWrapper>
@@ -121,12 +161,14 @@ class PeriodDistributionSummary extends Component {
           </ProgressBarWrapper>
           <Percent>{inPercent}%</Percent>
         </Summary>
-        <DomainsDistribution>
-          {domainsData.map(data => (
-            <div key={data.title}>{data.title}</div>
-          ))}
-        </DomainsDistribution>
-      </Wrapper>
+        {total && domainsLength === domainsData.length &&
+          <DomainsDistributionWrapper>
+            {domainsData.map(data => (
+              <DomainDistribution {...data} key={data.title} />
+            ))}
+          </DomainsDistributionWrapper>
+        }
+      </PageWrapper>
     );
   }
 }
