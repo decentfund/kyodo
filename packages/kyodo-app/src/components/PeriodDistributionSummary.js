@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
-import { getContract, getCurrentPeriodInfo } from '../reducers';
+import { getContract, getCurrentPeriodInfo, getPointsDistribution } from '../reducers';
+import { loadPeriodTasks } from '../actions';
 
 const Wrapper = styled.div``;
 
@@ -45,12 +46,11 @@ class PeriodDistributionSummary extends Component {
   constructor(props, context) {
     super(props, context);
     this.contracts = context.drizzle.contracts;
-    console.log('contracts', this.contracts);
   }
 
   componentDidMount() {
+    this.props.loadPeriodTasks();
     const domainsLengthKey = this.contracts.Domains.methods.getDomainsLength.cacheCall();
-    console.log('domainsLengthKey', domainsLengthKey);
     this.setState({ domainsLengthKey });
   }
 
@@ -77,7 +77,7 @@ class PeriodDistributionSummary extends Component {
   }
 
   render() {
-    const { currentPeriod } = this.props;
+    const { currentPeriod, pointsDistribution } = this.props;
     const { domainsLength, domains, domainsKeys } = this.state;
     const { currentBalance, initialBalance, periodTitle} = currentPeriod;
     const distributed = initialBalance - currentBalance;
@@ -93,8 +93,9 @@ class PeriodDistributionSummary extends Component {
     ];
 
     console.log('currentDomains', domains);
-    console.log('domainsLength', domainsLength);
-    console.log('domainsKeys', domainsKeys);
+    console.log('pointsDistribution', pointsDistribution);
+    // console.log('domainsLength', domainsLength);
+    // console.log('domainsKeys', domainsKeys);
 
     /*
     my thoughts about how to build figures:
@@ -137,6 +138,7 @@ PeriodDistributionSummary.contextTypes = {
 const mapStateToProps = state => ({
   currentPeriod: getCurrentPeriodInfo(state),
   Domains: getContract('Domains')(state),
+  pointsDistribution: getPointsDistribution(state),
 });
 
-export default drizzleConnect(PeriodDistributionSummary, mapStateToProps);
+export default drizzleConnect(PeriodDistributionSummary, mapStateToProps, { loadPeriodTasks });
