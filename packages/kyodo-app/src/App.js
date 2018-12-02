@@ -18,7 +18,7 @@ import TotalSupplyChange from './components/TotalSupplyChange';
 import Earnings from './components/Earnings';
 import TasksList from './components/TasksList';
 import PeriodPointsDistribution from './components/PeriodPointsDistribution';
-import CurrentPeriodBalanceStatus from './components/CurrentPeriodBalanceStatus';
+import PeriodDistributionSummary from './components/PeriodDistributionSummary';
 import { getContract, getOwner, getWhitelistedAddresses } from './reducers';
 import { loadRate, loadMultiSigBalance } from './actions';
 import {
@@ -349,7 +349,7 @@ class App extends Component {
               path="/members/balances"
               render={props => (
                 <div style={{ marginBottom: 50 }}>
-                  <CurrentPeriodBalanceStatus/>
+                  <PeriodDistributionSummary />
                 </div>
               )}
             />
