@@ -108,10 +108,10 @@ class App extends Component {
         name: 'Members',
         address: process.env.REACT_APP_MEMBERS_CONTRACT_ADDRESS,
       },
-      // {
-      // name: 'Domains',
-      // address: process.env.REACT_APP_DOMAINS_CONTRACT_ADDRESS,
-      // },
+      {
+      name: 'Domains',
+      address: process.env.REACT_APP_DOMAINS_CONTRACT_ADDRESS,
+      },
       {
         name: 'Periods',
         address: process.env.REACT_APP_PERIODS_CONTRACT_ADDRESS,
@@ -283,7 +283,7 @@ class App extends Component {
       this.props.Token.symbol[this.state.tokenSymbolKey] &&
       this.props.Token.symbol[this.state.tokenSymbolKey].value;
 
-    if (!this.drizzle.contracts.Periods || !this.drizzle.contracts.Members)
+    if (!this.drizzle.contracts.Periods || !this.drizzle.contracts.Members || !this.drizzle.contracts.Domains)
       return <div />;
 
     return (
