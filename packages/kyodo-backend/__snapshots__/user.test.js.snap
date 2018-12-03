@@ -10,12 +10,10 @@ Array [
     "from": Object {
       "address": "0x0",
       "alias": "igor",
-      "balance": 10,
     },
     "to": Object {
       "address": "0x0",
       "alias": "pasha",
-      "balance": 10,
     },
   },
   Object {
@@ -26,12 +24,10 @@ Array [
     "from": Object {
       "address": "0x0",
       "alias": "igor",
-      "balance": 10,
     },
     "to": Object {
       "address": "0x0",
       "alias": "pasha",
-      "balance": 10,
     },
   },
   Object {
@@ -42,12 +38,10 @@ Array [
     "from": Object {
       "address": "0x0",
       "alias": "igor",
-      "balance": 10,
     },
     "to": Object {
       "address": "0x0",
       "alias": "pasha",
-      "balance": 10,
     },
   },
   Object {
@@ -58,12 +52,10 @@ Array [
     "from": Object {
       "address": "0x0",
       "alias": "pasha",
-      "balance": 10,
     },
     "to": Object {
       "address": "0x0",
       "alias": "igor",
-      "balance": 10,
     },
   },
 ]
