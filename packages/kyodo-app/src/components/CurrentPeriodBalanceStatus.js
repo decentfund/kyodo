@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
-import { getCurrentPeriodInfo } from '../reducers';
+import { getCurrentPeriodInfo, getPointsDistribution } from '../reducers';
 
 const Wrapper = styled.div`
   font-size: 24px;
@@ -32,14 +32,15 @@ const Percent = styled.div`
 
 class CurrentPeriodBalanceStatus extends Component {
   render() {
-    const { currentPeriod } = this.props;
-    const { currentBalance, initialBalance, periodTitle} = currentPeriod;
-    const distributed = initialBalance - currentBalance;
-    const fraction = (initialBalance > 0) ? distributed / initialBalance : 0;
+    const {
+      currentPeriod: { initialBalance, periodTitle },
+      usedTips,
+    } = this.props;
+    const fraction = initialBalance > 0 ? usedTips / initialBalance : 0;
     const inPercent = parseFloat(fraction * 100).toFixed(2);
     return (
       <Wrapper>
-        {distributed} of {initialBalance} points distributed in {periodTitle}
+        {usedTips} of {initialBalance} points distributed in {periodTitle}
         <ProgressBarWrapper>
           <ProgressBar fraction={fraction} />
         </ProgressBarWrapper>
@@ -55,6 +56,7 @@ CurrentPeriodBalanceStatus.contextTypes = {
 
 const mapStateToProps = state => ({
   currentPeriod: getCurrentPeriodInfo(state),
+  usedTips: getPointsDistribution(state).total,
 });
 
 export default drizzleConnect(CurrentPeriodBalanceStatus, mapStateToProps);
