@@ -133,10 +133,7 @@ export const getColonyCurrentPeriodId = async () => {
 
 export const getAllTips = async () => {
   const currentPeriodId = await getColonyCurrentPeriodId();
-  let tips = await Tip.find({ periodId: currentPeriodId }, err => {
-    if (err) throw Error(err);
-    return;
-  })
+  let tips = await Tip.find({ periodId: currentPeriodId })
     .populate('task', 'taskTitle')
     .populate('domain', 'domainTitle')
     .populate('from')
