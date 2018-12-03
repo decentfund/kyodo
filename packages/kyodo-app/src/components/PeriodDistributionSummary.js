@@ -146,10 +146,10 @@ class PeriodDistributionSummary extends Component {
         const used = pointsDistribution[domainName] || 0;
         const unused = total - used;
         return {
-          title: domain[0],
+          title: domainName,
           used,
           unused,
-        }
+        };
       });
 
     return (
@@ -161,7 +161,7 @@ class PeriodDistributionSummary extends Component {
           </ProgressBarWrapper>
           <Percent>{inPercent}%</Percent>
         </Summary>
-        {total && domainsLength === domainsData.length &&
+        {!!total && !!domainsData.length &&
           <DomainsDistributionWrapper>
             {domainsData.map(data => (
               <DomainDistribution {...data} key={data.title} />
