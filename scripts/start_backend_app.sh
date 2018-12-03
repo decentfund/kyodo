@@ -8,7 +8,7 @@ trap "kill $PID 2> /dev/null" EXIT
 
 # export env var
 export REACT_APP_BACKEND_URI="http://localhost:3666"
-echo "REACT_APP_BACKEND_URI=\"$REACT_APP_BACKEND_URI\"" > .env
+echo "export REACT_APP_BACKEND_URI=\"$REACT_APP_BACKEND_URI\"" > .env
 
 # Launch a subprocess not attached to this script that will trigger
 # commands after its end
