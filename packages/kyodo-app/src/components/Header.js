@@ -136,26 +136,16 @@ class Header extends Component {
               <NavLink to="/stats/tips" exact>
                 Tips
               </NavLink>
-            </Subnav>
-          )}
-        />
-        <Route
-          path="(/|/members)"
-          render={({ match }) => (
-            <Subnav>
-              <NavLink to="/members" exact>
-                Members
-              </NavLink>
               {` 🞄 `}
-              <NavLink to="/members/balances" exact>
-                Balances
+              <NavLink to="/stats/distribution" exact>
+                Distribution
               </NavLink>
             </Subnav>
           )}
         />
         <StyledPeriodContainer>
           <StyledPeriodProgress
-            { ...currentPeriod }
+            {...currentPeriod}
             startTime={moment.unix(currentPeriodStartTime)}
             endTime={moment
               .unix(currentPeriodStartTime)
@@ -182,4 +172,6 @@ const mapStateToProps = state => ({
   Members: getContract('Members')(state),
   currentPeriod: getCurrentPeriodInfo(state),
 });
-export default withRouter(drizzleConnect(Header, mapStateToProps, { loadCurrentPeriodInfo }));
+export default withRouter(
+  drizzleConnect(Header, mapStateToProps, { loadCurrentPeriodInfo }),
+);

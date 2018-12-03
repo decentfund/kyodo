@@ -321,6 +321,14 @@ class App extends Component {
               )}
             />
             <Route
+              path="/stats/distribution"
+              render={props => (
+                <div style={{ marginBottom: 50 }}>
+                  <CurrentPeriodBalanceStatus />
+                </div>
+              )}
+            />
+            <Route
               path="/points"
               render={props => <PeriodPointsDistribution />}
             />
@@ -344,14 +352,6 @@ class App extends Component {
                   />
                 ) : null
               }
-            />
-            <Route
-              path="/members/balances"
-              render={props => (
-                <div style={{ marginBottom: 50 }}>
-                  <CurrentPeriodBalanceStatus/>
-                </div>
-              )}
             />
             {owner === userAddress ? <MintTokens /> : null}
             <Route exact path="/" render={props => <MultisigBalance />} />
