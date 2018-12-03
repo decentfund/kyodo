@@ -85,8 +85,8 @@ const DomainDistribution = ({ title, used, unused }) => {
   return (
     <DomainDistributionWrapper>
       <DomainTitle>
-        {title} {used > 0 && used} {unused && used && '/'}{' '}
-        {unused > 0 && unused}
+        {title} {used > 0 ? used : null} {unused && used ? '/' : null}{' '}
+        {unused > 0 ? unused : null}
       </DomainTitle>
       <DomainDistributionGrid elementsPerRow={elementsPerRow}>
         {usedBlocks > 0 &&
