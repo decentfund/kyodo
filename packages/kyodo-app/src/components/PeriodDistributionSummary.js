@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
-import { getContract, getCurrentPeriodInfo, getPointsDistribution } from '../reducers';
+import {
+  getContract,
+  getCurrentPeriodInfo,
+  getPointsDistribution,
+} from '../reducers';
 import { loadPeriodTasks } from '../actions';
 
 const PageWrapper = styled.div``;
@@ -80,13 +84,19 @@ const DomainDistribution = ({ title, used, unused }) => {
 
   return (
     <DomainDistributionWrapper>
-      <DomainTitle>{title} {used} / {unused}</DomainTitle>
+      <DomainTitle>
+        {title} {used} / {unused}
+      </DomainTitle>
       <DomainDistributionGrid elementsPerRow={elementsPerRow}>
-        {usedBlocks > 0 && [...Array(usedBlocks)].map((_, i) => <UsedBlock key={`used${i}`} />)}
-        {unusedBlocks > 0 && [...Array(unusedBlocks)].map((_, i) => <UnusedBlock key={`unused${i}`} />)}
+        {usedBlocks > 0 &&
+          [...Array(usedBlocks)].map((_, i) => <UsedBlock key={`used${i}`} />)}
+        {unusedBlocks > 0 &&
+          [...Array(unusedBlocks)].map((_, i) => (
+            <UnusedBlock key={`unused${i}`} />
+          ))}
       </DomainDistributionGrid>
     </DomainDistributionWrapper>
-  )
+  );
 };
 
 class PeriodDistributionSummary extends Component {
@@ -110,18 +120,37 @@ class PeriodDistributionSummary extends Component {
 
   componentDidUpdate() {
     const { Domains } = this.props;
-    const { domainsLengthKey, domainsLength, domains, domainsKeys } = this.state;
+    const {
+      domainsLengthKey,
+      domainsLength,
+      domains,
+      domainsKeys,
+    } = this.state;
 
-    if (domainsLength === null && domainsLengthKey && Domains && Domains.getDomainsLength[domainsLengthKey]){
-      const domainsLength = Number(Domains.getDomainsLength[domainsLengthKey].value);
+    if (
+      domainsLength === null &&
+      domainsLengthKey &&
+      Domains &&
+      Domains.getDomainsLength[domainsLengthKey]
+    ) {
+      const domainsLength = Number(
+        Domains.getDomainsLength[domainsLengthKey].value,
+      );
       const domainsKeysData = [];
       for (let i = 0; i < domainsLength; ++i) {
-        domainsKeysData.push(this.contracts.Domains.methods.getDomain.cacheCall(i));
+        domainsKeysData.push(
+          this.contracts.Domains.methods.getDomain.cacheCall(i),
+        );
       }
       this.setState({ domainsLength, domainsKeys: domainsKeysData });
     }
 
-    if (domainsLength && !domains.length && Domains.getDomain && Object.keys(Domains.getDomain).length === domainsLength) {
+    if (
+      domainsLength &&
+      !domains.length &&
+      Domains.getDomain &&
+      Object.keys(Domains.getDomain).length === domainsLength
+    ) {
       const domainsData = [];
       for (let i = 0; i < domainsLength; ++i) {
         domainsData.push(Domains.getDomain[domainsKeys[i]].value);
@@ -131,11 +160,13 @@ class PeriodDistributionSummary extends Component {
   }
 
   render() {
-    const { currentPeriod, pointsDistribution } = this.props;
-    const { domains, domainsLength } = this.state;
-    const { currentBalance, initialBalance, periodTitle} = currentPeriod;
-    const distributed = initialBalance - currentBalance;
-    const fraction = (initialBalance > 0) ? distributed / initialBalance : 0;
+    const {
+      currentPeriod: { initialBalance, periodTitle },
+      pointsDistribution,
+    } = this.props;
+    const { total: usedTips } = pointsDistribution;
+    const { domains } = this.state;
+    const fraction = initialBalance > 0 ? usedTips / initialBalance : 0;
     const inPercent = parseFloat(fraction * 100).toFixed(2);
     const total = Number(initialBalance);
 
@@ -155,19 +186,20 @@ class PeriodDistributionSummary extends Component {
     return (
       <PageWrapper>
         <Summary>
-          {distributed} of {initialBalance} points distributed in {periodTitle}
+          {usedTips} of {initialBalance} points distributed in {periodTitle}
           <ProgressBarWrapper>
             <ProgressBar fraction={fraction} />
           </ProgressBarWrapper>
           <Percent>{inPercent}%</Percent>
         </Summary>
-        {!!total && !!domainsData.length &&
-          <DomainsDistributionWrapper>
-            {domainsData.map(data => (
-              <DomainDistribution {...data} key={data.title} />
-            ))}
-          </DomainsDistributionWrapper>
-        }
+        {!!total &&
+          !!domainsData.length && (
+            <DomainsDistributionWrapper>
+              {domainsData.map(data => (
+                <DomainDistribution {...data} key={data.title} />
+              ))}
+            </DomainsDistributionWrapper>
+          )}
       </PageWrapper>
     );
   }
@@ -183,4 +215,6 @@ const mapStateToProps = state => ({
   pointsDistribution: getPointsDistribution(state),
 });
 
-export default drizzleConnect(PeriodDistributionSummary, mapStateToProps, { loadPeriodTasks });
+export default drizzleConnect(PeriodDistributionSummary, mapStateToProps, {
+  loadPeriodTasks,
+});
