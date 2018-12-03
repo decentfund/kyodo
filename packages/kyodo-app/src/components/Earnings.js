@@ -28,7 +28,7 @@ class Earnings extends Component {
         <FormattedPlural value={total} one="point" other="points" />
         <StyledDomainsPoints>
           {Object.keys(points).map(domain => (
-            <span>
+            <span key={domain}>
               {points[domain]}@{domain.toLowerCase()}{' '}
             </span>
           ))}

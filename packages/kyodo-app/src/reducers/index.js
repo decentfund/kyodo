@@ -188,7 +188,7 @@ export const getTotalUserTips = createSelector(
   }),
 );
 
-const formatTipsPerDoman = tips =>
+const formatTipsPerDomain = tips =>
   tips.reduce(
     (memo, { domain, amount }) => {
       if (memo[domain]) {
@@ -204,11 +204,11 @@ const formatTipsPerDoman = tips =>
   );
 
 export const getTipsByDomain = createSelector(getTipsToUser, tips => {
-  return formatTipsPerDoman(tips);
+  return formatTipsPerDomain(tips);
 });
 
 export const getPointsDistribution = createSelector(getTips, tips => {
-  return formatTipsPerDoman(tips);
+  return formatTipsPerDomain(tips);
 });
 
 export const getCurrentPeriodInfo = state => state.periods.currentPeriod;
