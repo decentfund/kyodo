@@ -43,8 +43,13 @@ router
   .post('/tip', (req, res) => {
     sendTip(req, res);
   })
-  .get('/tips', (req, res) => {
-    getAllTips(req, res);
+  .get('/tips', async (req, res) => {
+    try {
+      const tips = await getAllTips();
+      return res.status(200).send(tips);
+    } catch (err) {
+      return res.status(400).send(err);
+    }
   })
   .post('/domain', (req, res) => {
     addDomain(req, res);
