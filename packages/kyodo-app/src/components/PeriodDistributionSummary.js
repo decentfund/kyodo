@@ -85,7 +85,8 @@ const DomainDistribution = ({ title, used, unused }) => {
   return (
     <DomainDistributionWrapper>
       <DomainTitle>
-        {title} {used} / {unused}
+        {title} {used > 0 && used} {unused && used && '/'}{' '}
+        {unused > 0 && unused}
       </DomainTitle>
       <DomainDistributionGrid elementsPerRow={elementsPerRow}>
         {usedBlocks > 0 &&
@@ -175,13 +176,17 @@ class PeriodDistributionSummary extends Component {
       .map(domain => {
         const domainName = domain[0];
         const used = pointsDistribution[domainName] || 0;
-        const unused = total - used;
+        // const unused = total - used;
+        // Without liquidity democracy unused is olways 0
+        const unused = 0;
         return {
           title: domainName,
           used,
           unused,
         };
       });
+
+    const unused = total - usedTips;
 
     return (
       <PageWrapper>
@@ -200,6 +205,11 @@ class PeriodDistributionSummary extends Component {
               ))}
             </DomainsDistributionWrapper>
           )}
+        {unused > 0 ? (
+          <DomainsDistributionWrapper>
+            <DomainDistribution used={0} unused={unused} title="UNUSED" />
+          </DomainsDistributionWrapper>
+        ) : null}
       </PageWrapper>
     );
   }
