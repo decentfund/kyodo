@@ -2,7 +2,7 @@ import express from 'express';
 
 import { createColony, getColonies } from './colony';
 import { createTask, modifyTask, getTasks } from './task';
-import { sendTip, getAllTips } from './tip';
+import { getAllTips } from './tip';
 import { addDomain, getAllDomains, getDomainById } from './domain';
 import { addUser, getAllUsers } from './user';
 
@@ -39,9 +39,6 @@ router
   })
   .get('/colony', (req, res) => {
     getColonies(req, res);
-  })
-  .post('/tip', (req, res) => {
-    sendTip(req, res);
   })
   .get('/tips', async (req, res) => {
     try {
