@@ -18,6 +18,7 @@ import TotalSupplyChange from './components/TotalSupplyChange';
 import Earnings from './components/Earnings';
 import TasksList from './components/TasksList';
 import PeriodPointsDistribution from './components/PeriodPointsDistribution';
+import PeriodDistributionSummary from './components/PeriodDistributionSummary';
 import { getContract, getOwner, getWhitelistedAddresses } from './reducers';
 import { loadRate, loadMultiSigBalance } from './actions';
 import {
@@ -107,10 +108,10 @@ class App extends Component {
         name: 'Members',
         address: process.env.REACT_APP_MEMBERS_CONTRACT_ADDRESS,
       },
-      // {
-      // name: 'Domains',
-      // address: process.env.REACT_APP_DOMAINS_CONTRACT_ADDRESS,
-      // },
+      {
+        name: 'Domains',
+        address: process.env.REACT_APP_DOMAINS_CONTRACT_ADDRESS,
+      },
       {
         name: 'Periods',
         address: process.env.REACT_APP_PERIODS_CONTRACT_ADDRESS,
@@ -282,7 +283,11 @@ class App extends Component {
       this.props.Token.symbol[this.state.tokenSymbolKey] &&
       this.props.Token.symbol[this.state.tokenSymbolKey].value;
 
-    if (!this.drizzle.contracts.Periods || !this.drizzle.contracts.Members)
+    if (
+      !this.drizzle.contracts.Periods ||
+      !this.drizzle.contracts.Members ||
+      !this.drizzle.contracts.Domains
+    )
       return <div />;
 
     return (
@@ -320,6 +325,14 @@ class App extends Component {
               )}
             />
             <Route
+              path="/stats/distribution"
+              render={props => (
+                <div style={{ marginBottom: 50 }}>
+                  <PeriodDistributionSummary />
+                </div>
+              )}
+            />
+            <Route
               path="/points"
               render={props => <PeriodPointsDistribution />}
             />
@@ -332,6 +345,7 @@ class App extends Component {
               }
             />
             <Route
+              exact
               path="/members"
               render={props =>
                 whitelistedAddresses.length > 0 || owner === userAddress ? (

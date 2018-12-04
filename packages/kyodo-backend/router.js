@@ -2,7 +2,7 @@ import express from 'express';
 
 import { createColony, getColonies } from './colony';
 import { createTask, modifyTask, getTasks } from './task';
-import { sendTip, getAllTips } from './tip';
+import { getAllTips } from './tip';
 import { addDomain, getAllDomains, getDomainById } from './domain';
 import { addUser, getAllUsers } from './user';
 
@@ -10,7 +10,7 @@ import {
   initiateNewPeriod,
   getAllPeriods,
   getCurrentPeriod,
-  getCurrentPeriodTotalBalance,
+  getCurrentPeriodSummary,
 } from './period';
 
 const router = express.Router();
@@ -22,8 +22,8 @@ router
   .get('/period', (req, res) => {
     getCurrentPeriod(req, res);
   })
-  .get('/period/totalBalance', (req, res) => {
-    getCurrentPeriodTotalBalance(req, res);
+  .get('/period/summary', (req, res) => {
+    getCurrentPeriodSummary(req, res);
   })
   .get('/periods', (req, res) => {
     getAllPeriods(req, res);
@@ -40,11 +40,13 @@ router
   .get('/colony', (req, res) => {
     getColonies(req, res);
   })
-  .post('/tip', (req, res) => {
-    sendTip(req, res);
-  })
-  .get('/tips', (req, res) => {
-    getAllTips(req, res);
+  .get('/tips', async (req, res) => {
+    try {
+      const tips = await getAllTips();
+      return res.status(200).send(tips);
+    } catch (err) {
+      return res.status(400).send(err);
+    }
   })
   .post('/domain', (req, res) => {
     addDomain(req, res);

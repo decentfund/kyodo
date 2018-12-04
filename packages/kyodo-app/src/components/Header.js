@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import styled from 'styled-components';
 import { drizzleConnect } from 'drizzle-react';
-import { getContract } from '../reducers';
+import { getContract, getCurrentPeriodInfo } from '../reducers';
+import { loadCurrentPeriodInfo } from '../actions';
 import { withRouter, Route, NavLink } from 'react-router-dom';
 
 import Menu from './Menu';
@@ -74,6 +75,7 @@ class Header extends Component {
     const userAliasKey = this.contracts.Members.methods.getAlias.cacheCall(
       this.props.userAddress,
     );
+    this.props.loadCurrentPeriodInfo();
 
     this.setState({
       currentPeriodStartTimeKey,
@@ -105,7 +107,8 @@ class Header extends Component {
 
     const alias = this.props.Members.getAlias[this.state.userAliasKey].value;
 
-    const { colonyName, userAddress } = this.props;
+    const { colonyName, userAddress, currentPeriod = {} } = this.props;
+
     return (
       <div>
         <StyledWrapper>
@@ -133,11 +136,16 @@ class Header extends Component {
               <NavLink to="/stats/tips" exact>
                 Tips
               </NavLink>
+              {` 🞄 `}
+              <NavLink to="/stats/distribution" exact>
+                Distribution
+              </NavLink>
             </Subnav>
           )}
         />
         <StyledPeriodContainer>
           <StyledPeriodProgress
+            {...currentPeriod}
             startTime={moment.unix(currentPeriodStartTime)}
             endTime={moment
               .unix(currentPeriodStartTime)
@@ -162,5 +170,8 @@ Header.contextTypes = {
 const mapStateToProps = state => ({
   Periods: getContract('Periods')(state),
   Members: getContract('Members')(state),
+  currentPeriod: getCurrentPeriodInfo(state),
 });
-export default withRouter(drizzleConnect(Header, mapStateToProps));
+export default withRouter(
+  drizzleConnect(Header, mapStateToProps, { loadCurrentPeriodInfo }),
+);

@@ -47,7 +47,12 @@ describe('getCurrentUserPeriod', async () => {
 
   it('returns period correctly', async () => {
     // creating new user period
-    const period = new Period({ user, periodId: 0, balance: 0, tips: [] });
+    const period = new Period({
+      user,
+      periodId: 0,
+      initialBalance: 0,
+      tips: [],
+    });
     await period.save();
 
     const periodResponse = await getCurrentUserPeriod('user', 0);

@@ -42,8 +42,7 @@ export const createAndSaveNewUserPeriod = async ({
     title: 'My new period',
     address,
     periodId,
-    balance, // current user balance
-    initialBalance: balance,
+    initialBalance: balance, // current user balance
     user,
     tips,
   });
@@ -67,8 +66,7 @@ export const initiateNewPeriod = async (req, res) => {
       title: req.body.title,
       address: user.address,
       periodId: currentPeriod,
-      balance: user.balance, // TODO: get the real user's balance and put it here
-      initialBalance: user.balance,
+      initialBalance: user.balance, // TODO: get the real user's balance and put it here
       tips: 0,
       user,
     });
@@ -94,13 +92,26 @@ export const getCurrentPeriod = async (req, res) => {
   res.status(200).send(period);
 };
 
-export const getCurrentPeriodTotalBalance = async (req, res) => {
-  const period = await Period.aggregate([
+export const getCurrentPeriodSummary = async (req, res) => {
+  const periodInfo = await Period.findOne({ periodId: currentPeriod });
+  const periodBalance = await Period.aggregate([
     { $match: { periodId: currentPeriod } },
-    { $group: { _id : null, balance: { $sum: "$initialBalance" } } },
-    { $project: { _id: 0, balance: 1 } }
+    {
+      $group: {
+        _id: null,
+        initialBalance: { $sum: '$initialBalance' },
+      },
+    },
+    { $project: { _id: 0, initialBalance: 1 } },
   ]);
-  res.status(200).send(period[0] || {});
+
+  const balanceInfo = periodBalance[0] || {};
+  const periodTitle = periodInfo ? periodInfo.title : '';
+  const result = {
+    periodTitle,
+    initialBalance: balanceInfo.initialBalance || 0,
+  };
+  res.status(200).send(result);
 };
 
 // exports.getUserPeriodBalance = async () => {};
@@ -116,18 +127,6 @@ export const getUserByAddressInPeriod = async address => {
     },
   );
   return user;
-};
-
-export const changeUserBalance = async (address, tip) => {
-  let sender = await Period.find({ address, periodId: currentPeriod });
-  await Period.update(
-    { address, periodId: currentPeriod },
-    { $set: { balance: sender[0].balance - tip } },
-    (err, res) => {
-      if (err) console.log(err);
-      return res;
-    },
-  );
 };
 
 //MEGA CRON
