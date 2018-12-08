@@ -27,7 +27,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
   let authority;
 
   const domainBalance = async (id, tokenAddress, colony) => {
-    const [, domainPotId] = await colony.getDomain.call(id);
+    const { potId: domainPotId } = await colony.getDomain.call(id);
     const domainBalance = await colony.getPotBalance.call(
       domainPotId,
       tokenAddress,
@@ -191,7 +191,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
       }
 
       const ownerRole = 0;
-      let currentBlock = await web3.eth.getBlock('latest').number;
+      let currentBlock = (await web3.eth.getBlock('latest')).number;
 
       let hasRole = await authority.hasUserRole(kyodo.address, ownerRole);
       let tokenOwner = await token.owner();
@@ -203,7 +203,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
 
       await kyodo.setPeriodDaysLength(1);
       const callback = () => {};
-      await web3.currentProvider.sendAsync(
+      await web3.currentProvider.send(
         {
           jsonrpc: '2.0',
           method: 'evm_increaseTime',
@@ -213,7 +213,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         callback,
       );
 
-      currentBlock = await web3.eth.getBlock('latest').number;
+      currentBlock = (await web3.eth.getBlock('latest')).number;
       await kyodo.startNewPeriod();
 
       let totalSupply = await token.totalSupply();
@@ -265,7 +265,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
       let domainsLength = await domains.getDomainsLength();
       assert.equal(domainsLength, 4, "Domains weren't added");
 
-      let currentBlock = await web3.eth.getBlock('latest').number;
+      let currentBlock = (await web3.eth.getBlock('latest')).number;
 
       await kyodo.startNewPeriod();
       let currentPeriodStartBlock = await periods.currentPeriodStartBlock();
@@ -274,7 +274,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
 
       await kyodo.setPeriodDaysLength(1);
       const callback = () => {};
-      await web3.currentProvider.sendAsync(
+      await web3.currentProvider.send(
         {
           jsonrpc: '2.0',
           method: 'evm_increaseTime',
@@ -283,7 +283,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         },
         callback,
       );
-      currentBlock = await web3.eth.getBlock('latest').number;
+      currentBlock = (await web3.eth.getBlock('latest')).number;
 
       await kyodo.startNewPeriod();
       currentPeriodStartBlock = await periods.currentPeriodStartBlock();
@@ -296,12 +296,12 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         await kyodo.addDomain(domainNames[i]);
       }
 
-      let currentBlock = await web3.eth.getBlock('latest').number;
+      let currentBlock = (await web3.eth.getBlock('latest')).number;
       await kyodo.startNewPeriod();
       let currentPeriodStartBlock = await periods.currentPeriodStartBlock();
       assert.equal(currentPeriodStartBlock, currentBlock + 1);
       const callback = () => {};
-      await web3.currentProvider.sendAsync(
+      await web3.currentProvider.send(
         {
           jsonrpc: '2.0',
           method: 'evm_increaseTime',
@@ -314,7 +314,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
       await assertRevert(kyodo.startNewPeriod());
       await kyodo.setPeriodDaysLength(40);
       await assertRevert(kyodo.startNewPeriod());
-      await web3.currentProvider.sendAsync(
+      await web3.currentProvider.send(
         {
           jsonrpc: '2.0',
           method: 'evm_increaseTime',
@@ -323,10 +323,10 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         },
         callback,
       );
-      currentBlock = await web3.eth.getBlock('latest').number;
+      currentBlock = (await web3.eth.getBlock('latest')).number;
       await kyodo.startNewPeriod();
       currentPeriodStartBlock = await periods.currentPeriodStartBlock();
-      assert.equal(currentPeriodStartBlock, currentBlock + 1);
+      assert.equal(currentPeriodStartBlock.toNumber(), currentBlock + 1);
     });
   });
   describe('domain adding', function() {
@@ -355,7 +355,6 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         1,
         'First domain id is stored incorrectly',
       );
-      truffleAssert.prettyPrintEmittedEvents(tx);
       truffleAssert.eventEmitted(tx, 'NewDomainAdded', ev => {
         return ev._code === firstDomain && ev._id.toNumber() === 1;
       });
