@@ -7,7 +7,9 @@ require('chai')
   .should();
 
 const KyodoDAO = artifacts.require('KyodoDAO');
+const KyodoDAO_V1 = artifacts.require('KyodoDAO_V1');
 const DomainsV1 = artifacts.require('DomainsV1');
+const DomainsV2 = artifacts.require('DomainsV2');
 const MembersV1 = artifacts.require('MembersV1');
 const PeriodsV1 = artifacts.require('PeriodsV1');
 const Token = artifacts.require('Token');
@@ -381,5 +383,128 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         return ev._code === secondDomain && ev._id.toNumber() === 2;
       });
     });
+
+    it('works correctly with array', async function() {
+      let domainsLength = await domains.getDomainsLength();
+      assert.equal(domainsLength, 0, 'Domains are empty');
+
+      const firstDomain = 'GOV';
+      const secondDomain = 'FUND';
+
+      const domainsArray = [
+        { code: 'GOV' },
+        { code: 'FUND' },
+        { code: 'SOCIAL' },
+        { code: 'BUIDL' },
+      ];
+
+      const domainsCount = domainsArray.length;
+      const txs = [];
+      for (var i = 0; i < domainsCount; i++) {
+        const tx = await kyodo.addDomain(domainsArray[i].code);
+        txs.push(tx);
+      }
+
+      domainsLength = (await domains.getDomainsLength()).toNumber();
+      assert.equal(
+        domainsLength,
+        4,
+        'Domains length is not correct after adding of domains',
+      );
+      let domain = await domains.getDomain(0);
+      assert.equal(
+        domain[0],
+        firstDomain,
+        'First domain code is stored incorrectly',
+      );
+      assert.equal(
+        domain[1].toNumber(),
+        1,
+        'First domain id is stored incorrectly',
+      );
+
+      truffleAssert.eventEmitted(txs[0], 'NewDomainAdded', ev => {
+        return ev._code === firstDomain && ev._id.toNumber() === 1;
+      });
+
+      domain = await domains.getDomain(1);
+      assert.equal(
+        domain[0],
+        secondDomain,
+        'Second domain code is stored incorrectly',
+      );
+      assert.equal(
+        domain[1].toNumber(),
+        2,
+        'Second domain id is stored incorrectly',
+      );
+      truffleAssert.eventEmitted(txs[1], 'NewDomainAdded', ev => {
+        return ev._code === secondDomain && ev._id.toNumber() === 2;
+      });
+    });
+  });
+});
+
+contract('KyodoDAO_V1', function([owner]) {
+  let colonyNetwork;
+  let token;
+  let kyodo;
+  let domains;
+  let periods;
+  let members;
+  let colony;
+
+  before(async () => {
+    const etherRouter = await EtherRouter.deployed();
+    colonyNetwork = await IColonyNetwork.at(etherRouter.address);
+  });
+  beforeEach(async function() {
+    const tokenArgs = getTokenArgs();
+    token = await Token.new(...tokenArgs);
+    token.mint(1000);
+    kyodo = await KyodoDAO_V1.new(owner);
+    await kyodo.initialize(owner);
+    const { logs } = await colonyNetwork.createColony(token.address);
+    const { colonyAddress } = logs[0].args;
+    domains = await DomainsV2.new();
+    await domains.initialize(kyodo.address);
+    periods = await PeriodsV1.new();
+    await periods.initialize(kyodo.address);
+    members = await MembersV1.new();
+    await members.initialize(kyodo.address);
+    await kyodo.setColonyAddress(colonyAddress);
+    await kyodo.setTokenAddress(token.address);
+    await kyodo.setDomainsAddress(domains.address);
+    await kyodo.setPeriodsAddress(periods.address);
+    await kyodo.setMembersAddress(members.address);
+    await token.setOwner(colonyAddress);
+    colony = await IColony.at(colonyAddress);
+    await colony.setAdminRole(domains.address);
+    await colony.setOwnerRole(kyodo.address);
+  });
+
+  it('add domain works as expected', async () => {
+    let domainsLength = await domains.getDomainsLength();
+    assert.equal(domainsLength.toNumber(), 0, 'Domains are not empty');
+    await kyodo.addDomain('FUND');
+    domainsLength = await domains.getDomainsLength();
+    assert.equal(domainsLength, 1, 'Domain not added');
+
+    await kyodo.addDomain('GOV');
+    domainsLength = await domains.getDomainsLength();
+    assert.equal(domainsLength, 2, 'Domain not added');
+
+    const fundDomainDetails = await domains.getDomain('FUND');
+    assert.equal(
+      fundDomainDetails[1].toNumber(),
+      2,
+      'First created domain potId is wrong',
+    );
+    const govDomainDetails = await domains.getDomain('GOV');
+    assert.equal(
+      govDomainDetails[1].toNumber(),
+      3,
+      'Second created domain potId is wrong',
+    );
   });
 });
