@@ -10,7 +10,7 @@ var OwnedUpgradeabilityProxy = artifacts.require(
 );
 var deployParameters = require('./getDeployParameters');
 var getColonyClient = require('./getColonyClient');
-var encodeCall = require('./encodeCall');
+var encodeCall = require('../helpers/encodeCall');
 
 module.exports = (deployer, network, accounts) => {
   // Helper to setup dependency contracts
@@ -55,41 +55,37 @@ module.exports = (deployer, network, accounts) => {
     await kyodoProxy.upgradeToAndCall(KyodoDAO.address, initializeData);
 
     // Storing kyodo proxy 1.0 in registry
-    await Registry.at(Registry.address).addVersion('1.0', kyodoProxy.address);
+    await registryInstance.addVersion('1.0', kyodoProxy.address);
+
+    const kyodoProxyInstance = await KyodoDAO.at(kyodoProxy.address);
 
     // Setting token address for proxy
-    await KyodoDAO.at(kyodoProxy.address).setTokenAddress(Token.address);
+    await kyodoProxyInstance.setTokenAddress(Token.address);
 
     // Deploying members contract
     const membersProxy = await deployKyodoDependencyProxy(
       kyodoProxy.address,
       MembersV1,
     );
-    await KyodoDAO.at(kyodoProxy.address).setMembersAddress(
-      membersProxy.address,
-    );
+    await kyodoProxyInstance.setMembersAddress(membersProxy.address);
 
     // Deploying domains contract
     const domainsProxy = await deployKyodoDependencyProxy(
       kyodoProxy.address,
       DomainsV1,
     );
-    await KyodoDAO.at(kyodoProxy.address).setDomainsAddress(
-      domainsProxy.address,
-    );
+    await kyodoProxyInstance.setDomainsAddress(domainsProxy.address);
 
     // Deploying domains contract
     const periodsProxy = await deployKyodoDependencyProxy(
       kyodoProxy.address,
       PeriodsV1,
     );
-    await KyodoDAO.at(kyodoProxy.address).setPeriodsAddress(
-      periodsProxy.address,
-    );
+    await kyodoProxyInstance.setPeriodsAddress(periodsProxy.address);
 
     // Adding users to whitelist
     const { accounts: initAccounts } = deployParameters;
     const addresses = Object.keys(initAccounts);
-    await KyodoDAO.at(kyodoProxy.address).addManyToWhitelist(addresses);
+    await kyodoProxyInstance.addManyToWhitelist(addresses);
   });
 };

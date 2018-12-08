@@ -12,7 +12,7 @@ log() {
 
 # Pull docker image
 log "Pulling docker image..."
-docker pull ethereum/solc:0.4.23
+docker pull ethereum/solc:0.4.24
 
 # Initialize colonyNetwork submodule
 log "Initializing colonyNetwork submodule..."
