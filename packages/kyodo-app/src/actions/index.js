@@ -25,3 +25,9 @@ export function loadPeriodTasks() {
     type: types.LOAD_PERIOD_TASKS_REQUEST,
   };
 }
+
+export function loadCurrentPeriodInfo() {
+  return {
+    type: types.LOAD_CURRENT_PERIOD_INFO_REQUEST,
+  };
+}

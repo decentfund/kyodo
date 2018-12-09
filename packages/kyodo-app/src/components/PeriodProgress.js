@@ -27,7 +27,7 @@ const StyledRelativeTime = styled.span`
   font-weight: 300;
 `;
 
-const PeriodProgress = ({ periodName, endTime, startTime, className }) => {
+const PeriodProgress = ({ periodTitle, endTime, startTime, className }) => {
   const fraction = moment().diff(startTime) / endTime.diff(startTime);
   const daysLeft = moment(endTime).diff(moment.now(), 'days');
 
@@ -36,7 +36,7 @@ const PeriodProgress = ({ periodName, endTime, startTime, className }) => {
       <ProgressBar fraction={fraction} />
       <div style={{ marginTop: 3, textAlign: 'right' }}>
         <StyledPeriodLabel>current period</StyledPeriodLabel>
-        <StyledPeriodName>{periodName}</StyledPeriodName>{' '}
+        <StyledPeriodName>{periodTitle}</StyledPeriodName>{' '}
         <StyledRelativeTime>
           {daysLeft} <FormattedPlural value={daysLeft} one="day" other="days" />{' '}
           left
@@ -47,13 +47,13 @@ const PeriodProgress = ({ periodName, endTime, startTime, className }) => {
 };
 
 PeriodProgress.propTypes = {
-  periodName: PropTypes.string,
+  periodTitle: PropTypes.string,
   endTime: PropTypes.instanceOf(moment),
   startTime: PropTypes.instanceOf(moment),
 };
 
 PeriodProgress.defaultProps = {
-  periodName: 'Early Renaissance',
+  periodTitle: 'Early Renaissance',
   endTime: moment(),
   startTime: moment(),
 };

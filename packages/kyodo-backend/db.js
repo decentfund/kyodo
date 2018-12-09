@@ -81,9 +81,9 @@ export const getCurrentUserPeriod = async (alias, periodId) => {
   if (!period) throw new SystemError('Cannot find user current period');
 
   return {
-    ...period,
-    initialBalance: period.balance,
-    balance: period.balance + receivedPoints - delegatedPoints - usedPoints,
+    ...period._doc,
+    balance:
+      period.initialBalance + receivedPoints - delegatedPoints - usedPoints,
   };
 };
 

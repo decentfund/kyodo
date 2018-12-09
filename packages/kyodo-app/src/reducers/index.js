@@ -10,6 +10,7 @@ import balances from './balances';
 import users from './users';
 import tips from './tips';
 import historical, * as fromHistorical from './historical';
+import periods from './periods';
 import { BASE_CURRENCY } from '../constants';
 
 const moment = extendMoment(Moment);
@@ -187,21 +188,30 @@ export const getTotalUserTips = createSelector(
   }),
 );
 
-export const getTipsByDomain = createSelector(getTipsToUser, tips => {
-  return tips.reduce(
-    (a, { domain, amount }) => {
-      if (a[domain]) {
-        a[domain] = a[domain] + amount;
+const formatTipsPerDomain = tips =>
+  tips.reduce(
+    (memo, { domain, amount }) => {
+      if (memo[domain]) {
+        memo[domain] = memo[domain] + amount;
       } else {
-        a[domain] = amount;
+        memo[domain] = amount;
       }
 
-      a.total += amount;
-      return a;
+      memo.total += amount;
+      return memo;
     },
     { total: 0 },
   );
+
+export const getTipsByDomain = createSelector(getTipsToUser, tips => {
+  return formatTipsPerDomain(tips);
 });
+
+export const getPointsDistribution = createSelector(getTips, tips => {
+  return formatTipsPerDomain(tips);
+});
+
+export const getCurrentPeriodInfo = state => state.periods.currentPeriod;
 
 const reducer = combineReducers({
   routing: routerReducer,
@@ -210,6 +220,7 @@ const reducer = combineReducers({
   historical,
   tips,
   users,
+  periods,
   ...drizzleReducers,
 });
 
