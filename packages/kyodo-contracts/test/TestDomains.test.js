@@ -220,21 +220,6 @@ contract('Domains V2', function([owner, anotherAccount]) {
     await truffleAssert.reverts(domains.addDomain('FUND'), 'deprecated');
   });
 
-  it('returns list of domain names', async () => {
-    await domains.addDomain('FUND', 2, {
-      from: owner,
-      gas: 500000,
-    });
-
-    await domains.addDomain('GOV', 3, {
-      from: owner,
-      gas: 500000,
-    });
-
-    const domainNames = await domains.getDomainNames();
-    assert.equal(domainNames, ['FUND', 'GOV']);
-  });
-
   describe('distribute tokens correctly', () => {
     let colonyNetwork;
     let token;
