@@ -5,6 +5,7 @@ import { routerReducer } from 'react-router-redux';
 import { drizzleReducers } from 'drizzle';
 import { createSelector } from 'reselect';
 import get from 'lodash/get';
+import groupBy from 'lodash/groupBy';
 import rates, * as fromRates from './rates';
 import balances from './balances';
 import users from './users';
@@ -210,6 +211,64 @@ export const getTipsByDomain = createSelector(getTipsToUser, tips => {
 export const getPointsDistribution = createSelector(getTips, tips => {
   return formatTipsPerDomain(tips);
 });
+
+const getDomainsFromTips = createSelector(getTips, tips =>
+  Object.keys(
+    tips.reduce((memo, { domain }) => ({ ...memo, [domain]: true }), {})
+  )
+);
+
+const getUsersFromTips = createSelector(getTips, tips =>
+  Object.keys(
+    tips.reduce((memo, { to }) => ({ ...memo, [to]: true }), {})
+  )
+);
+
+const getTipsByUser = createSelector(getTips, tips => groupBy(tips, 'to'));
+
+// Should return array of users with their names, addresses, points earned per domains,
+// highest earning in domain, total points earned in current period
+export const getLeaderboardData = createSelector(
+  [getDomainsFromTips, getUsersFromTips, getTipsByUser],
+  (domains, users, tipsByUser) => {
+
+    const userStats = Object.keys(tipsByUser)
+      .map(user => {
+        const userTips = tipsByUser[user];
+        const userAddress = userTips[0].toAddress;
+        const tipsPerDomain = formatTipsPerDomain(userTips);
+        return {
+          user,
+          userAddress,
+          tips: tipsPerDomain,
+        };
+      });
+
+    const domainStats = domains.map(domain => {
+      let leader = { user: '', amount: 0 };
+      userStats.forEach(data => {
+        if (data.tips[domain] && data.tips[domain] > leader.amount) {
+          leader = {
+            user: data.user,
+            amount: data.tips[domain],
+          };
+        }
+      });
+      return {
+        ...leader,
+        domain,
+      };
+    });
+
+    return {
+      domains,
+      users,
+      tipsByUser,
+      userStats,
+      domainStats,
+    };
+  }
+);
 
 export const getCurrentPeriodInfo = state => state.periods.currentPeriod;
 
