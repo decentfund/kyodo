@@ -204,45 +204,54 @@ const formatTipsPerDomain = tips =>
     { total: 0 },
   );
 
-export const getTipsByDomain = createSelector(getTipsToUser, tips => {
-  return formatTipsPerDomain(tips);
-});
-
-export const getPointsDistribution = createSelector(getTips, tips => {
-  return formatTipsPerDomain(tips);
-});
-
-const getDomainsFromTips = createSelector(getTips, tips =>
-  Object.keys(
-    tips.reduce((memo, { domain }) => ({ ...memo, [domain]: true }), {})
-  )
+export const getTipsByDomain = createSelector(
+  getTipsToUser,
+  tips => {
+    return formatTipsPerDomain(tips);
+  },
 );
 
-const getUsersFromTips = createSelector(getTips, tips =>
-  Object.keys(
-    tips.reduce((memo, { to }) => ({ ...memo, [to]: true }), {})
-  )
+export const getPointsDistribution = createSelector(
+  getTips,
+  tips => {
+    return formatTipsPerDomain(tips);
+  },
 );
 
-const getTipsByUser = createSelector(getTips, tips => groupBy(tips, 'to'));
+const getDomainsFromTips = createSelector(
+  getTips,
+  tips =>
+    Object.keys(
+      tips.reduce((memo, { domain }) => ({ ...memo, [domain]: true }), {}),
+    ),
+);
+
+const getUsersFromTips = createSelector(
+  getTips,
+  tips =>
+    Object.keys(tips.reduce((memo, { to }) => ({ ...memo, [to]: true }), {})),
+);
+
+const getTipsByUser = createSelector(
+  getTips,
+  tips => groupBy(tips, 'to'),
+);
 
 // Should return array of users with their names, addresses, points earned per domains,
 // highest earning in domain, total points earned in current period
 export const getLeaderboardData = createSelector(
   [getDomainsFromTips, getUsersFromTips, getTipsByUser],
   (domains, users, tipsByUser) => {
-
-    const userStats = Object.keys(tipsByUser)
-      .map(user => {
-        const userTips = tipsByUser[user];
-        const userAddress = userTips[0].toAddress;
-        const tipsPerDomain = formatTipsPerDomain(userTips);
-        return {
-          user,
-          userAddress,
-          tips: tipsPerDomain,
-        };
-      });
+    const userStats = Object.keys(tipsByUser).map(user => {
+      const userTips = tipsByUser[user];
+      const userAddress = userTips[0].toAddress;
+      const tipsPerDomain = formatTipsPerDomain(userTips);
+      return {
+        user,
+        userAddress,
+        tips: tipsPerDomain,
+      };
+    });
 
     const domainStats = domains.map(domain => {
       let leader = { user: '', amount: 0 };
@@ -267,7 +276,7 @@ export const getLeaderboardData = createSelector(
       userStats,
       domainStats,
     };
-  }
+  },
 );
 
 export const getCurrentPeriodInfo = state => state.periods.currentPeriod;
