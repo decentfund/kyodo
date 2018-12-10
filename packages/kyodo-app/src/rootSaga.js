@@ -23,6 +23,7 @@ import {
 } from './constants';
 import { BASE_CURRENCY } from './constants';
 import * as fromActions from './actions';
+import tasksList from './mockTips';
 
 const BACKEND_URI = process.env.REACT_APP_BACKEND_URI || 'http://kyodo.decent.fund:3666';
 
@@ -125,8 +126,10 @@ function* loadPeriodTasks() {
     const tasks = data.map(t => ({
       title: t.task.taskTitle,
       domain: t.domain.domainTitle,
-      from: t.from.alias,
-      to: t.to.alias,
+      from: t.from.alias || t.from.address,
+      fromAddress: t.from.address,
+      to: t.to.alias || t.to.address,
+      toAddress: t.to.address,
       id: t._id,
       amount: t.amount,
     }));
