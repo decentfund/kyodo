@@ -7,6 +7,8 @@ import {
   put,
   takeEvery,
   takeLatest,
+  select,
+  apply,
 } from 'redux-saga/effects';
 import { drizzleSagas } from 'drizzle';
 import {
@@ -20,12 +22,20 @@ import {
   LOAD_HISTORICAL_RATES_SUCCESS,
   LOAD_MULTISIG_BALANCE_REQUEST,
   LOAD_MULTISIG_BALANCE_SUCCESS,
+  GET_COLONY_NETWORK_CLIENT_REQUEST,
+  GET_COLONY_NETWORK_CLIENT_SUCCESS,
+  GET_COLONY_REQUEST,
+  GET_COLONY_SUCCESS,
+  GET_POT_BALANCE_REQUEST,
+  GET_POT_BALANCE_SUCCESS,
+  GET_DOMAINS_BALANCES_REQUEST,
 } from './constants';
 import { BASE_CURRENCY } from './constants';
 import * as fromActions from './actions';
-import tasksList from './mockTips';
+import * as fromNetworkHelpers from './helpers/network';
 
-const BACKEND_URI = process.env.REACT_APP_BACKEND_URI || 'http://kyodo.decent.fund:3666';
+const BACKEND_URI =
+  process.env.REACT_APP_BACKEND_URI || 'http://kyodo.decent.fund:3666';
 
 function* loadRate({ currency }) {
   try {
@@ -165,6 +175,111 @@ function* watchLoadCurrentPeriodInfo() {
   yield takeLatest(LOAD_CURRENT_PERIOD_INFO_REQUEST, loadPeriodInfo);
 }
 
+function* getColonyNetworkClient({ payload: provider }) {
+  try {
+    // get network id from the state
+    const {
+      web3: { networkId },
+    } = yield select();
+
+    window.ethereum.enable();
+    // getting colony network client
+    const colonyNetworkClient = yield call(
+      fromNetworkHelpers.getColonyNetworkClient,
+      networkId,
+      provider,
+    );
+
+    yield put({
+      type: GET_COLONY_NETWORK_CLIENT_SUCCESS,
+      payload: colonyNetworkClient,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+function* watchGetColonyNetwork() {
+  yield takeLatest(GET_COLONY_NETWORK_CLIENT_REQUEST, getColonyNetworkClient);
+}
+
+function* getColony({ payload: address }) {
+  try {
+    // get network id from the state
+    const {
+      colony: { networkClient },
+    } = yield select();
+
+    // getting colony network client
+    const colonyClient = yield apply(
+      networkClient,
+      networkClient.getColonyClientByAddress,
+      [address],
+    );
+
+    yield put({
+      type: GET_COLONY_SUCCESS,
+      payload: colonyClient,
+    });
+
+    yield put(fromActions.getDomainsBalances());
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+function* watchGetColony() {
+  yield takeLatest(GET_COLONY_REQUEST, getColony);
+}
+
+function* getPotBalance({ payload: potId }) {
+  const {
+    colony: { client },
+  } = yield select();
+
+  try {
+    const { balance } = yield call(
+      [client.getPotBalance, client.getPotBalance.call],
+      {
+        potId,
+        token: client.token.contract.address,
+      },
+    );
+
+    const potBalance = balance.toString();
+    yield put({
+      type: GET_POT_BALANCE_SUCCESS,
+      payload: {
+        potBalance,
+        potId,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+function* watchGetPotBalance() {
+  yield takeEvery(GET_POT_BALANCE_REQUEST, getPotBalance);
+}
+
+function* getDomainsBalances() {
+  const {
+    colony: { domains },
+  } = yield select();
+
+  for (let domain of domains) {
+    yield put({
+      type: GET_POT_BALANCE_REQUEST,
+      payload: domain.potId,
+    });
+  }
+}
+
+function* watchGetDomainsBalances() {
+  yield takeLatest(GET_DOMAINS_BALANCES_REQUEST, getDomainsBalances);
+}
+
 export default function* root() {
   yield all([
     ...drizzleSagas.map(saga => fork(saga)),
@@ -173,5 +288,9 @@ export default function* root() {
     watchLoadHistoricalRates(),
     watchLoadTasks(),
     watchLoadCurrentPeriodInfo(),
+    watchGetColonyNetwork(),
+    watchGetColony(),
+    watchGetPotBalance(),
+    watchGetDomainsBalances(),
   ]);
 }

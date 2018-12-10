@@ -20,7 +20,12 @@ import TasksList from './components/TasksList';
 import PeriodPointsDistribution from './components/PeriodPointsDistribution';
 import PeriodDistributionSummary from './components/PeriodDistributionSummary';
 import { getContract, getOwner, getWhitelistedAddresses } from './reducers';
-import { loadRate, loadMultiSigBalance } from './actions';
+import {
+  loadRate,
+  loadMultiSigBalance,
+  getColonyNetworkClient,
+  getColony,
+} from './actions';
 import {
   generateContractConfigFromEvent,
   generateContractConfigFromName,
@@ -201,6 +206,27 @@ class App extends Component {
       });
     }
 
+    if (
+      !this.props.colonyNetworkClient &&
+      !this.props.colonyNetworkClientLoading &&
+      window.web3 &&
+      window.web3.currentProvider
+    ) {
+      this.props.getColonyNetworkClient(window.web3.currentProvider);
+    }
+
+    if (
+      this.state.colonyAddressKey &&
+      this.props.KyodoDAO.colony[this.state.colonyAddressKey] &&
+      this.props.colonyNetworkClient &&
+      !this.props.colonyClient &&
+      !this.props.colonyClientLoading
+    ) {
+      this.props.getColony(
+        this.props.KyodoDAO.colony[this.state.colonyAddressKey].value,
+      );
+    }
+
     if (this.drizzle.contracts.Periods && !this.state.prevBlockKey) {
       const prevBlockKey = this.drizzle.contracts.Periods.methods.currentPeriodStartBlock.cacheCall();
       this.setState({
@@ -376,6 +402,10 @@ const mapStateToProps = state => ({
   drizzleStatus: state.drizzleStatus,
   owner: getOwner(getContract('KyodoDAO')(state)),
   whitelistedAddresses: getWhitelistedAddresses(getContract('Members')(state)),
+  colonyNetworkClient: state.colony.networkClient,
+  colonyClient: state.colony.client,
+  colonyClientLoading: state.colony.clientLoading,
+  colonyNetworkClientLoading: state.colony.networkClientLoading,
 });
 
 App.contextTypes = {
@@ -385,4 +415,6 @@ App.contextTypes = {
 export default drizzleConnect(App, mapStateToProps, {
   loadRate,
   loadMultiSigBalance,
+  getColonyNetworkClient,
+  getColony,
 });
