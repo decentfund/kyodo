@@ -51,3 +51,9 @@ export function getDomainsBalances() {
     type: types.GET_DOMAINS_BALANCES_REQUEST,
   };
 }
+
+export function getDomains() {
+  return {
+    type: types.GET_DOMAINS_REQUEST,
+  };
+}

@@ -1,13 +1,7 @@
 export default (
   state = {
     pots: {},
-    // FIXME: Temporary hard coding domains and their pots
-    domains: [
-      { name: 'FUND', potId: 2 },
-      { name: 'GOV', potId: 3 },
-      { name: 'SOCIAL', potId: 4 },
-      { name: 'BUIDL', potId: 5 },
-    ],
+    domains: [],
   },
   action,
 ) => {
@@ -33,6 +27,11 @@ export default (
         ...state,
         client: action.payload,
         clientLoading: false,
+      };
+    case 'GET_DOMAINS_SUCCESS':
+      return {
+        ...state,
+        domains: action.payload,
       };
     case 'GET_POT_BALANCE_SUCCESS': {
       const { potId, potBalance: balance } = action.payload;

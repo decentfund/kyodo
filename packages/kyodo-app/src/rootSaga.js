@@ -29,6 +29,8 @@ import {
   GET_POT_BALANCE_REQUEST,
   GET_POT_BALANCE_SUCCESS,
   GET_DOMAINS_BALANCES_REQUEST,
+  GET_DOMAINS_REQUEST,
+  GET_DOMAINS_SUCCESS,
 } from './constants';
 import { BASE_CURRENCY } from './constants';
 import * as fromActions from './actions';
@@ -222,7 +224,7 @@ function* getColony({ payload: address }) {
       payload: colonyClient,
     });
 
-    yield put(fromActions.getDomainsBalances());
+    yield put(fromActions.getDomains());
   } catch (e) {
     console.log(e);
   }
@@ -280,6 +282,25 @@ function* watchGetDomainsBalances() {
   yield takeLatest(GET_DOMAINS_BALANCES_REQUEST, getDomainsBalances);
 }
 
+function* getDomains() {
+  const apiURI = `${BACKEND_URI}/domains`;
+  const { data } = yield call(axios.get, apiURI);
+  console.log(data);
+
+  // set domains to store
+  yield put({
+    type: GET_DOMAINS_SUCCESS,
+    payload: data.map(domain => ({ name: domain.title, potId: domain.potId })),
+  });
+
+  // get domains balances
+  yield put(fromActions.getDomainsBalances());
+}
+
+function* watchGetDomains() {
+  yield takeLatest(GET_DOMAINS_REQUEST, getDomains);
+}
+
 export default function* root() {
   yield all([
     ...drizzleSagas.map(saga => fork(saga)),
@@ -292,5 +313,6 @@ export default function* root() {
     watchGetColony(),
     watchGetPotBalance(),
     watchGetDomainsBalances(),
+    watchGetDomains(),
   ]);
 }
