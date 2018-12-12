@@ -54,8 +54,13 @@ router
   .get('/domain', (req, res) => {
     getDomainById(req, res);
   })
-  .get('/domains', (req, res) => {
-    getAllDomains(req, res);
+  .get('/domains', async (req, res) => {
+    try {
+      const domains = await getAllDomains();
+      return res.status(200).send(domains);
+    } catch (err) {
+      return res.status(400).send(err);
+    }
   })
   .post('/user', (req, res) => {
     addUser(req, res);

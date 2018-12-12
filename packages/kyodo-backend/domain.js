@@ -53,12 +53,8 @@ export const addDomain = async (req, res) => {
   res.end(`{"success" : Added ${domain} Successfully, "status" : 200}`);
 };
 
-export const getAllDomains = async (req, res) => {
-  let domains = await Domain.find((err, domains) => {
-    if (err) return console.error(err);
-    console.log(domains);
-    res.send(`ALL DOMAINS: ${domains}`);
-  });
+export const getAllDomains = async () => {
+  return await Domain.find();
 };
 
 export const getDomainById = async (req, res) => {
