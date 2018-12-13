@@ -6,7 +6,7 @@ import { drizzleConnect } from 'drizzle-react';
 import styled, { injectGlobal } from 'styled-components';
 // import Helloworld from './Helloworld.js';
 import Header from './components/Header';
-import KyodoDAO from '@kyodo/contracts/build/contracts/KyodoDAO.json';
+import KyodoDAO from '@kyodo/contracts/build/contracts/KyodoDAO_V1.json';
 import AddRiotID from './components/AddRiotID';
 import Members from './components/Members';
 import MultisigBalance from './components/MultisigBalance';
