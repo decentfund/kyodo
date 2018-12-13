@@ -290,7 +290,10 @@ function* getDomains() {
   // set domains to store
   yield put({
     type: GET_DOMAINS_SUCCESS,
-    payload: data.map(domain => ({ name: domain.title, potId: domain.potId })),
+    payload: data.map(domain => ({
+      name: domain.domainTitle,
+      potId: domain.potId,
+    })),
   });
 
   // get domains balances
