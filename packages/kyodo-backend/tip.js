@@ -120,9 +120,9 @@ export const getAllUserTips = async ({ user, periodId = null }) => {
   return [...fromTips, ...toTips];
 };
 
-export const getAllTipsInDomain = async domain => {
-  const govDomain = await Domain.find({ domainTitle: domain });
-  const tips = await Tip.find({ domain: govDomain });
+export const getAllTipsInDomain = async domainTitle => {
+  const domain = await Domain.find({ domainTitle });
+  const tips = await Tip.find({ domain });
   return {
     total: sum(map(tips, 'amount')),
     tips,
