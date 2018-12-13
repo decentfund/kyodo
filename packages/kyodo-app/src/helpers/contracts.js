@@ -1,5 +1,6 @@
 import MembersContract from '@kyodo/contracts/build/contracts/MembersV1.json';
 import PeriodsContract from '@kyodo/contracts/build/contracts/PeriodsV1.json';
+import DomainsContract from '@kyodo/contracts/build/contracts/DomainsV1.json';
 
 const generateContractConfig = ({
   contractName,
@@ -22,6 +23,9 @@ const generateContractConfigFromEvent = ({ event, web3, address }) => {
   } else if (event === 'MembersAddressChanged') {
     contractName = 'Members';
     contractAbi = MembersContract.abi;
+  } else if (event === 'DomainsAddressChanged') {
+    contractName = 'Domains';
+    contractAbi = DomainsContract.abi;
   }
 
   if (contractName) {

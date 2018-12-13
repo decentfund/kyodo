@@ -11,8 +11,9 @@ log() {
 }
 
 # Pull docker image
-log "Pulling docker image..."
+log "Pulling docker images..."
 docker pull ethereum/solc:0.4.23
+docker pull ethereum/solc:0.4.24
 
 # Initialize colonyNetwork submodule
 log "Initializing colonyNetwork submodule..."
@@ -24,3 +25,8 @@ cd lib/colonyNetwork
 # Install colonyNetwork dependencies
 log "Installing colonyNetwork dependencies..."
 yarn
+
+# Compiling contracts and applying registry
+cd ../../
+./node_modules/.bin/truffle compile
+./node_modules/.bin/apply-registry build/contracts

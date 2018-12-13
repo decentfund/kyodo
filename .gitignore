@@ -6,3 +6,5 @@ lerna-debug.log
 **/build/*
 **/ganache-accounts.json
 yarn-error.log
+.env
+.env-e

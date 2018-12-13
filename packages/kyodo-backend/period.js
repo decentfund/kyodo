@@ -1,5 +1,5 @@
-import { Period, Colony, getColonyById } from './db.js';
-import { dbGetAllUsers, getAllUsers, findUserByAddress } from './user.js';
+import { Period, getColonyById } from './db.js';
+import { dbGetAllUsers, getAllUsers } from './user.js';
 import { PERIOD_TIME } from './constants/periodTime.js';
 
 let getBalance = () => 0;
@@ -16,17 +16,16 @@ export const initPeriod = async (blockNumber, periodId, colonyId) => {
   const users = await dbGetAllUsers();
   currentPeriod = periodId;
   colony.periodIds.push(currentPeriod);
-  await colony.save(err => {
-    if (err) return console.error(err);
-  });
+  await colony.save();
 
-  users.map(async el => {
-    const balance = await getBalance(el.address, blockNumber);
+  users.map(async user => {
+    const balance = await getBalance(user.address, blockNumber);
     await createAndSaveNewUserPeriod({
-      address: el.address,
+      address: user.address,
       periodId: currentPeriod,
-      balance, //current user balance
+      balance, // current user balance
       tips: 0,
+      user,
     });
   });
 };
@@ -43,54 +42,76 @@ export const createAndSaveNewUserPeriod = async ({
     title: 'My new period',
     address,
     periodId,
-    balance, //current user balance
+    initialBalance: balance, // current user balance
     user,
     tips,
   });
-  await period.save(err => {
-    if (err) return console.error(err);
-  });
+  await period.save();
   return period;
+};
+
+export const clearPeriods = async () => {
+  return Period.deleteMany();
 };
 
 export const initiateNewPeriod = async (req, res) => {
   // verify all users are present in db
   // fetching users from smart contract
 
-  let users = await getAllUsers(req, res);
+  let users = await dbGetAllUsers();
   currentPeriod++;
-  users.map(async el => {
-    console.log('USER INSIDE LOOP', el);
+  users.map(async user => {
+    console.log('USER INSIDE LOOP', user);
     let period = new Period({
       title: req.body.title,
-      address: el.address,
+      address: user.address,
       periodId: currentPeriod,
-      balance: el.balance, //current user balance
+      initialBalance: user.balance, // TODO: get the real user's balance and put it here
       tips: 0,
-      user: el,
+      user,
     });
-    await period.save((err, el) => {
-      if (err) return console.error(err);
-    });
+    await period.save();
   });
   res
     .status(200)
     .send(
-      `Successfully initiated first period of a colony, let the games begin!!!`,
+      `Successfully initiated first period of a colony, let the game begin!!!`,
     );
 };
 
 export const getAllPeriods = async (req, res) => {
   let periods = await Period.find((err, periods) => {
     if (err) return console.error(err);
-    res.send(`ALL THE PERIODS: ${periods}`);
+    res.status(200).send(periods);
   });
   return periods;
 };
 
 export const getCurrentPeriod = async (req, res) => {
-  await Period.find({ periodId: currentPeriod });
-  res.status(200).send(currentPeriod);
+  const period = await Period.find({ periodId: currentPeriod });
+  res.status(200).send(period);
+};
+
+export const getCurrentPeriodSummary = async (req, res) => {
+  const periodInfo = await Period.findOne({ periodId: currentPeriod });
+  const periodBalance = await Period.aggregate([
+    { $match: { periodId: currentPeriod } },
+    {
+      $group: {
+        _id: null,
+        initialBalance: { $sum: '$initialBalance' },
+      },
+    },
+    { $project: { _id: 0, initialBalance: 1 } },
+  ]);
+
+  const balanceInfo = periodBalance[0] || {};
+  const periodTitle = periodInfo ? periodInfo.title : '';
+  const result = {
+    periodTitle,
+    initialBalance: balanceInfo.initialBalance || 0,
+  };
+  res.status(200).send(result);
 };
 
 // exports.getUserPeriodBalance = async () => {};
@@ -106,20 +127,6 @@ export const getUserByAddressInPeriod = async address => {
     },
   );
   return user;
-};
-
-export const changeUserBalance = async (address, tip) => {
-  let sender = await Period.find({
-    address: address,
-  });
-  await Period.update(
-    { address: address },
-    { $set: { balance: sender[0].balance - tip } },
-    (err, res) => {
-      if (err) console.log(err);
-      return res;
-    },
-  );
 };
 
 //MEGA CRON

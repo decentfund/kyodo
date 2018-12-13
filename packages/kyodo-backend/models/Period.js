@@ -5,6 +5,7 @@ const periodSchema = new Schema({
   address: String,
   periodId: Number,
   balance: Number,
+  initialBalance: Number,
   user: { type: Schema.Types.ObjectId, ref: 'User' },
 });
 

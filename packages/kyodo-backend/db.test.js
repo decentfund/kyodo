@@ -1,26 +1,24 @@
-import mongoose from 'mongoose';
-import { User, Period, Colony, getCurrentUserPeriod } from './db';
+import 'babel-polyfill';
+import { Period, Colony, getCurrentUserPeriod } from './db';
+import {
+  connectMongoose,
+  clearDb,
+  disconnectMongoose,
+  createColony,
+  createUser,
+} from './test/helpers';
+
+beforeAll(connectMongoose);
+beforeEach(clearDb);
+afterAll(disconnectMongoose);
 
 describe('db', () => {
-  let connection;
-
-  beforeAll(async () => {
-    connection = await mongoose.connect(global.__MONGO_URI__);
-  });
-
-  afterAll(async () => {
-    await connection.disconnect();
-  });
-
-  beforeEach(async () => {
-    const colony = new Colony();
-    await colony.save();
-  });
+  beforeEach(createColony);
 
   describe('colony', () => {
     it('returns proper current period id', async () => {
       const colony = await Colony.findOne();
-      expect(colony.currentPeriodId).toBe(undefined);
+      expect(colony.currentPeriodId).toBe(0);
     });
 
     it('returns proper current period id', async () => {
@@ -33,19 +31,10 @@ describe('db', () => {
 });
 
 describe('getCurrentUserPeriod', async () => {
-  let connection;
   let user;
 
-  beforeAll(async () => {
-    connection = await mongoose.connect(global.__MONGO_URI__);
-    user = new User({
-      alias: 'user',
-    });
-    await user.save();
-  });
-
-  afterAll(async () => {
-    await connection.disconnect();
+  beforeEach(async () => {
+    user = await createUser();
   });
 
   it('throws error if user period is not found', async () => {
@@ -58,7 +47,12 @@ describe('getCurrentUserPeriod', async () => {
 
   it('returns period correctly', async () => {
     // creating new user period
-    const period = new Period({ user, periodId: 0, balance: 0, tips: [] });
+    const period = new Period({
+      user,
+      periodId: 0,
+      initialBalance: 0,
+      tips: [],
+    });
     await period.save();
 
     const periodResponse = await getCurrentUserPeriod('user', 0);

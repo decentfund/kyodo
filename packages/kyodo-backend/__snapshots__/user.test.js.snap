@@ -1,0 +1,62 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generates final activity tasks properly works correctly 1`] = `
+Array [
+  Object {
+    "amount": 5,
+    "domain": Object {
+      "domainTitle": "GOV",
+    },
+    "from": Object {
+      "address": "0x0",
+      "alias": "igor",
+    },
+    "to": Object {
+      "address": "0x0",
+      "alias": "pasha",
+    },
+  },
+  Object {
+    "amount": 3,
+    "domain": Object {
+      "domainTitle": "GOV",
+    },
+    "from": Object {
+      "address": "0x0",
+      "alias": "igor",
+    },
+    "to": Object {
+      "address": "0x0",
+      "alias": "pasha",
+    },
+  },
+  Object {
+    "amount": 1,
+    "domain": Object {
+      "domainTitle": "GOV",
+    },
+    "from": Object {
+      "address": "0x0",
+      "alias": "igor",
+    },
+    "to": Object {
+      "address": "0x0",
+      "alias": "pasha",
+    },
+  },
+  Object {
+    "amount": 3,
+    "domain": Object {
+      "domainTitle": "GOV",
+    },
+    "from": Object {
+      "address": "0x0",
+      "alias": "pasha",
+    },
+    "to": Object {
+      "address": "0x0",
+      "alias": "igor",
+    },
+  },
+]
+`;

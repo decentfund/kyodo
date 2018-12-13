@@ -18,8 +18,14 @@ import TotalSupplyChange from './components/TotalSupplyChange';
 import Earnings from './components/Earnings';
 import TasksList from './components/TasksList';
 import PeriodPointsDistribution from './components/PeriodPointsDistribution';
+import PeriodDistributionSummary from './components/PeriodDistributionSummary';
 import { getContract, getOwner, getWhitelistedAddresses } from './reducers';
-import { loadRate, loadMultiSigBalance } from './actions';
+import {
+  loadRate,
+  loadMultiSigBalance,
+  getColonyNetworkClient,
+  getColony,
+} from './actions';
 import {
   generateContractConfigFromEvent,
   generateContractConfigFromName,
@@ -107,10 +113,10 @@ class App extends Component {
         name: 'Members',
         address: process.env.REACT_APP_MEMBERS_CONTRACT_ADDRESS,
       },
-      // {
-      // name: 'Domains',
-      // address: process.env.REACT_APP_DOMAINS_CONTRACT_ADDRESS,
-      // },
+      {
+        name: 'Domains',
+        address: process.env.REACT_APP_DOMAINS_CONTRACT_ADDRESS,
+      },
       {
         name: 'Periods',
         address: process.env.REACT_APP_PERIODS_CONTRACT_ADDRESS,
@@ -200,6 +206,27 @@ class App extends Component {
       });
     }
 
+    if (
+      !this.props.colonyNetworkClient &&
+      !this.props.colonyNetworkClientLoading &&
+      window.web3 &&
+      window.web3.currentProvider
+    ) {
+      this.props.getColonyNetworkClient(window.web3.currentProvider);
+    }
+
+    if (
+      this.state.colonyAddressKey &&
+      this.props.KyodoDAO.colony[this.state.colonyAddressKey] &&
+      this.props.colonyNetworkClient &&
+      !this.props.colonyClient &&
+      !this.props.colonyClientLoading
+    ) {
+      this.props.getColony(
+        this.props.KyodoDAO.colony[this.state.colonyAddressKey].value,
+      );
+    }
+
     if (this.drizzle.contracts.Periods && !this.state.prevBlockKey) {
       const prevBlockKey = this.drizzle.contracts.Periods.methods.currentPeriodStartBlock.cacheCall();
       this.setState({
@@ -282,7 +309,11 @@ class App extends Component {
       this.props.Token.symbol[this.state.tokenSymbolKey] &&
       this.props.Token.symbol[this.state.tokenSymbolKey].value;
 
-    if (!this.drizzle.contracts.Periods || !this.drizzle.contracts.Members)
+    if (
+      !this.drizzle.contracts.Periods ||
+      !this.drizzle.contracts.Members ||
+      !this.drizzle.contracts.Domains
+    )
       return <div />;
 
     return (
@@ -320,6 +351,14 @@ class App extends Component {
               )}
             />
             <Route
+              path="/stats/distribution"
+              render={props => (
+                <div style={{ marginBottom: 50 }}>
+                  <PeriodDistributionSummary />
+                </div>
+              )}
+            />
+            <Route
               path="/points"
               render={props => <PeriodPointsDistribution />}
             />
@@ -328,6 +367,7 @@ class App extends Component {
               render={props => <AddRiotID account={userAddress} />}
             />
             <Route
+              exact
               path="/members"
               render={props =>
                 whitelistedAddresses.length > 0 || owner === userAddress ? (
@@ -358,6 +398,10 @@ const mapStateToProps = state => ({
   drizzleStatus: state.drizzleStatus,
   owner: getOwner(getContract('KyodoDAO')(state)),
   whitelistedAddresses: getWhitelistedAddresses(getContract('Members')(state)),
+  colonyNetworkClient: state.colony.networkClient,
+  colonyClient: state.colony.client,
+  colonyClientLoading: state.colony.clientLoading,
+  colonyNetworkClientLoading: state.colony.networkClientLoading,
 });
 
 App.contextTypes = {
@@ -367,4 +411,6 @@ App.contextTypes = {
 export default drizzleConnect(App, mapStateToProps, {
   loadRate,
   loadMultiSigBalance,
+  getColonyNetworkClient,
+  getColony,
 });

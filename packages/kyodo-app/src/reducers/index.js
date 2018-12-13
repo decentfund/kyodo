@@ -5,11 +5,14 @@ import { routerReducer } from 'react-router-redux';
 import { drizzleReducers } from 'drizzle';
 import { createSelector } from 'reselect';
 import get from 'lodash/get';
+import groupBy from 'lodash/groupBy';
 import rates, * as fromRates from './rates';
 import balances from './balances';
 import users from './users';
 import tips from './tips';
+import colony from './colony';
 import historical, * as fromHistorical from './historical';
+import periods from './periods';
 import { BASE_CURRENCY } from '../constants';
 
 const moment = extendMoment(Moment);
@@ -187,21 +190,120 @@ export const getTotalUserTips = createSelector(
   }),
 );
 
-export const getTipsByDomain = createSelector(getTipsToUser, tips => {
-  return tips.reduce(
-    (a, { domain, amount }) => {
-      if (a[domain]) {
-        a[domain] = a[domain] + amount;
+const formatTipsPerDomain = tips =>
+  tips.reduce(
+    (memo, { domain, amount }) => {
+      if (memo[domain]) {
+        memo[domain] = memo[domain] + amount;
       } else {
-        a[domain] = amount;
+        memo[domain] = amount;
       }
 
-      a.total += amount;
-      return a;
+      memo.total += amount;
+      return memo;
     },
     { total: 0 },
   );
-});
+
+export const getTipsByDomain = createSelector(
+  getTipsToUser,
+  tips => {
+    return formatTipsPerDomain(tips);
+  },
+);
+
+export const getPointsDistribution = createSelector(
+  getTips,
+  tips => {
+    return formatTipsPerDomain(tips);
+  },
+);
+
+const getDomainsFromTips = createSelector(
+  getTips,
+  tips =>
+    Object.keys(
+      tips.reduce((memo, { domain }) => ({ ...memo, [domain]: true }), {}),
+    ),
+);
+
+const getUsersFromTips = createSelector(
+  getTips,
+  tips =>
+    Object.keys(tips.reduce((memo, { to }) => ({ ...memo, [to]: true }), {})),
+);
+
+const getTipsByUser = createSelector(
+  getTips,
+  tips => groupBy(tips, 'to'),
+);
+
+// Should return array of users with their names, addresses, points earned per domains,
+// highest earning in domain, total points earned in current period
+export const getLeaderboardData = createSelector(
+  [getDomainsFromTips, getUsersFromTips, getTipsByUser],
+  (domains, users, tipsByUser) => {
+    const userStats = Object.keys(tipsByUser).map(user => {
+      const userTips = tipsByUser[user];
+      const userAddress = userTips[0].toAddress;
+      const tipsPerDomain = formatTipsPerDomain(userTips);
+      return {
+        user,
+        userAddress,
+        tips: tipsPerDomain,
+      };
+    });
+
+    const domainStats = domains.map(domain => {
+      let leader = { user: '', amount: 0 };
+      userStats.forEach(data => {
+        if (data.tips[domain] && data.tips[domain] > leader.amount) {
+          leader = {
+            user: data.user,
+            amount: data.tips[domain],
+          };
+        }
+      });
+      return {
+        ...leader,
+        domain,
+      };
+    });
+
+    return {
+      domains,
+      users,
+      tipsByUser,
+      userStats,
+      domainStats,
+    };
+  },
+);
+
+export const getDomains = state => state.colony.domains;
+export const getPots = state => state.colony.pots;
+
+export const decimals = state =>
+  parseInt(state.contracts.Token.decimals['0x0'].value, 10);
+
+export const getPointPrice = createSelector(
+  [getDomains, getPots, getPointsDistribution, getDecimals],
+  (domains, pots, pointsDistribution, decimals) => {
+    return domains.reduce((memo, domain) => {
+      if (!pots[domain.potId] || !pointsDistribution[domain.name]) return 0;
+      const domainPotBalance = pots[domain.potId] && pots[domain.potId].balance;
+      const domainPointsAmount = pointsDistribution[domain.name];
+
+      return {
+        ...memo,
+        [domain.name]:
+          domainPotBalance / domainPointsAmount / Math.pow(10, decimals || 18),
+      };
+    }, {});
+  },
+);
+
+export const getCurrentPeriodInfo = state => state.periods.currentPeriod;
 
 const reducer = combineReducers({
   routing: routerReducer,
@@ -210,6 +312,8 @@ const reducer = combineReducers({
   historical,
   tips,
   users,
+  periods,
+  colony,
   ...drizzleReducers,
 });
 

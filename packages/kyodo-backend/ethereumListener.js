@@ -5,8 +5,6 @@ const provider = new Web3.providers.WebsocketProvider(
   process.env.WS_PROVIDER || 'ws://localhost:8545',
 );
 import TruffleContract from 'truffle-contract';
-import KyodoDAO from '@kyodo/contracts/build/contracts/KyodoDAO.json';
-import Registry from '@kyodo/contracts/build/contracts/Registry.json';
 import Members from '@kyodo/contracts/build/contracts/MembersV1.json';
 import Domains from '@kyodo/contracts/build/contracts/DomainsV1.json';
 import Periods from '@kyodo/contracts/build/contracts/PeriodsV1.json';
@@ -14,38 +12,15 @@ import { createColony } from './colony.js';
 import { dbAddUser, setUserAlias } from './user';
 import { initPeriod } from './period';
 import { dbAddDomain as addDomain } from './domain';
+import { getKyodo } from './web3/kyodo';
+import { getColony } from './web3/colony';
 
-let kyodo;
-let registry;
 let members;
 let domains;
 let periods;
-let colonyAddress;
-
-const getNewestVersionAddress = events =>
-  events.sort(
-    (a, b) =>
-      parseFloat(b.returnValues.version) - parseFloat(a.returnValue.version),
-  )[0];
-
-const initializeKyodo = async () => {
-  registry = TruffleContract(Registry);
-  registry.setProvider(provider);
-  const registryInstance = await registry.deployed();
-  const pastEvents = await registryInstance.getPastEvents('VersionAdded', {
-    fromBlock: 0,
-    toBlock: 'latest',
-  });
-  const newestVersionAddress = getNewestVersionAddress(pastEvents).returnValues
-    .implementation;
-
-  const KyodoContract = TruffleContract(KyodoDAO);
-  KyodoContract.setProvider(provider);
-  const kyodo = await KyodoContract.at(newestVersionAddress);
-  return kyodo;
-};
 
 const updateUsers = async () => {
+  const kyodo = await getKyodo();
   const membersAddress = await kyodo.members();
 
   const MembersContract = TruffleContract(Members);
@@ -79,15 +54,15 @@ const parseNewAliasSetEvent = event => ({
 });
 
 const parseNewDomainAddedEvent = event => ({
-  id: event.args._id.toNumber(),
+  potId: event.args._id.toNumber(),
   title: event.args._code,
+  blockNumber: event.blockNumber,
 });
 
 const startListener = () => {
-  initializeKyodo().then(async value => {
-    kyodo = value;
-
-    colonyAddress = await kyodo.colony();
+  getKyodo().then(async kyodo => {
+    const colonyContract = await getColony();
+    const colonyAddress = colonyContract.address;
     let colony = await Colony.findOne({ colonyAddress });
     if (!colony) {
       colony = await createColony(colonyAddress);
@@ -170,17 +145,35 @@ const startListener = () => {
       options,
     );
 
+    // Filtering last domains added
+    const latestDomains = pastNewDomainAddedEvents
+      .map(parseNewDomainAddedEvent)
+      .reduce((a, { title, blockNumber, potId }) => {
+        if (!a.title || a.title.blockNumber < blockNumber) {
+          a[title] = {
+            potId,
+            blockNumber,
+          };
+        }
+        return a;
+      }, {});
+
     // filter existing domains
     const dbDomains = await Domain.find();
-    const existingDomainsIds = dbDomains.map(d => d.domainId);
+    const existingDomainsCodes = dbDomains.map(d => d.domainTitle);
+
     // Syncing past domain added
-    pastNewDomainAddedEvents
-      .map(parseNewDomainAddedEvent)
-      .filter(e => !existingDomainsIds.includes(e.id))
-      .forEach(async domain => {
-        // add domain
-        await addDomain(domain);
-      });
+    Object.keys(latestDomains).forEach(async title => {
+      // add domain if not present, otherwise change domain potId
+      if (!existingDomainsCodes.includes(title)) {
+        await addDomain({ title, ...latestDomains[title] });
+      } else {
+        await Domain.update(
+          { domainTitle: title, potId: { $ne: latestDomains[title].potId } },
+          { $set: { potId: latestDomains[title].potId } },
+        );
+      }
+    });
 
     // Subscribe to new domains added events
   });

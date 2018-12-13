@@ -4,7 +4,7 @@ import Token from '@kyodo/contracts/build/contracts/Token.json';
 
 const drizzleOptions = {
   web3: {
-    ignoreMetamask: true,
+    // ignoreMetamask: true,
     block: false,
     fallback: {
       type: 'ws',

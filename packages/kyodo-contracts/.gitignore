@@ -1,1 +1,7 @@
 .env
+/networks/
+!/networks/1.json
+!/networks/2.json
+!/networks/3.json
+!/networks/4.json
+!/networks/42.json
