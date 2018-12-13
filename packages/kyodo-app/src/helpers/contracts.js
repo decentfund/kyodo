@@ -1,4 +1,4 @@
-import MembersContract from '@kyodo/contracts/build/contracts/MembersV1.json';
+import MembersContract from '@kyodo/contracts/build/contracts/MembersV2.json';
 import PeriodsContract from '@kyodo/contracts/build/contracts/PeriodsV1.json';
 import DomainsContract from '@kyodo/contracts/build/contracts/DomainsV1.json';
 
