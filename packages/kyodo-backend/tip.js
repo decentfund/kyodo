@@ -91,8 +91,9 @@ export const getAllTips = async () => {
 };
 
 export const getUserTips = async ({ user, periodId, direction }) => {
+  const _periodId = periodId || (await getColonyCurrentPeriodId());
   const tips = await Tip.find(
-    { periodId: periodId, [direction]: user._id },
+    { periodId: _periodId, [direction]: user._id },
     err => {
       if (err) return console.error(err);
     },
@@ -106,15 +107,14 @@ export const getUserTips = async ({ user, periodId, direction }) => {
 };
 
 export const getAllUserTips = async ({ user, periodId = null }) => {
-  const _periodId = periodId || (await getColonyCurrentPeriodId());
   const fromTips = await getUserTips({
     user,
-    periodId: _periodId,
+    periodId,
     direction: 'from',
   });
   const toTips = await getUserTips({
     user,
-    periodId: _periodId,
+    periodId,
     direction: 'to',
   });
   return [...fromTips, ...toTips];
