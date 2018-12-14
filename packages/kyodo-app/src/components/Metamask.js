@@ -5,6 +5,7 @@ import { drizzleConnect } from 'drizzle-react';
 import { LoadingContainer } from 'drizzle-react-components';
 import MetamaskLogo from './metamask-logo-color.svg';
 import { getNetworkName } from '../helpers/network';
+import { capitalize } from '../utils/string';
 
 const MetamaskWrapper = styled.div`
   display: flex;
@@ -39,7 +40,7 @@ const Metamask = () => (
   </MetamaskWrapper>
 );
 
-const WrongNetwork = (props) => (
+const WrongNetwork = props => (
   <MetamaskWrapper>
     <Title>Wrong network</Title>
     <StyledLogo src={MetamaskLogo} />
@@ -50,8 +51,8 @@ const WrongNetwork = (props) => (
 class LoadingMetamask extends Component {
   static defaultProps = {
     requiredNetwork: [
-      'Mainnet',
-      'Development', // allow local RPC for testing
+      'mainnet',
+      'development', // allow local RPC for testing
     ],
   };
 
@@ -68,7 +69,11 @@ class LoadingMetamask extends Component {
     if (web3.status === 'initialized' && web3.networkId) {
       const network = getNetworkName(web3.networkId);
       if (!requiredNetwork.includes(network)) {
-        return <WrongNetwork>{requiredNetwork[0]} Test Net is your choice</WrongNetwork>;
+        return (
+          <WrongNetwork>
+            {capitalize(requiredNetwork[0])} Test Net is your choice
+          </WrongNetwork>
+        );
       }
     }
 

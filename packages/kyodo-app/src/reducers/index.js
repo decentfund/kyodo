@@ -10,6 +10,7 @@ import rates, * as fromRates from './rates';
 import balances from './balances';
 import users from './users';
 import tips from './tips';
+import colony from './colony';
 import historical, * as fromHistorical from './historical';
 import periods from './periods';
 import { BASE_CURRENCY } from '../constants';
@@ -252,6 +253,29 @@ export const getLeaderboardData = createSelector(
   },
 );
 
+export const getDomains = state => state.colony.domains;
+export const getPots = state => state.colony.pots;
+
+export const decimals = state =>
+  parseInt(state.contracts.Token.decimals['0x0'].value, 10);
+
+export const getPointPrice = createSelector(
+  [getDomains, getPots, getPointsDistribution, getDecimals],
+  (domains, pots, pointsDistribution, decimals) => {
+    return domains.reduce((memo, domain) => {
+      if (!pots[domain.potId] || !pointsDistribution[domain.name]) return 0;
+      const domainPotBalance = pots[domain.potId] && pots[domain.potId].balance;
+      const domainPointsAmount = pointsDistribution[domain.name];
+
+      return {
+        ...memo,
+        [domain.name]:
+          domainPotBalance / domainPointsAmount / Math.pow(10, decimals || 18),
+      };
+    }, {});
+  },
+);
+
 export const getCurrentPeriodInfo = state => state.periods.currentPeriod;
 
 const reducer = combineReducers({
@@ -262,6 +286,7 @@ const reducer = combineReducers({
   tips,
   users,
   periods,
+  colony,
   ...drizzleReducers,
 });
 

@@ -8,7 +8,7 @@ var deployParameters = require('./getDeployParameters');
 module.exports = deployer => {
   deployer.then(async () => {
     const kyodoInstance = await getKyodoInstance('1.0', Registry, KyodoDAO);
-    tokenInstance = Token.at(Token.address);
+    tokenInstance = await Token.at(Token.address);
     const { accounts: distAccounts } = deployParameters;
     // Minting initial distribution
     Object.keys(distAccounts).forEach(async address => {

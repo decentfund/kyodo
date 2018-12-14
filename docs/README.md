@@ -52,6 +52,11 @@ yarn deploy-contracts
 yarn start-backend
 ```
 
+### Start trufflepig to serve colony network locally
+```
+yarn start-trufflepig
+```
+
 ### Start frontend app
 
 ```

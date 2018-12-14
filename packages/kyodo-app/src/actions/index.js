@@ -31,3 +31,29 @@ export function loadCurrentPeriodInfo() {
     type: types.LOAD_CURRENT_PERIOD_INFO_REQUEST,
   };
 }
+
+export function getColonyNetworkClient(provider) {
+  return {
+    type: types.GET_COLONY_NETWORK_CLIENT_REQUEST,
+    payload: provider,
+  };
+}
+
+export function getColony(address) {
+  return {
+    type: types.GET_COLONY_REQUEST,
+    payload: address,
+  };
+}
+
+export function getDomainsBalances() {
+  return {
+    type: types.GET_DOMAINS_BALANCES_REQUEST,
+  };
+}
+
+export function getDomains() {
+  return {
+    type: types.GET_DOMAINS_REQUEST,
+  };
+}

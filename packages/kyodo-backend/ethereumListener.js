@@ -54,8 +54,9 @@ const parseNewAliasSetEvent = event => ({
 });
 
 const parseNewDomainAddedEvent = event => ({
-  id: event.args._id.toNumber(),
+  potId: event.args._id.toNumber(),
   title: event.args._code,
+  blockNumber: event.blockNumber,
 });
 
 const startListener = () => {
@@ -144,17 +145,35 @@ const startListener = () => {
       options,
     );
 
+    // Filtering last domains added
+    const latestDomains = pastNewDomainAddedEvents
+      .map(parseNewDomainAddedEvent)
+      .reduce((a, { title, blockNumber, potId }) => {
+        if (!a.title || a.title.blockNumber < blockNumber) {
+          a[title] = {
+            potId,
+            blockNumber,
+          };
+        }
+        return a;
+      }, {});
+
     // filter existing domains
     const dbDomains = await Domain.find();
-    const existingDomainsIds = dbDomains.map(d => d.domainId);
+    const existingDomainsCodes = dbDomains.map(d => d.domainTitle);
+
     // Syncing past domain added
-    pastNewDomainAddedEvents
-      .map(parseNewDomainAddedEvent)
-      .filter(e => !existingDomainsIds.includes(e.id))
-      .forEach(async domain => {
-        // add domain
-        await addDomain(domain);
-      });
+    Object.keys(latestDomains).forEach(async title => {
+      // add domain if not present, otherwise change domain potId
+      if (!existingDomainsCodes.includes(title)) {
+        await addDomain({ title, ...latestDomains[title] });
+      } else {
+        await Domain.update(
+          { domainTitle: title, potId: { $ne: latestDomains[title].potId } },
+          { $set: { potId: latestDomains[title].potId } },
+        );
+      }
+    });
 
     // Subscribe to new domains added events
   });
