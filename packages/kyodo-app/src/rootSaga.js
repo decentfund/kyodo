@@ -1,5 +1,6 @@
 import axios from 'axios';
 import moment from 'moment';
+import orderBy from 'lodash/orderBy';
 import {
   all,
   fork,
@@ -135,16 +136,21 @@ function* loadPeriodTasks() {
     const apiURI = `${BACKEND_URI}/tips`;
 
     const { data } = yield call(axios.get, apiURI);
-    const tasks = data.map(t => ({
-      title: t.task.taskTitle,
-      domain: t.domain.domainTitle,
-      from: t.from.alias || t.from.address,
-      fromAddress: t.from.address,
-      to: t.to.alias || t.to.address,
-      toAddress: t.to.address,
-      id: t._id,
-      amount: t.amount,
-    }));
+    const tasks = orderBy(
+      data.map(t => ({
+        title: t.task.taskTitle,
+        domain: t.domain.domainTitle,
+        from: t.from.alias || t.from.address,
+        fromAddress: t.from.address,
+        to: t.to.alias || t.to.address,
+        toAddress: t.to.address,
+        id: t._id,
+        amount: t.amount,
+        dateCreated: t.dateCreated,
+      })),
+      ['dateCreated'],
+      ['desc'],
+    );
 
     yield put({
       type: LOAD_PERIOD_TASKS_SUCCESS,

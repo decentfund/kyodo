@@ -72,6 +72,7 @@ class Header extends Component {
   componentDidMount() {
     const currentPeriodStartTimeKey = this.contracts.Periods.methods.currentPeriodStartTime.cacheCall();
     const periodDaysLengthKey = this.contracts.Periods.methods.periodDaysLength.cacheCall();
+    const kyodoNameKey = this.contracts.KyodoDAO.methods.name.cacheCall();
     const userAliasKey = this.contracts.Members.methods.getAlias.cacheCall(
       this.props.userAddress,
     );
@@ -81,6 +82,7 @@ class Header extends Component {
       currentPeriodStartTimeKey,
       periodDaysLengthKey,
       userAliasKey,
+      kyodoNameKey,
     });
   }
 
@@ -106,15 +108,16 @@ class Header extends Component {
     ].value;
 
     const alias = this.props.Members.getAlias[this.state.userAliasKey].value;
+    const kyodoName =
+      this.props.KyodoDAO.name[this.state.kyodoNameKey].value || 'decent.fund';
 
-    const { colonyName, userAddress, currentPeriod = {} } = this.props;
-
+    const { userAddress, currentPeriod = {} } = this.props;
     return (
       <div>
         <StyledWrapper>
           <img src={Logo} />
           <StyledMenuContainer>
-            <StyledColonyName href="/">{colonyName}</StyledColonyName>
+            <StyledColonyName href="/">{kyodoName}</StyledColonyName>
             <StyledMenu />
             <StyledUserAlias to="/user">
               {alias ? (
@@ -161,11 +164,9 @@ class Header extends Component {
   }
 }
 Header.defaultProps = {
-  colonyName: 'decent.fund',
   userAddress: '0x...',
 };
 Header.propTypes = {
-  colonyName: PropTypes.string,
   userAddress: PropTypes.string,
 };
 Header.contextTypes = {
@@ -173,6 +174,7 @@ Header.contextTypes = {
 };
 const mapStateToProps = state => ({
   Periods: getContract('Periods')(state),
+  KyodoDAO: getContract('KyodoDAO')(state),
   Members: getContract('Members')(state),
   currentPeriod: getCurrentPeriodInfo(state),
 });
