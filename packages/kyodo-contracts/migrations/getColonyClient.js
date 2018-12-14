@@ -20,7 +20,7 @@ const getPrivateKey = (network, accounts) => {
   // TODO: Wrap and throw error on empty file / var
   if (network === 'development') {
     const keys = require('../ganache-accounts.json');
-    const rawKey = keys.private_keys[accounts[0]];
+    const rawKey = keys.private_keys[accounts[0].toLowerCase()];
     return rawKey.startsWith('0x') ? rawKey : `0x${rawKey}`;
   } else {
     const mnemonic = process.env.MNEMONIC;
