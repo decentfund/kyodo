@@ -53,7 +53,7 @@ const StyledTip = styled.div`
   margin-bottom: 15px;
 `;
 
-class Members extends Component {
+class TasksList extends Component {
   componentDidMount() {
     this.props.loadPeriodTasks();
   }
@@ -82,7 +82,7 @@ class Members extends Component {
   }
 }
 
-Members.contextTypes = {
+TasksList.contextTypes = {
   drizzle: PropTypes.object,
 };
 
@@ -91,4 +91,4 @@ const mapStateToProps = state => ({
   tips: state.tips,
 });
 
-export default drizzleConnect(Members, mapStateToProps, { loadPeriodTasks });
+export default drizzleConnect(TasksList, mapStateToProps, { loadPeriodTasks });
