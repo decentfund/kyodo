@@ -22,10 +22,11 @@ import PeriodDistributionSummary from './components/PeriodDistributionSummary';
 import LeaderBoard from './components/LeaderBoard';
 import { getContract, getOwner, getWhitelistedAddresses } from './reducers';
 import {
-  loadRate,
-  loadMultiSigBalance,
-  getColonyNetworkClient,
   getColony,
+  getColonyNetworkClient,
+  loadMultiSigBalance,
+  loadPeriodTasks,
+  loadRate,
 } from './actions';
 import {
   generateContractConfigFromEvent,
@@ -244,6 +245,7 @@ class App extends Component {
     // // FIXME: move load rate to loadMultisigBalance saga
     this.props.loadRate(['ETH', ...Object.keys(process.env.BALANCE)]);
     this.props.loadMultiSigBalance();
+    this.props.loadPeriodTasks();
   }
 
   addToWhitelist = () => {
@@ -418,8 +420,9 @@ App.contextTypes = {
 };
 
 export default drizzleConnect(App, mapStateToProps, {
-  loadRate,
-  loadMultiSigBalance,
-  getColonyNetworkClient,
   getColony,
+  getColonyNetworkClient,
+  loadMultiSigBalance,
+  loadPeriodTasks,
+  loadRate,
 });

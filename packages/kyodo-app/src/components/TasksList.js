@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
-import { loadPeriodTasks } from '../actions';
 
 const StyledHeader = styled.div`
   display: flex;
@@ -54,10 +53,6 @@ const StyledTip = styled.div`
 `;
 
 class TasksList extends Component {
-  componentDidMount() {
-    this.props.loadPeriodTasks();
-  }
-
   render() {
     return (
       <div>
@@ -91,4 +86,4 @@ const mapStateToProps = state => ({
   tips: state.tips,
 });
 
-export default drizzleConnect(TasksList, mapStateToProps, { loadPeriodTasks });
+export default drizzleConnect(TasksList, mapStateToProps);
