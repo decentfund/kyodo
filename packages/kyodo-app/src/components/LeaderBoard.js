@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
+import orderBy from 'lodash/orderBy';
 import Leader from './Leader';
+import { getLeaderboardData } from '../reducers';
 
 class LeaderBoard extends Component {
   constructor(props, context) {
@@ -10,12 +12,20 @@ class LeaderBoard extends Component {
   }
 
   render() {
-    // FIXME: Temporary elements
+    const { users } = this.props;
+    const totalLeaderPoints = orderBy(users, ['tips.total'], ['desc'])[0].tips
+      .total;
     return (
       <div>
-        <Leader name="igor" width={100} />
-        <Leader name="wijuwiju" width={49} />
-        <Leader name="parygina" width={1} />
+        {orderBy(users, ['tips.total'], ['desc']).map(
+          ({ user, userAddress, tips: { total } }) => (
+            <Leader
+              name={user}
+              address={userAddress}
+              width={total / totalLeaderPoints}
+            />
+          ),
+        )}
       </div>
     );
   }
@@ -26,6 +36,13 @@ LeaderBoard.contextTypes = {
   members: PropTypes.array,
 };
 
-const mapStateToProps = (state, { account }) => ({});
+const mapStateToProps = state => {
+  const data = getLeaderboardData(state);
+  return {
+    users: data.userStats,
+    domains: data.domains,
+    domainStats: data.domainStats,
+  };
+};
 
 export default drizzleConnect(LeaderBoard, mapStateToProps);
