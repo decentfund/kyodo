@@ -18,8 +18,9 @@ class LeaderBoard extends Component {
     return (
       <div>
         {orderBy(users, ['tips.total'], ['desc']).map(
-          ({ user, userAddress, tips: { total } }) => (
+          ({ user, userAddress, tips: { total } }, index) => (
             <Leader
+              leader={index === 0}
               name={user}
               address={userAddress}
               width={total / totalLeaderPoints}

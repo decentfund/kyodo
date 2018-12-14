@@ -17,19 +17,21 @@ const Name = styled.div`
   flex-grow: 1;
 
   &:before {
-    background: rgba(0, 0, 0, 0.06);
+    background: ${({ leader }) =>
+      !leader ? 'rgba(0, 0, 0, 0.06)' : '#F5F905'};
     border-radius: 0px 12px 12px 0px;
     content: '';
     position: absolute;
     left: 0px;
     width: ${({ width }) => `${width * 100}%`};
     height: 100%;
+    z-index: -1;
   }
 `;
 
 class Leader extends Component {
   render() {
-    const { width, name, address } = this.props;
+    const { width, name, address, leader } = this.props;
     return (
       <Container>
         <Blockies
@@ -40,7 +42,7 @@ class Leader extends Component {
           spotColor="#EEEEEE"
           bgColor="#F5F905"
         />
-        <Name width={width}>
+        <Name width={width} leader={leader}>
           {name || `member known as ${address.substring(4, -4)}`}
         </Name>
       </Container>
