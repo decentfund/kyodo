@@ -19,6 +19,7 @@ import Earnings from './components/Earnings';
 import TasksList from './components/TasksList';
 import PeriodPointsDistribution from './components/PeriodPointsDistribution';
 import PeriodDistributionSummary from './components/PeriodDistributionSummary';
+import LeaderBoard from './components/LeaderBoard';
 import { getContract, getOwner, getWhitelistedAddresses } from './reducers';
 import {
   loadRate,
@@ -355,6 +356,14 @@ class App extends Component {
               render={props => (
                 <div style={{ marginBottom: 50 }}>
                   <PeriodDistributionSummary />
+                </div>
+              )}
+            />
+            <Route
+              path="/stats/leaderboard"
+              render={props => (
+                <div style={{ marginBottom: 50 }}>
+                  <LeaderBoard members={whitelistedAddresses} />
                 </div>
               )}
             />

@@ -48,6 +48,7 @@
     "raf": "3.4.0",
     "react": "^16.4.0",
     "react-billboardjs": "^1.4.3",
+    "react-blockies": "^1.4.0",
     "react-dev-utils": "^5.0.1",
     "react-dom": "^16.4.0",
     "react-intl": "^2.6.0",

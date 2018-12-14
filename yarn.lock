@@ -15747,6 +15747,13 @@ react-billboardjs@^1.4.3:
     prop-types "^15.6.1"
     react-parm "^2.3.0"
 
+react-blockies@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/react-blockies/-/react-blockies-1.4.0.tgz#4a23927c8c2368df569054778e732dc9d32342ab"
+  integrity sha512-AQe8oLnb5TabDrIJJ4XzoH2djapuLtEockB+Fcx/5hLAFzFmbsRsv8tJL3p+LOb3gK0hLJlJfd1JMtjSAJpcNA==
+  dependencies:
+    prop-types "^15.5.10"
+
 react-dev-utils@^5.0.1:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-5.0.2.tgz#7bb68d2c4f6ffe7ed1184c5b0124fcad692774d2"
