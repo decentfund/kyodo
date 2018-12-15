@@ -20,7 +20,12 @@ import TasksList from './components/TasksList';
 import PeriodPointsDistribution from './components/PeriodPointsDistribution';
 import PeriodDistributionSummary from './components/PeriodDistributionSummary';
 import LeaderBoard from './components/LeaderBoard';
-import { getContract, getOwner, getWhitelistedAddresses } from './reducers';
+import {
+  getContract,
+  getOwner,
+  getWhitelistedAddresses,
+  getSymbol,
+} from './reducers';
 import {
   getColony,
   getColonyNetworkClient,
@@ -239,6 +244,12 @@ class App extends Component {
     if (this.drizzle.contracts.Members) {
       this.drizzle.contracts.Members.methods.getWhitelistedAddresses.cacheCall();
     }
+
+    if (this.drizzle.contracts.Token) {
+      this.drizzle.contracts.Token.methods.totalSupply.cacheCall();
+      this.drizzle.contracts.Token.methods.decimals.cacheCall();
+      this.drizzle.contracts.Token.methods.symbol.cacheCall();
+    }
   }
 
   componentDidMount() {
@@ -283,7 +294,12 @@ class App extends Component {
 
   render() {
     const { address } = this.state;
-    const { userAddress, owner, whitelistedAddresses } = this.props;
+    const {
+      userAddress,
+      owner,
+      whitelistedAddresses,
+      tokenSymbol,
+    } = this.props;
     let prevBlock, colonyAddress;
 
     if (
@@ -305,12 +321,6 @@ class App extends Component {
       colonyAddress = this.props.KyodoDAO.colony[this.state.colonyAddressKey]
         .value;
     }
-
-    const tokenSymbol =
-      this.state.tokenSymbolKey &&
-      this.props.Token &&
-      this.props.Token.symbol[this.state.tokenSymbolKey] &&
-      this.props.Token.symbol[this.state.tokenSymbolKey].value;
 
     if (
       !this.drizzle.contracts.Periods ||
@@ -408,6 +418,7 @@ const mapStateToProps = state => ({
   Members: getContract('Members')(state),
   drizzleStatus: state.drizzleStatus,
   owner: getOwner(getContract('KyodoDAO')(state)),
+  tokenSymbol: getSymbol(getContract('Token')(state)),
   whitelistedAddresses: getWhitelistedAddresses(getContract('Members')(state)),
   colonyNetworkClient: state.colony.networkClient,
   colonyClient: state.colony.client,
