@@ -1,5 +1,7 @@
 import fs from "fs";
+import moment from "moment";
 import readline from "readline";
+import pluralize from "pluralize";
 import { google } from "googleapis";
 import sdk from "matrix-js-sdk";
 import BigNumber from "bignumber.js";
@@ -10,6 +12,8 @@ import omitBy from "lodash/omitBy";
 import { domains, max_points, sheet_id, sheet_tab_name } from "./constants";
 import { getOrCreatePrivateRoom } from "./helpers/matrix";
 import { initDb } from "@kyodo/backend/db";
+import { getCurrentPeriodSummary } from "@kyodo/backend/period";
+import { getStartTime, getPeriodDaysLength } from "@kyodo/backend/web3/periods";
 
 // If modifying these scopes, delete credentials.json.
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
@@ -121,7 +125,12 @@ function authenticated(auth) {
           if (command == "!help") {
             client.sendTextMessage(
               roomId,
-              "dish points using the following format:\n!dish [#of points] [type of points] points to [handle] for [reason]",
+              `To express your level of impression send evaluation points to a person you are impressed by:\n
+              !dish [#of points] [type of points] points to [handle] for [reason]\n
+              Example: !dish 50 BUIDL points to @igorline for crazy coding ★★★★★\n
+              \n
+              To know your points balance use !balance command
+              `,
             );
           } else if (command == "!dish") {
             handleDish(event, room, client, auth);
@@ -329,15 +338,40 @@ export async function handleBalance(event, room, client) {
       .map(name => `${tipsPerDomain[name]} ${name.toUpperCase()}`)
       .join(", ");
 
+    let message = "";
+
+    // evaluating days left
+    const startTime = await getStartTime();
+    const periodDaysLength = await getPeriodDaysLength();
+    const endTime = moment.unix(startTime).add(periodDaysLength, "days");
+    const daysDiff = moment(endTime).diff(moment.now(), "days");
+
+    let days = pluralize("day", daysDiff, true);
+
+    // pluralizing points
+    const balancePoints = pluralize("point", balance, true);
+
+    // getting period title
+    const { periodTitle } = await getCurrentPeriodSummary();
+
+    if (initialBalance > 0) {
+      if (balance > 0) {
+        message = `♥‿♥ wow you have ${balancePoints} to tip out of ${initialBalance} / ${days} till the end of ${periodTitle} period.`;
+      } else if (balance === 0) {
+        message = `＾･ｪ･＾you have [ ⚫ ] points out of ${initialBalance}. No worries, it's temporarily! Get tipped by doing smth cool or nerdy or beautiful or readable ;)`;
+      }
+    } else {
+      message = `(✿◠‿◠) hello! you have [ ⚫ ] points. Please wait a bit for the next period to get your points and tip / ${days} till the end of ${periodTitle} period.`;
+    }
+
+    message += ` Your have received ${formattedTips} points`;
+
     // send status message
-    client.sendTextMessage(
-      roomId,
-      `Your current period balance is ${balance} out of ${initialBalance} points. Your have received ${formattedTips} points`,
-    );
+    client.sendTextMessage(roomId, message);
   } catch (e) {
     client.sendTextMessage(
       roomId,
-      "You are not registered! If you are whitelisted head over to http://kyodo.decent.fund to set your alias",
+      "You are not registered! Head over to http://kyodo.decent.fund to set your alias",
     );
   }
 }

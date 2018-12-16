@@ -1,3 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`command handleBalance works properly 1`] = `"r00m1d"`;
+exports[`command handleBalance works properly for existing user with positive balance 1`] = `
+Array [
+  "r00m1d",
+  "♥‿♥ wow you have 10 points to tip out of 100 / 43 days till the end of Age period. Your have received 10 GOV, 30 SOCIAL points",
+]
+`;
+
+exports[`command handleBalance works properly for existing user with zero balance 1`] = `
+Array [
+  "r00m1d",
+  "＾･ｪ･＾you have [ ⚫ ] points out of 100. No worries, it's temporarily! Get tipped by doing smth cool or nerdy or beautiful or readable ;) Your have received 10 GOV, 30 SOCIAL points",
+]
+`;
+
+exports[`command handleBalance works properly for new user 1`] = `
+Array [
+  "r00m1d",
+  "(✿◠‿◠) hello! you have [ ⚫ ] points. Please wait a bit for the next period to get your points and tip / 43 days till the end of Age period. Your have received 10 GOV, 30 SOCIAL points",
+]
+`;
+
+exports[`command handleBalance works properly for non existing user with positive balance 1`] = `
+Array [
+  "r00m1d",
+  "You are not registered! Head over to http://kyodo.decent.fund to set your alias",
+]
+`;
