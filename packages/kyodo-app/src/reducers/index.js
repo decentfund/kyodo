@@ -14,6 +14,7 @@ import colony from './colony';
 import historical, * as fromHistorical from './historical';
 import periods from './periods';
 import { BASE_CURRENCY } from '../constants';
+import { formatTipsPerDomain } from '@kyodo/shared/tips';
 
 const moment = extendMoment(Moment);
 
@@ -190,53 +191,25 @@ export const getTotalUserTips = createSelector(
   }),
 );
 
-const formatTipsPerDomain = tips =>
-  tips.reduce(
-    (memo, { domain, amount }) => {
-      if (memo[domain]) {
-        memo[domain] = memo[domain] + amount;
-      } else {
-        memo[domain] = amount;
-      }
+export const getTipsByDomain = createSelector(getTipsToUser, tips => {
+  return formatTipsPerDomain(tips);
+});
 
-      memo.total += amount;
-      return memo;
-    },
-    { total: 0 },
-  );
+export const getPointsDistribution = createSelector(getTips, tips => {
+  return formatTipsPerDomain(tips);
+});
 
-export const getTipsByDomain = createSelector(
-  getTipsToUser,
-  tips => {
-    return formatTipsPerDomain(tips);
-  },
+const getDomainsFromTips = createSelector(getTips, tips =>
+  Object.keys(
+    tips.reduce((memo, { domain }) => ({ ...memo, [domain]: true }), {}),
+  ),
 );
 
-export const getPointsDistribution = createSelector(
-  getTips,
-  tips => {
-    return formatTipsPerDomain(tips);
-  },
+const getUsersFromTips = createSelector(getTips, tips =>
+  Object.keys(tips.reduce((memo, { to }) => ({ ...memo, [to]: true }), {})),
 );
 
-const getDomainsFromTips = createSelector(
-  getTips,
-  tips =>
-    Object.keys(
-      tips.reduce((memo, { domain }) => ({ ...memo, [domain]: true }), {}),
-    ),
-);
-
-const getUsersFromTips = createSelector(
-  getTips,
-  tips =>
-    Object.keys(tips.reduce((memo, { to }) => ({ ...memo, [to]: true }), {})),
-);
-
-const getTipsByUser = createSelector(
-  getTips,
-  tips => groupBy(tips, 'to'),
-);
+const getTipsByUser = createSelector(getTips, tips => groupBy(tips, 'to'));
 
 // Should return array of users with their names, addresses, points earned per domains,
 // highest earning in domain, total points earned in current period

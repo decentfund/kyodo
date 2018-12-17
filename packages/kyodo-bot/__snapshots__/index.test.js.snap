@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`command handleBalance works properly 1`] = `"r00m1d"`;
