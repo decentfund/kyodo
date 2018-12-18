@@ -15,6 +15,8 @@
     "dayjs": "^1.6.0",
     "googleapis": "^30.0.0",
     "lodash": "^4.17.11",
-    "matrix-js-sdk": "^0.11.0"
+    "matrix-js-sdk": "^0.11.0",
+    "moment": "^2.23.0",
+    "pluralize": "^7.0.0"
   }
 }
