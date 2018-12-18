@@ -1,12 +1,7 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
-import {
-  getContract,
-  getCurrentPeriodInfo,
-  getPointsDistribution,
-} from '../reducers';
+import { getCurrentPeriodInfo, getPointsDistribution } from '../reducers';
 import { loadPeriodTasks } from '../actions';
 
 const PageWrapper = styled.div``;
@@ -101,86 +96,30 @@ const DomainDistribution = ({ title, used, unused }) => {
 };
 
 class PeriodDistributionSummary extends Component {
-  state = {
-    domainsLengthKey: null,
-    domainsLength: null,
-    domains: [],
-    domainsKeys: [],
-  };
-
-  constructor(props, context) {
-    super(props, context);
-    this.contracts = context.drizzle.contracts;
-  }
-
   componentDidMount() {
     this.props.loadPeriodTasks();
-    const domainsLengthKey = this.contracts.Domains.methods.getDomainsLength.cacheCall();
-    this.setState({ domainsLengthKey });
-  }
-
-  componentDidUpdate() {
-    const { Domains } = this.props;
-    const {
-      domainsLengthKey,
-      domainsLength,
-      domains,
-      domainsKeys,
-    } = this.state;
-
-    if (
-      domainsLength === null &&
-      domainsLengthKey &&
-      Domains &&
-      Domains.getDomainsLength[domainsLengthKey]
-    ) {
-      const domainsLength = Number(
-        Domains.getDomainsLength[domainsLengthKey].value,
-      );
-      const domainsKeysData = [];
-      for (let i = 0; i < domainsLength; ++i) {
-        domainsKeysData.push(
-          this.contracts.Domains.methods.getDomain.cacheCall(i),
-        );
-      }
-      this.setState({ domainsLength, domainsKeys: domainsKeysData });
-    }
-
-    if (
-      domainsLength &&
-      !domains.length &&
-      Domains.getDomain &&
-      Object.keys(Domains.getDomain).length === domainsLength
-    ) {
-      const domainsData = [];
-      for (let i = 0; i < domainsLength; ++i) {
-        domainsData.push(Domains.getDomain[domainsKeys[i]].value);
-      }
-      this.setState({ domains: domainsData });
-    }
   }
 
   render() {
     const {
       currentPeriod: { initialBalance, periodTitle },
       pointsDistribution,
+      domains,
     } = this.props;
     const { total: usedTips } = pointsDistribution;
-    const { domains } = this.state;
     const fraction = initialBalance > 0 ? usedTips / initialBalance : 0;
     const inPercent = parseFloat(fraction * 100).toFixed(2);
     const total = Number(initialBalance);
 
     const domainsData = domains
-      .filter(domain => pointsDistribution[domain[0]] !== undefined)
+      .filter(domain => pointsDistribution[domain.name] !== undefined)
       .map(domain => {
-        const domainName = domain[0];
-        const used = pointsDistribution[domainName] || 0;
+        const used = pointsDistribution[domain.name] || 0;
         // const unused = total - used;
         // Without liquidity democracy unused is olways 0
         const unused = 0;
         return {
-          title: domainName,
+          title: domain.name,
           used,
           unused,
         };
@@ -197,14 +136,13 @@ class PeriodDistributionSummary extends Component {
           </ProgressBarWrapper>
           <Percent>{inPercent}%</Percent>
         </Summary>
-        {!!total &&
-          !!domainsData.length && (
-            <DomainsDistributionWrapper>
-              {domainsData.map(data => (
-                <DomainDistribution {...data} key={data.title} />
-              ))}
-            </DomainsDistributionWrapper>
-          )}
+        {!!total && (
+          <DomainsDistributionWrapper>
+            {domainsData.map(data => (
+              <DomainDistribution {...data} key={data.title} />
+            ))}
+          </DomainsDistributionWrapper>
+        )}
         {unused > 0 ? (
           <DomainsDistributionWrapper>
             <DomainDistribution used={0} unused={unused} title="UNUSED" />
@@ -215,13 +153,9 @@ class PeriodDistributionSummary extends Component {
   }
 }
 
-PeriodDistributionSummary.contextTypes = {
-  drizzle: PropTypes.object,
-};
-
 const mapStateToProps = state => ({
   currentPeriod: getCurrentPeriodInfo(state),
-  Domains: getContract('Domains')(state),
+  domains: state.colony.domains,
   pointsDistribution: getPointsDistribution(state),
 });
 

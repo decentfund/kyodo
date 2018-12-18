@@ -14,6 +14,7 @@ import colony from './colony';
 import historical, * as fromHistorical from './historical';
 import periods from './periods';
 import { BASE_CURRENCY } from '../constants';
+import { formatTipsPerDomain } from '@kyodo/shared/tips';
 
 const moment = extendMoment(Moment);
 
@@ -189,21 +190,6 @@ export const getTotalUserTips = createSelector(
     byUser: fromUser.reduce((a, t) => a + t.amount, 0),
   }),
 );
-
-const formatTipsPerDomain = tips =>
-  tips.reduce(
-    (memo, { domain, amount }) => {
-      if (memo[domain]) {
-        memo[domain] = memo[domain] + amount;
-      } else {
-        memo[domain] = amount;
-      }
-
-      memo.total += amount;
-      return memo;
-    },
-    { total: 0 },
-  );
 
 export const getTipsByDomain = createSelector(getTipsToUser, tips => {
   return formatTipsPerDomain(tips);
