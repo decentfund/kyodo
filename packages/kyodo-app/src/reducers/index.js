@@ -214,12 +214,18 @@ const getTipsByUser = createSelector(getTips, tips => groupBy(tips, 'to'));
 // Should return array of users with their names, addresses, points earned per domains,
 // highest earning in domain, total points earned in current period
 export const getLeaderboardData = createSelector(
-  [getDomainsFromTips, getUsersFromTips, getTipsByUser],
-  (domains, users, tipsByUser) => {
+  [getDomainsFromTips, getUsersFromTips, getTipsByUser, getPointsDistribution],
+  (domains, users, tipsByUser, pointsDistribution) => {
+    const zeroTips = {};
+    domains.forEach(domain => {
+      zeroTips[domain] = 0;
+    });
+
     const userStats = Object.keys(tipsByUser).map(user => {
       const userTips = tipsByUser[user];
       const userAddress = userTips[0].toAddress;
-      const tipsPerDomain = formatTipsPerDomain(userTips);
+
+      const tipsPerDomain = { ...zeroTips, ...formatTipsPerDomain(userTips) };
       return {
         user,
         userAddress,
@@ -249,6 +255,7 @@ export const getLeaderboardData = createSelector(
       tipsByUser,
       userStats,
       domainStats,
+      pointsDistribution,
     };
   },
 );

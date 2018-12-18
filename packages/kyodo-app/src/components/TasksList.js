@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled from 'styled-components';
-import { loadPeriodTasks } from '../actions';
 
 const StyledHeader = styled.div`
   display: flex;
@@ -53,11 +52,7 @@ const StyledTip = styled.div`
   margin-bottom: 15px;
 `;
 
-class Members extends Component {
-  componentDidMount() {
-    this.props.loadPeriodTasks();
-  }
-
+class TasksList extends Component {
   render() {
     return (
       <div>
@@ -82,7 +77,7 @@ class Members extends Component {
   }
 }
 
-Members.contextTypes = {
+TasksList.contextTypes = {
   drizzle: PropTypes.object,
 };
 
@@ -91,4 +86,4 @@ const mapStateToProps = state => ({
   tips: state.tips,
 });
 
-export default drizzleConnect(Members, mapStateToProps, { loadPeriodTasks });
+export default drizzleConnect(TasksList, mapStateToProps);
