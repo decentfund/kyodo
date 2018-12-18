@@ -72,7 +72,6 @@ const mapStateToProps = state => {
     users: data.userStats,
     domains: data.domains,
     domainStats: data.domainStats,
-    pointsDistribution: data.pointsDistribution,
     pointPrice: getPointPrice(state),
     tokenPriceEUR: getRate(state, 'DF', 'EUR'),
     tokenPriceETH: getRate(state, 'DF', 'ETH'),
