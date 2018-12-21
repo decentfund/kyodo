@@ -14,6 +14,7 @@ const Container = styled.div`
 const NamePointsContainer = styled.div`
   flex-grow: 1;
   display: flex;
+  overflow: hidden;
 `;
 
 const NameContainer = styled.div`
@@ -21,6 +22,7 @@ const NameContainer = styled.div`
   flex-grow: 1;
   display: flex;
   margin-bottom: 24px;
+  overflow: hidden;
 `;
 
 const Name = styled.div`
@@ -53,7 +55,7 @@ const PointsContainer = styled.div`
 
 const DomainPointsContainer = styled.div`
   text-align: right;
-  width: 75px;
+  min-width: 75px;
 
   span {
     padding: 0px 3px;
