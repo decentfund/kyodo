@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { drizzleConnect } from 'drizzle-react';
 import { LoadingContainer } from 'drizzle-react-components';
+import { getNetworkName } from '@kyodo/shared/network';
 import MetamaskLogo from './metamask-logo-color.svg';
-import { getNetworkName } from '../helpers/network';
 import { capitalize } from '../utils/string';
 
 const MetamaskWrapper = styled.div`

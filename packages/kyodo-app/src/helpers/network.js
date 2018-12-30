@@ -8,24 +8,7 @@ const { default: EthersAdapter } = require('@colony/colony-js-adapter-ethers');
 // Import the ColonyNetworkClient
 const { default: ColonyNetworkClient } = require('@colony/colony-js-client');
 
-export const getNetworkName = network => {
-  switch (network) {
-    case 1:
-      return 'mainnet';
-    case 2:
-      return 'morden';
-    case 3:
-      return 'ropsten';
-    case 4:
-      return 'rinkeby';
-    case 42:
-      return 'kovan';
-    case 5777:
-      return 'private';
-    default:
-      return 'development';
-  }
-};
+const { getNetworkName } = require('@kyodo/shared/network');
 
 const getLoader = network => {
   if (network !== 'development') {
