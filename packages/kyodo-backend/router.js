@@ -1,9 +1,8 @@
 import express from 'express';
 
-import { createColony, getColonies } from './colony';
 import { createTask, modifyTask, getTasks } from './task';
 import { getAllTips } from './tip';
-import { addDomain, getAllDomains, getDomainById } from './domain';
+import { getAllDomains, getDomainById } from './domain';
 import { addUser, getAllUsers } from './user';
 
 import {
@@ -34,12 +33,6 @@ router
   .get('/tasks', (req, res) => {
     getTasks(req, res);
   })
-  .post('/colony', (req, res) => {
-    createColony(req, res);
-  })
-  .get('/colony', (req, res) => {
-    getColonies(req, res);
-  })
   .get('/tips', async (req, res) => {
     try {
       const tips = await getAllTips();
@@ -47,9 +40,6 @@ router
     } catch (err) {
       return res.status(400).send(err);
     }
-  })
-  .post('/domain', (req, res) => {
-    addDomain(req, res);
   })
   .get('/domain', (req, res) => {
     getDomainById(req, res);
