@@ -1,10 +1,14 @@
 {
   "name": "@kyodo/app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "@kyodo/contracts": "^0.1.0",
     "@kyodo/shared": "^0.1.1",
+    "@colony/colony-js-adapter-ethers": "^1.9.0",
+    "@colony/colony-js-client": "^1.9.0",
+    "@colony/colony-js-contract-loader-http": "^1.9.0",
+    "@colony/colony-js-contract-loader-network": "^1.6.2",
     "autoprefixer": "7.1.6",
     "axios": "^0.18.0",
     "babel-core": "6.26.0",
@@ -66,8 +70,6 @@
     "style-loader": "0.19.0",
     "styled-components": "^3.3.3",
     "sw-precache-webpack-plugin": "0.11.4",
-    "truffle-contract": "^3.0.5",
-    "truffle-hdwallet-provider": "0.0.3",
     "url-loader": "0.6.2",
     "web3": "^1.0.0-beta.34",
     "webpack": "3.8.1",
@@ -97,8 +99,7 @@
     "eslint-plugin-standard": "^3.1.0",
     "husky": "^0.14.3",
     "precise-commits": "^1.0.2",
-    "prettier": "^1.13.6",
-    "truffle": "^4.1.11"
+    "prettier": "^1.13.6"
   },
   "jest": {
     "collectCoverageFrom": [
