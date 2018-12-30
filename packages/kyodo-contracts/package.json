@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@colony/colony-js-adapter-ethers": "1.6.0",
-    "@colony/colony-js-client": "^1.6.1",
+    "@colony/colony-js-adapter-ethers": "^1.9.0",
+    "@colony/colony-js-client": "^1.9.0",
     "@colony/colony-js-contract-loader-fs": "^1.5.4",
     "@colony/colony-js-contract-loader-network": "^1.6.2",
     "ethereumjs-abi": "^0.6.5",
-    "ethers": "^3.0.27"
+    "ethers": "3.0.27"
   },
   "devDependencies": {
     "babel-eslint": "^9.0.0",
