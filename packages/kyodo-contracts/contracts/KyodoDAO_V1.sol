@@ -4,6 +4,7 @@ import "./Ownable.sol";
 import "./KyodoDAO.sol";
 import "./DomainsV2.sol";
 import "./OwnedUpgradeabilityProxy.sol";
+import "../lib/colonyNetwork/contracts/IColony.sol";
 
 
 contract KyodoDAO_V1 is KyodoDAO {
@@ -29,6 +30,10 @@ contract KyodoDAO_V1 is KyodoDAO {
 
   function changePeriodsProxyOwner(address _owner) external onlyOwner {
     Ownable(periods).transferOwnership(_owner);
+  }
+
+  function setColonyAdmin(address _address) external onlyOwner {
+    IColony(colony).setAdminRole(_address);
   }
 
   function setName(string _name) public onlyOwner {

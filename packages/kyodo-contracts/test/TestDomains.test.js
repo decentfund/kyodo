@@ -77,7 +77,7 @@ contract('Domains', function([owner]) {
 
       // Try to migrate data
       for (var i = 0; i < currentDomains.length; i++) {
-        await domainsV2Proxy.addDomain(
+        await domainsV2Proxy.methods['addDomain(string,uint256)'](
           currentDomains[i].code,
           currentDomains[i].potId,
         );
@@ -103,7 +103,7 @@ contract('Domains V2', function([owner, anotherAccount]) {
   });
 
   it('adds new domain properly', async () => {
-    const tx = await domains.addDomain('FUND', 2, {
+    const tx = await domains.methods['addDomain(string,uint256)']('FUND', 2, {
       from: owner,
       gas: 500000,
     });
@@ -124,7 +124,7 @@ contract('Domains V2', function([owner, anotherAccount]) {
   });
 
   it('adds multiple domains', async () => {
-    let tx = await domains.addDomain('FUND', 2, {
+    let tx = await domains.methods['addDomain(string,uint256)']('FUND', 2, {
       from: owner,
       gas: 500000,
     });
@@ -142,7 +142,7 @@ contract('Domains V2', function([owner, anotherAccount]) {
     let domainsLength = (await domains.getDomainsLength()).toNumber();
     assert.equal(domainsLength, 1, 'Domains length is not changed');
 
-    tx = await domains.addDomain('GOV', 11, {
+    tx = await domains.methods['addDomain(string,uint256)']('GOV', 11, {
       from: owner,
       gas: 500000,
     });
@@ -162,13 +162,13 @@ contract('Domains V2', function([owner, anotherAccount]) {
   });
 
   it("doesn't allow adding same domain name", async () => {
-    await domains.addDomain('FUND', 2, {
+    await domains.methods['addDomain(string,uint256)']('FUND', 2, {
       from: owner,
       gas: 500000,
     });
 
     await truffleAssert.reverts(
-      domains.addDomain('FUND', 3, {
+      domains.methods['addDomain(string,uint256)']('FUND', 3, {
         from: owner,
         gas: 500000,
       }),
@@ -177,7 +177,7 @@ contract('Domains V2', function([owner, anotherAccount]) {
   });
 
   it('allows changing domain pot id', async () => {
-    await domains.addDomain('FUND', 2, {
+    await domains.methods['addDomain(string,uint256)']('FUND', 2, {
       from: owner,
       gas: 500000,
     });
@@ -193,7 +193,7 @@ contract('Domains V2', function([owner, anotherAccount]) {
   });
 
   it("doesn't allow changing domain potId for non owner", async () => {
-    await domains.addDomain('FUND', 2, {
+    await domains.methods['addDomain(string,uint256)']('FUND', 2, {
       from: owner,
       gas: 500000,
     });
@@ -206,7 +206,7 @@ contract('Domains V2', function([owner, anotherAccount]) {
   });
 
   it('returns domain details correctly', async () => {
-    await domains.addDomain('FUND', 2, {
+    await domains.methods['addDomain(string,uint256)']('FUND', 2, {
       from: owner,
       gas: 500000,
     });
@@ -217,7 +217,10 @@ contract('Domains V2', function([owner, anotherAccount]) {
   });
 
   it('should fail with version 1 addDomain call', async () => {
-    await truffleAssert.reverts(domains.addDomain('FUND'), 'deprecated');
+    await truffleAssert.reverts(
+      domains.methods['addDomain(string)']('FUND'),
+      'deprecated',
+    );
   });
 
   describe('distribute tokens correctly', () => {
@@ -248,17 +251,17 @@ contract('Domains V2', function([owner, anotherAccount]) {
     });
     it('with several domains', async () => {
       await colony.addDomain(1);
-      await domains.addDomain('FUND', 2, {
+      await domains.methods['addDomain(string,uint256)']('FUND', 2, {
         from: owner,
         gas: 500000,
       });
       await colony.addDomain(1);
-      await domains.addDomain('GOV', 3, {
+      await domains.methods['addDomain(string,uint256)']('GOV', 3, {
         from: owner,
         gas: 500000,
       });
       await colony.addDomain(1);
-      await domains.addDomain('SOCIAL', 4, {
+      await domains.methods['addDomain(string,uint256)']('SOCIAL', 4, {
         from: owner,
         gas: 500000,
       });

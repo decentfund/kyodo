@@ -65,7 +65,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
     const authorityAddress = await colony.authority();
     authority = await Authority.at(authorityAddress);
     await colony.setAdminRole(domains.address);
-    await colony.setOwnerRole(kyodo.address);
+    await colony.setFounderRole(kyodo.address);
   });
   describe('sets alias', function() {
     describe('add alias', function() {
@@ -480,7 +480,7 @@ contract('KyodoDAO_V1', function([owner]) {
     await token.setOwner(colonyAddress);
     colony = await IColony.at(colonyAddress);
     await colony.setAdminRole(domains.address);
-    await colony.setOwnerRole(kyodo.address);
+    await colony.setFounderRole(kyodo.address);
   });
 
   it('add domain works as expected', async () => {
