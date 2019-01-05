@@ -4,4 +4,4 @@
 cd packages/kyodo-contracts
 
 # Start Ganache
-yarn start-ganache
+yarn start:blockchain:client
