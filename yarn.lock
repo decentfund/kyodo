@@ -13226,9 +13226,9 @@ prettier-linter-helpers@^1.0.0:
     fast-diff "^1.1.2"
 
 prettier-plugin-solidity@^1.0.0-alpha.4:
-  version "1.0.0-alpha.13"
-  resolved "https://registry.yarnpkg.com/prettier-plugin-solidity/-/prettier-plugin-solidity-1.0.0-alpha.13.tgz#f7b260fd8ad631269340194976db675e30508679"
-  integrity sha512-tIBwHpN9DeEGFPksg7+esQzd+C5veWZy81qA5BiKBhYxyL7ckgme96xHXFKum4ru+85eOXoKcoECWHLg4oiNmg==
+  version "1.0.0-alpha.14"
+  resolved "https://registry.yarnpkg.com/prettier-plugin-solidity/-/prettier-plugin-solidity-1.0.0-alpha.14.tgz#6198cbaf46b8ab9281d052d3d8649c23a96fbf3a"
+  integrity sha512-KgcdZaHFt+hwbfnT3tJYt5HZVUwDp/RWTnwVkQ9LBTtmZ7zrncHI6umgfX44bLftFybood1WqKsI4KelyazyUQ==
   dependencies:
     emoji-regex "^7.0.3"
     escape-string-regexp "^1.0.5"
