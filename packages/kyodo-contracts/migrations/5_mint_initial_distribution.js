@@ -21,11 +21,15 @@ module.exports = async deployer => {
   // Minting reserve tokens
   const totalToMint = Object.values(distAccounts).reduce(
     (acc, value) => acc + value,
+    0,
   );
-  const reserve = WAD.muln(totalToMint * 0.5);
-  await tokenInstance.mint(reserve);
-  // TODO: Transfer to multisig
-  await tokenInstance.transfer(kyodoInstance.address, reserve);
+
+  if (totalToMint > 0) {
+    const reserve = WAD.muln(totalToMint * 0.5);
+    await tokenInstance.mint(reserve);
+    // TODO: Transfer to multisig
+    await tokenInstance.transfer(kyodoInstance.address, reserve);
+  }
   // Pass ownership to KyodoDAO
   const colonyAddress = await kyodoInstance.colony();
   await tokenInstance.setOwner(colonyAddress);
