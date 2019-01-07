@@ -36,6 +36,12 @@ jobs:
           key: v1-dependencies-{{ checksum "yarn.lock" }}
 
       - run:
+          name: "Install lsof"
+          command: |
+            sudo apt-get update
+            sudo apt-get install lsof
+
+      - run:
           name: "Start Ganache"
           command: yarn start-ganache
           background: true
