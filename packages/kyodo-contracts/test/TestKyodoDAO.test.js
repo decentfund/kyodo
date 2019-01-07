@@ -16,7 +16,6 @@ const Token = artifacts.require('Token');
 const EtherRouter = artifacts.require('EtherRouter');
 const IColonyNetwork = artifacts.require('IColonyNetwork');
 const IColony = artifacts.require('IColony');
-const Authority = artifacts.require('Authority');
 
 contract('KyodoDAO', function([owner, anotherAccount]) {
   let colonyNetwork;
@@ -26,7 +25,6 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
   let periods;
   let members;
   let colony;
-  let authority;
 
   const domainBalance = async (id, tokenAddress, colony) => {
     const { potId: domainPotId } = await colony.getDomain.call(id);
@@ -62,8 +60,6 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
     await kyodo.setMembersAddress(members.address);
     await token.setOwner(colonyAddress);
     colony = await IColony.at(colonyAddress);
-    const authorityAddress = await colony.authority();
-    authority = await Authority.at(authorityAddress);
     await colony.setAdminRole(domains.address);
     await colony.setFounderRole(kyodo.address);
   });
@@ -195,7 +191,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
       const ownerRole = 0;
       let currentBlock = (await web3.eth.getBlock('latest')).number;
 
-      let hasRole = await authority.hasUserRole(kyodo.address, ownerRole);
+      let hasRole = await colony.hasUserRole(kyodo.address, ownerRole);
       let tokenOwner = await token.owner();
       assert(tokenOwner === colony.address, `${owner} is not token owner`);
       assert(hasRole, `${kyodo.address} does not have owner role`);
