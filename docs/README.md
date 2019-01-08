@@ -39,6 +39,15 @@ cp migrations/deploy_parameters.example.json migrations/deploy_parameters.json
 ### Setup contracts
 
 ```bash
+# Pull solc compiler docker images
+# Solc 0.4.23 for colonyNetwork
+docker pull ethereum/solc:0.4.23
+# Solc 0.4.24 for kyodo and bokkypoobah datetime library
+docker pull ethereum/solc:0.4.24
+
+# Init git submodules
+yarn initialize
+
 # Start ganache cli with necessary parameters
 yarn start-ganache
 
