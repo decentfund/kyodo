@@ -6,6 +6,7 @@ var tokenInstance;
 var deployParameters = require('./getDeployParameters');
 
 const { BN } = require('bn.js');
+// FIXME: this works for tokens with 18 decimals only
 const WAD = new BN(10).pow(new BN(18));
 
 module.exports = async deployer => {
@@ -14,9 +15,12 @@ module.exports = async deployer => {
   const { accounts: distAccounts } = deployParameters;
   // Minting initial distribution
   Object.keys(distAccounts).forEach(async address => {
-    const amount = WAD.muln(distAccounts[address]);
-    await tokenInstance.mint(amount);
-    await tokenInstance.transfer(address, amount);
+    const specifiedAmount = distAccounts[address];
+    if (specifiedAmount > 0) {
+      const amount = WAD.muln(distAccounts[address]);
+      await tokenInstance.mint(amount);
+      await tokenInstance.transfer(address, amount);
+    }
   });
   // Minting reserve tokens
   const totalToMint = Object.values(distAccounts).reduce(
