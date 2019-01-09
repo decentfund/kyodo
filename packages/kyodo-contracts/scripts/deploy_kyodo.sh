@@ -7,3 +7,5 @@ if [[ -n "$network" ]]; then
 else
   ./node_modules/.bin/truffle migrate --compile-all --reset
 fi
+
+./node_modules/.bin/apply-registry build/contracts
