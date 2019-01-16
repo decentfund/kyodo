@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "deploy-contracts": "bash scripts/deploy_contracts.sh",
+    "initialize": "sh scripts/initialize.sh",
     "start": "bash scripts/start_frontend_app.sh",
     "start-backend": "bash scripts/start_backend_app.sh",
     "start-ganache": "bash scripts/start_ganache.sh",

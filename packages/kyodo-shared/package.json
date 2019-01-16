@@ -1,6 +1,6 @@
 {
   "name": "@kyodo/shared",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "babel-core": "6.26.0",

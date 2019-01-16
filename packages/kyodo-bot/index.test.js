@@ -41,8 +41,8 @@ describe("command handleBalance works properly", () => {
       .format("X"),
   );
 
-  // mock periods getPeriodsDaysLength
-  fromWeb3Periods.getPeriodsDaysLength = jest.fn(() => 45);
+  // mock periods getPeriodDaysLength
+  fromWeb3Periods.getPeriodDaysLength = jest.fn(() => 45);
 
   // mock periods getCurrentPeriodSummary
   fromPeriod.getCurrentPeriodSummary = jest.fn(() => ({

@@ -1,15 +1,4 @@
-import { generateIpfsHash, getTaskSpecification } from './ipfs.js';
-import { getColonyInstanceFromId } from './colony';
-import { initiateNetwork } from './network.js';
 import { Task } from './db.js';
-
-const getTaskFromChain = async id => {
-  const networkClient = await initiateNetwork();
-  const colonyClient = await getColonyInstanceFromId(76);
-  const task = await colonyClient.getTask.call({ taskId: id });
-  console.log('TASK:     ', task);
-  return task;
-};
 
 export const dbCreateTask = async ({ title }) => {
   let task = await new Task({
@@ -22,35 +11,6 @@ export const dbCreateTask = async ({ title }) => {
   });
 
   return task;
-};
-
-export const createTask = async (req, res) => {
-  let networkClient = await initiateNetwork();
-  let colonyClient = await getColonyInstanceFromId(76);
-  let hash = await generateIpfsHash(req.body);
-  await colonyClient.createTask.send({ specificationHash: hash });
-  let taskCount = await colonyClient.getTaskCount.call();
-  let newTask = await getTaskFromChain(taskCount.count);
-
-  let task = new Task({
-    taskId: taskCount.count,
-    taskTitle: req.body.taskTitle,
-    specificationHash: hash,
-    finalized: newTask.finalized,
-    cancelled: newTask.cancelled,
-    dateCreated: Date.now(),
-    dueDate: new Date(req.body.dueDate),
-    potId: newTask.potId,
-    domainId: newTask.potId,
-    // id: newTask.id,
-    // skillId: newTask.skillId
-  });
-
-  task.save((err, task) => {
-    if (err) return console.error(err);
-  });
-  // await getTaskFromChain();
-  res.end(`{"success" : Added and ${hash} Successfully, "status" : 200}`);
 };
 
 export const getTaskById = async (req, res) => {

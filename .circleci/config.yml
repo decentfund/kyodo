@@ -1,38 +1,62 @@
 version: 2
+
 jobs:
   build:
     docker:
-      - image: circleci/node:9.10.0
+      - image: circleci/node:10.12.0
       
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
-    # working_directory: ~/repo
-
     steps:
       - checkout
 
       - setup_remote_docker
 
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "yarn.lock" }}
-          - v1-dependencies-
+      - run:
+          name: "Pull solc 0.4.23 docker image"
+          command: docker pull ethereum/solc:0.4.23
 
       - run:
-          name: "Add Greenkeeper"
-          command: yarn global add greenkeeper-lockfile@1
+          name: "Pull solc 0.4.24 docker image"
+          command: docker pull ethereum/solc:0.4.24
+
+      - run:
+          name: "Init submodules"
+          command: git submodule update --recursive --init
+
+      - restore_cache:
+          keys:
+            - v2-colonyNetwork-dependencies-{{ checksum "packages/kyodo-contracts/lib/colonyNetwork/yarn.lock" }}
+
+      - run:
+          name: "yarn install colonyNetwork"
+          command: (cd packages/kyodo-contracts/lib/colonyNetwork && yarn install --pure-lockfile)
+
+      - run:
+          name: "yarn run provision token contracts"
+          command: (cd packages/kyodo-contracts/lib/colonyNetwork && yarn run provision:token:contracts)
+
+      - save_cache:
+          paths:
+            - packages/kyodo-contracts/lib/colonyNetwork/node_modules
+          key: v2-colonyNetwork-dependencies-{{ checksum "packages/kyodo-contracts/lib/colonyNetwork/yarn.lock" }}
+
+      - restore_cache:
+          keys:
+            - v2-dependencies-{{ checksum "yarn.lock" }}
 
       - run:
           name: "Install Dependencies"
-          command: yarn
+          command: yarn install --pure-lockfile
 
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "yarn.lock" }}
+          key: v2-dependencies-{{ checksum "yarn.lock" }}
+
+      - run:
+          name: "Install lsof"
+          command: |
+            sudo apt-get update
+            sudo apt-get install lsof
 
       - run:
           name: "Start Ganache"
@@ -45,7 +69,4 @@ jobs:
 
       - run:
           name: "Test Packages"
-          command: |
-            $HOME/.config/yarn/global/node_modules/.bin/greenkeeper-lockfile-update
-            yarn test
-            $HOME/.config/yarn/global/node_modules/.bin/greenkeeper-lockfile-upload
+          command: yarn test

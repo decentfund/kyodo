@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled, { injectGlobal } from 'styled-components';
-// import Helloworld from './Helloworld.js';
 import Header from './components/Header';
 import KyodoDAO from '@kyodo/contracts/build/contracts/KyodoDAO_V1.json';
 import AddRiotID from './components/AddRiotID';

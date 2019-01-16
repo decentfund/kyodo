@@ -10,11 +10,6 @@ log() {
   echo "${CYAN}$1${NONE}"
 }
 
-# Pull docker image
-log "Pulling docker images..."
-docker pull ethereum/solc:0.4.23
-docker pull ethereum/solc:0.4.24
-
 # Initialize colonyNetwork submodule
 log "Initializing colonyNetwork submodule..."
 git submodule update --init --recursive
@@ -26,7 +21,12 @@ cd lib/colonyNetwork
 log "Installing colonyNetwork dependencies..."
 yarn
 
+# Provision colonyNetwork submodules
+log "Provisioning colonyNetwork submodules..."
+yarn run provision:token:contracts
+
 # Compiling contracts and applying registry
-cd ../../
-./node_modules/.bin/truffle compile
-./node_modules/.bin/apply-registry build/contracts
+# TODO: Move that stuff out
+# cd ../../
+# ./node_modules/.bin/truffle compile
+# ./node_modules/.bin/apply-registry build/contracts
