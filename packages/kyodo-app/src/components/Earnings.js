@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { drizzleConnect } from 'drizzle-react';
+import { connect } from 'react-redux';
 import { FormattedPlural } from 'react-intl';
 import pointsIcon from './points_icon.svg';
 import { getTipsByDomain } from '../reducers';
@@ -42,4 +42,4 @@ const mapStateToProps = state => ({
   points: getTipsByDomain(state),
 });
 
-export default drizzleConnect(Earnings, mapStateToProps);
+export default connect(mapStateToProps)(Earnings);

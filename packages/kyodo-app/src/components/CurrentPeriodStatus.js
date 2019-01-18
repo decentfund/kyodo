@@ -2,10 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import styled from 'styled-components';
-import { drizzleConnect } from 'drizzle-react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+
 import dfToken from './dftoken.svg';
-import { getRate, getContract } from '../reducers';
 import { FormattedEth, FormattedEur } from './FormattedCurrency';
+
+import drizzleConnect from '../utils/drizzleConnect';
+import { getRate, getContract } from '../reducers';
 import { formatDecimals } from '../helpers/format';
 
 const WrapperCurrentPeriodStatus = styled.div`
@@ -49,7 +53,7 @@ class CurrentPeriodStatus extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.contracts = context.drizzle.contracts;
+    this.contracts = props.drizzle.contracts;
   }
 
   componentDidMount() {
@@ -138,15 +142,12 @@ CurrentPeriodStatus.defaultProps = {
 };
 
 CurrentPeriodStatus.propTypes = {
+  drizzle: PropTypes.object,
   periodName: PropTypes.string,
   Token: PropTypes.object,
   Periods: PropTypes.object,
   tokenPriceEUR: PropTypes.number,
   tokenPriceETH: PropTypes.number,
-};
-
-CurrentPeriodStatus.contextTypes = {
-  drizzle: PropTypes.object,
 };
 
 const mapStateToProps = state => ({
@@ -156,4 +157,7 @@ const mapStateToProps = state => ({
   tokenPriceETH: getRate(state, 'DF', 'ETH'),
 });
 
-export default drizzleConnect(CurrentPeriodStatus, mapStateToProps);
+export default compose(
+  drizzleConnect,
+  connect(mapStateToProps),
+)(CurrentPeriodStatus);

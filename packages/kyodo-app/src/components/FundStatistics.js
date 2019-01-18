@@ -1,9 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ContractData } from 'drizzle-react-components';
-import { drizzleConnect } from 'drizzle-react';
+import { connect } from 'react-redux';
+
 import StatisticsLabel from './StatisticsLabel';
 import { FormattedEth, FormattedEur } from './FormattedCurrency';
+import ContractData from './ContractData';
+
 import {
   getRate,
   getTotalSupply,
@@ -43,4 +45,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default drizzleConnect(FundStatistics, mapStateToProps);
+export default connect(mapStateToProps)(FundStatistics);

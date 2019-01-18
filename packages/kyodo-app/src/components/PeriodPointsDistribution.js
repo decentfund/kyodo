@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { drizzleConnect } from 'drizzle-react';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
 import Earnings from './Earnings';
 import { StyledHeader } from './StyledSharedComponents';
@@ -140,14 +139,13 @@ class Members extends Component {
   }
 }
 
-Members.contextTypes = {
-  drizzle: PropTypes.object,
-};
-
 const mapStateToProps = state => ({
   userAlias: getCurrentUserAlias(state),
   tips: getUserTips(state),
   total: getTotalUserTips(state),
 });
 
-export default drizzleConnect(Members, mapStateToProps, { loadPeriodTasks });
+export default connect(
+  mapStateToProps,
+  { loadPeriodTasks },
+)(Members);

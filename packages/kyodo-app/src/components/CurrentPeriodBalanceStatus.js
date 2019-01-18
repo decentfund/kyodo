@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { drizzleConnect } from 'drizzle-react';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { getCurrentPeriodInfo, getPointsDistribution } from '../reducers';
 
@@ -50,13 +49,9 @@ class CurrentPeriodBalanceStatus extends Component {
   }
 }
 
-CurrentPeriodBalanceStatus.contextTypes = {
-  drizzle: PropTypes.object,
-};
-
 const mapStateToProps = state => ({
   currentPeriod: getCurrentPeriodInfo(state),
   usedTips: getPointsDistribution(state).total,
 });
 
-export default drizzleConnect(CurrentPeriodBalanceStatus, mapStateToProps);
+export default connect(mapStateToProps)(CurrentPeriodBalanceStatus);

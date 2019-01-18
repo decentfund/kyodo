@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { drizzleConnect } from 'drizzle-react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import orderBy from 'lodash/orderBy';
+
 import Leader from './Leader';
 import Header from './Header';
+
 import { getLeaderboardData, getPointPrice, getRate } from '../../reducers';
+import drizzleConnect from '../../utils/drizzleConnect';
 
 class LeaderBoard extends Component {
   state = {
@@ -13,7 +16,7 @@ class LeaderBoard extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.contracts = context.drizzle.contracts;
+    this.contracts = props.drizzle.contracts;
   }
 
   handleSortingChange = sorting => {
@@ -62,10 +65,6 @@ class LeaderBoard extends Component {
   }
 }
 
-LeaderBoard.contextTypes = {
-  drizzle: PropTypes.object,
-};
-
 const mapStateToProps = state => {
   const data = getLeaderboardData(state);
   return {
@@ -78,4 +77,7 @@ const mapStateToProps = state => {
   };
 };
 
-export default drizzleConnect(LeaderBoard, mapStateToProps);
+export default compose(
+  drizzleConnect,
+  connect(mapStateToProps),
+)(LeaderBoard);

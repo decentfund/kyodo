@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { drizzleConnect } from 'drizzle-react';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
 
 const StyledHeader = styled.div`
@@ -86,4 +86,4 @@ const mapStateToProps = state => ({
   tips: state.tips,
 });
 
-export default drizzleConnect(TasksList, mapStateToProps);
+export default connect(mapStateToProps)(TasksList);

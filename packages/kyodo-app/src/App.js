@@ -3,7 +3,7 @@ import difference from 'lodash/difference';
 import { Route } from 'react-router';
 import { ConnectedRouter } from 'connected-react-router';
 import PropTypes from 'prop-types';
-import { drizzleConnect } from 'drizzle-react';
+import { connect } from 'react-redux';
 import styled, { injectGlobal } from 'styled-components';
 import Header from './components/Header';
 import KyodoDAO from '@kyodo/contracts/build/contracts/KyodoDAO_V1.json';
@@ -83,7 +83,7 @@ class App extends Component {
   constructor(props, context) {
     super(props);
 
-    this.drizzle = context.drizzle;
+    this.drizzle = props.drizzle;
 
     if (process.env.REACT_APP_KYODODAO_CONTRACT_ADDRESS) {
       const contractConfig = {
@@ -430,10 +430,13 @@ App.contextTypes = {
   drizzle: PropTypes.object,
 };
 
-export default drizzleConnect(App, mapStateToProps, {
-  getColony,
-  getColonyNetworkClient,
-  loadMultiSigBalance,
-  loadPeriodTasks,
-  loadRate,
-});
+export default connect(
+  mapStateToProps,
+  {
+    getColony,
+    getColonyNetworkClient,
+    loadMultiSigBalance,
+    loadPeriodTasks,
+    loadRate,
+  },
+)(App);

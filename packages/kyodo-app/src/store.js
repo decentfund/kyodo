@@ -4,7 +4,7 @@ import { routerMiddleware } from 'connected-react-router';
 import createRootReducer from './reducers';
 import rootSaga from './rootSaga';
 import createSagaMiddleware from 'redux-saga';
-import { generateContractsInitialState } from 'drizzle';
+import { Drizzle, generateContractsInitialState } from 'drizzle';
 import drizzleOptions from './drizzleOptions';
 
 // Redux DevTools
@@ -25,5 +25,8 @@ const store = createStore(
 );
 
 sagaMiddleware.run(rootSaga);
+
+const drizzle = new Drizzle(drizzleOptions, store);
+export { drizzle };
 
 export default store;
