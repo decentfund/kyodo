@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import difference from 'lodash/difference';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { Route } from 'react-router';
+import { ConnectedRouter } from 'connected-react-router';
 import PropTypes from 'prop-types';
 import { drizzleConnect } from 'drizzle-react';
 import styled, { injectGlobal } from 'styled-components';
@@ -329,7 +330,7 @@ class App extends Component {
       return <div />;
 
     return (
-      <Router>
+      <ConnectedRouter history={this.props.history}>
         <div className="App">
           <Header userAddress={userAddress} />
           <StyledMainInfoContainer>
@@ -403,7 +404,7 @@ class App extends Component {
             <Route exact path="/" render={props => <MultisigBalance />} />
           </StyledMainInfoContainer>
         </div>
-      </Router>
+      </ConnectedRouter>
     );
   }
 }
