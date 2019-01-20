@@ -1,6 +1,4 @@
-require('babel-register')({
-  ignore: /node_modules\/(?!openzeppelin-solidity\/test\/helpers)/,
-});
+require('babel-register');
 require('babel-polyfill');
 require('dotenv').load();
 
