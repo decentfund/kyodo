@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { drizzleConnect } from 'drizzle-react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
+
 import FormattedAddress from './FormattedAddress';
+
 import { getContract } from '../reducers';
 import { formatDecimals, formatCurrency } from '../helpers/format';
+import drizzleConnect from '../utils/drizzleConnect';
 
 const StyledContainer = styled.div`
   display: flex;
@@ -48,7 +52,7 @@ class WhitelistedAddress extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.contracts = context.drizzle.contracts;
+    this.contracts = props.drizzle.contracts;
   }
   componentDidMount() {
     const { Members, Token } = this.contracts;
@@ -117,4 +121,7 @@ const mapStateToProps = (state, { account }) => ({
   Members: getContract('Members')(state),
 });
 
-export default drizzleConnect(WhitelistedAddress, mapStateToProps);
+export default compose(
+  drizzleConnect,
+  connect(mapStateToProps),
+)(WhitelistedAddress);

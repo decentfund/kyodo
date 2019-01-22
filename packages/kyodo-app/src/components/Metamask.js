@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { drizzleConnect } from 'drizzle-react';
-import { LoadingContainer } from 'drizzle-react-components';
+import { connect } from 'react-redux';
+import LoadingContainer from './LoadingContainer';
 import { getNetworkName } from '@kyodo/shared/network';
 import MetamaskLogo from './metamask-logo-color.svg';
 import { capitalize } from '../utils/string';
@@ -97,4 +97,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default drizzleConnect(LoadingMetamask, mapStateToProps);
+export default connect(mapStateToProps)(LoadingMetamask);

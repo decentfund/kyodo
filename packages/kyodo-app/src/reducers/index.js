@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
+import { connectRouter } from 'connected-react-router';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
-import { routerReducer } from 'react-router-redux';
 import { drizzleReducers } from 'drizzle';
 import { createSelector } from 'reselect';
 import get from 'lodash/get';
@@ -285,16 +285,15 @@ export const getPointPrice = createSelector(
 
 export const getCurrentPeriodInfo = state => state.periods.currentPeriod;
 
-const reducer = combineReducers({
-  routing: routerReducer,
-  rates,
-  balances,
-  historical,
-  tips,
-  users,
-  periods,
-  colony,
-  ...drizzleReducers,
-});
-
-export default reducer;
+export default history =>
+  combineReducers({
+    router: connectRouter(history),
+    rates,
+    balances,
+    historical,
+    tips,
+    users,
+    periods,
+    colony,
+    ...drizzleReducers,
+  });

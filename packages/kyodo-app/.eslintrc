@@ -2,9 +2,6 @@
   "extends" : [
     "react-app",
   ],
-  "plugins": [
-    "promise"
-  ],
   "env": {
     "browser" : true,
     "node"    : true,

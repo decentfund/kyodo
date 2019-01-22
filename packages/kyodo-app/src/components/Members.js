@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { drizzleConnect } from 'drizzle-react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
-import Input from './Input';
-import WhitelistedAddress from './WhitelistedAddress';
+
 import FormButton from './FormButton';
+import Input from './Input';
 import MembersHeaderIcons from './MembersHeaderIcons';
+import WhitelistedAddress from './WhitelistedAddress';
 import { StyledHeader } from './StyledSharedComponents';
+
 import { isValidAddress } from '../helpers';
+import drizzleConnect from '../utils/drizzleConnect';
 
 const StyledFormContainer = styled.div`
   margin-top: 20px;
@@ -23,7 +26,7 @@ class Members extends Component {
   constructor(props, context) {
     super(props);
 
-    this.drizzle = context.drizzle;
+    this.drizzle = props.drizzle;
   }
 
   handleAddressChange = e => {
@@ -76,12 +79,11 @@ class Members extends Component {
   }
 }
 
-Members.contextTypes = {
-  drizzle: PropTypes.object,
-};
-
 const mapStateToProps = state => ({
   userAddress: state.accounts[0],
 });
 
-export default drizzleConnect(Members, mapStateToProps);
+export default compose(
+  drizzleConnect,
+  connect(mapStateToProps),
+)(Members);

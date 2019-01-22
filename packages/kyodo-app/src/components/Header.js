@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import styled from 'styled-components';
-import { drizzleConnect } from 'drizzle-react';
-import { getContract, getCurrentPeriodInfo } from '../reducers';
-import { loadCurrentPeriodInfo } from '../actions';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
 import { withRouter, Route, NavLink } from 'react-router-dom';
 
 import Menu from './Menu';
@@ -13,6 +12,10 @@ import UserAlias from './UserAlias';
 import Subnav from './Subnav';
 import PeriodProgress from './PeriodProgress';
 import FormattedAddress from './FormattedAddress';
+
+import { loadCurrentPeriodInfo } from '../actions';
+import { getContract, getCurrentPeriodInfo } from '../reducers';
+import drizzleConnect from '../utils/drizzleConnect';
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -66,7 +69,7 @@ class Header extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.contracts = context.drizzle.contracts;
+    this.contracts = props.drizzle.contracts;
   }
 
   componentDidMount() {
@@ -163,21 +166,20 @@ class Header extends Component {
     );
   }
 }
-Header.defaultProps = {
-  userAddress: '0x...',
-};
-Header.propTypes = {
-  userAddress: PropTypes.string,
-};
-Header.contextTypes = {
-  drizzle: PropTypes.object,
-};
+Header.defaultProps = { userAddress: '0x...' };
+Header.propTypes = { userAddress: PropTypes.string };
+Header.contextTypes = { drizzle: PropTypes.object };
 const mapStateToProps = state => ({
   Periods: getContract('Periods')(state),
   KyodoDAO: getContract('KyodoDAO')(state),
   Members: getContract('Members')(state),
   currentPeriod: getCurrentPeriodInfo(state),
 });
-export default withRouter(
-  drizzleConnect(Header, mapStateToProps, { loadCurrentPeriodInfo }),
-);
+export default compose(
+  withRouter,
+  drizzleConnect,
+  connect(
+    mapStateToProps,
+    { loadCurrentPeriodInfo },
+  ),
+)(Header);

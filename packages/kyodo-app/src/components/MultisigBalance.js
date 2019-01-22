@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { drizzleConnect } from 'drizzle-react';
+import { connect } from 'react-redux';
 import { StyledHeader } from './StyledSharedComponents';
 import TokenBalance from './TokenBalance';
 import Charts from './Charts';
@@ -19,13 +19,15 @@ const MultisigBalance = ({ balances, totalBalance }) => (
     <StyledHeader>Fund stats</StyledHeader>
     <StyledContainer>
       <StyledTokenBalances>
-        {balances.filter(({ balance }) => balance !== 0).map(token => (
-          <TokenBalance
-            {...token}
-            totalBalance={totalBalance}
-            key={token.ticker}
-          />
-        ))}
+        {balances
+          .filter(({ balance }) => balance !== 0)
+          .map(token => (
+            <TokenBalance
+              {...token}
+              totalBalance={totalBalance}
+              key={token.ticker}
+            />
+          ))}
       </StyledTokenBalances>
       <Charts />
     </StyledContainer>
@@ -41,4 +43,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default drizzleConnect(MultisigBalance, mapStateToProps);
+export default connect(mapStateToProps)(MultisigBalance);

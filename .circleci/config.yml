@@ -28,7 +28,7 @@ jobs:
 
       - run:
           name: "yarn install colonyNetwork"
-          command: (cd packages/kyodo-contracts/lib/colonyNetwork && yarn install --pure-lockfile)
+          command: (cd packages/kyodo-contracts/lib/colonyNetwork && yarn install --pure-lockfile --network-concurrency 1)
 
       - run:
           name: "yarn run provision token contracts"

@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { drizzleConnect } from 'drizzle-react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
-import { getContract } from '../reducers';
-import FormattedAddress from './FormattedAddress';
+
 import Input from './Input';
 import Button from './Button';
+import FormattedAddress from './FormattedAddress';
+
+import { getContract } from '../reducers';
+import drizzleConnect from '../utils/drizzleConnect';
 
 const StyledContainer = styled.div`
   position: relative;
@@ -51,7 +54,7 @@ const StyledArc = styled.div`
 class AddRiotID extends Component {
   constructor(props, context) {
     super(props, context);
-    this.contracts = context.drizzle.contracts;
+    this.contracts = props.drizzle.contracts;
   }
 
   componentDidMount() {
@@ -113,13 +116,12 @@ class AddRiotID extends Component {
   }
 }
 
-AddRiotID.contextTypes = {
-  drizzle: PropTypes.object,
-};
-
 const mapStateToProps = (state, { account }) => ({
   Members: getContract('Members')(state),
   userAddress: state.accounts[0],
 });
 
-export default drizzleConnect(AddRiotID, mapStateToProps);
+export default compose(
+  drizzleConnect,
+  connect(mapStateToProps),
+)(AddRiotID);

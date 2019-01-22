@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
-import { drizzleConnect } from 'drizzle-react';
+import { connect } from 'react-redux';
 import BillboardChart from 'react-billboardjs';
 import './chart_theme.css';
 import { loadHistoricalRates } from '../actions';
@@ -165,6 +165,9 @@ const mapStateToProps = state => {
   };
 };
 
-export default drizzleConnect(Charts, mapStateToProps, {
-  loadHistoricalRates,
-});
+export default connect(
+  mapStateToProps,
+  {
+    loadHistoricalRates,
+  },
+)(Charts);

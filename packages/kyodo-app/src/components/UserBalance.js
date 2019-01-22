@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { ContractData } from 'drizzle-react-components';
-import { drizzleConnect } from 'drizzle-react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
-import { getRate, getContract, getTotalSupply, getDecimals } from '../reducers';
+
+import ContractData from './ContractData';
 import { FormattedEth, FormattedEur } from './FormattedCurrency';
-import { formatDecimals } from '../helpers/format';
 import dfToken from './dftoken.svg';
+
+import { formatDecimals } from '../helpers/format';
+import drizzleConnect from '../utils/drizzleConnect';
+import { getRate, getContract, getTotalSupply, getDecimals } from '../reducers';
 
 const StyledUserBalance = styled.div`
   display: inline-block;
@@ -48,7 +51,7 @@ class UserBalance extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.contracts = context.drizzle.contracts;
+    this.contracts = props.drizzle.contracts;
   }
 
   componentDidMount() {
@@ -113,10 +116,6 @@ class UserBalance extends Component {
   }
 }
 
-UserBalance.contextTypes = {
-  drizzle: PropTypes.object,
-};
-
 const mapStateToProps = (state, { account }) => ({
   tokenPriceEUR: getRate(state, 'DF', 'EUR'),
   tokenPriceETH: getRate(state, 'DF', 'ETH'),
@@ -125,4 +124,7 @@ const mapStateToProps = (state, { account }) => ({
   decimals: getDecimals(getContract('Token')(state)),
 });
 
-export default drizzleConnect(UserBalance, mapStateToProps);
+export default compose(
+  drizzleConnect,
+  connect(mapStateToProps),
+)(UserBalance);

@@ -1,5 +1,5 @@
 import truffleAssert from 'truffle-assertions';
-import assertRevert from 'openzeppelin-solidity/test/helpers/assertRevert';
+import { shouldFail } from 'openzeppelin-test-helpers';
 import { getTokenArgs } from '../lib/colonyNetwork/helpers/test-helper';
 
 require('chai')
@@ -66,7 +66,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
   describe('sets alias', function() {
     describe('add alias', function() {
       it('reverts for unwhitelisted', async function() {
-        await assertRevert(members.setAlias('aaa'));
+        await shouldFail(members.setAlias('aaa'));
       });
       it('reverts for existing nick', async function() {
         // FIXME: Implement single add to whitelist function in kyodo contract
@@ -77,7 +77,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         await members.setAlias('bbb');
         usedAliases = await members.getUsedAliasesLength();
         assert.equal(usedAliases, 1);
-        await assertRevert(members.setAlias('bbb', { from: anotherAccount }));
+        await shouldFail(members.setAlias('bbb', { from: anotherAccount }));
         usedAliases = await members.getUsedAliasesLength();
         assert.equal(usedAliases, 1);
       });
@@ -251,7 +251,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
       }
 
       await kyodo.startNewPeriod();
-      await assertRevert(kyodo.startNewPeriod());
+      await shouldFail(kyodo.startNewPeriod());
     });
     it('works after passing time', async function() {
       // We have to add these domains due to hardcoded distribution by now
@@ -268,7 +268,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
       await kyodo.startNewPeriod();
       let currentPeriodStartBlock = await periods.currentPeriodStartBlock();
       assert.equal(currentPeriodStartBlock, currentBlock + 1);
-      await assertRevert(kyodo.startNewPeriod());
+      await shouldFail(kyodo.startNewPeriod());
 
       await kyodo.setPeriodDaysLength(1);
       const callback = () => {};
@@ -309,9 +309,9 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
         callback,
       );
       await kyodo.setPeriodDaysLength(45);
-      await assertRevert(kyodo.startNewPeriod());
+      await shouldFail(kyodo.startNewPeriod());
       await kyodo.setPeriodDaysLength(40);
-      await assertRevert(kyodo.startNewPeriod());
+      await shouldFail(kyodo.startNewPeriod());
       await web3.currentProvider.send(
         {
           jsonrpc: '2.0',

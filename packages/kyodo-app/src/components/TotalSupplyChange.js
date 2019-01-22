@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { drizzleConnect } from 'drizzle-react';
-import { ContractData } from 'drizzle-react-components';
-import { getRate, getContract } from '../reducers';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+
+import ContractData from './ContractData';
 import { FormattedEth, FormattedEur } from './FormattedCurrency';
+
+import { getRate, getContract } from '../reducers';
 import { formatCurrency, formatDecimals } from '../helpers/format';
+import drizzleConnect from '../utils/drizzleConnect';
 
 const StyledTotalSupplyChange = styled.div`
   background: #f7ffc7;
@@ -36,7 +40,7 @@ class TotalSupplyChange extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.contracts = context.drizzle.contracts;
+    this.contracts = props.drizzle.contracts;
   }
 
   componentDidMount() {
@@ -101,9 +105,7 @@ TotalSupplyChange.defaultProps = {
   contractName: 'Token',
 };
 
-TotalSupplyChange.propTypes = {};
-
-TotalSupplyChange.contextTypes = {
+TotalSupplyChange.propTypes = {
   drizzle: PropTypes.object,
 };
 
@@ -114,4 +116,7 @@ const mapStateToProps = state => ({
   tokenPriceETH: getRate(state, 'DF', 'ETH'),
 });
 
-export default drizzleConnect(TotalSupplyChange, mapStateToProps);
+export default compose(
+  drizzleConnect,
+  connect(mapStateToProps),
+)(TotalSupplyChange);

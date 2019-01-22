@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { drizzleConnect } from 'drizzle-react';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { getCurrentPeriodInfo, getPointsDistribution } from '../reducers';
 import { loadPeriodTasks } from '../actions';
@@ -159,6 +159,9 @@ const mapStateToProps = state => ({
   pointsDistribution: getPointsDistribution(state),
 });
 
-export default drizzleConnect(PeriodDistributionSummary, mapStateToProps, {
-  loadPeriodTasks,
-});
+export default connect(
+  mapStateToProps,
+  {
+    loadPeriodTasks,
+  },
+)(PeriodDistributionSummary);

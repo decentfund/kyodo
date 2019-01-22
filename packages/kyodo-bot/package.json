@@ -18,5 +18,11 @@
     "matrix-js-sdk": "^0.11.0",
     "moment": "^2.23.0",
     "pluralize": "^7.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "7.1.6",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
+    "babel-preset-env": "^1.7.0"
   }
 }
