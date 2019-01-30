@@ -102,12 +102,7 @@ class UserBalance extends Component {
               </div>
             </StyledConvertedAmount>
             <div>
-              {(
-                (this.props.Token.balanceOf[this.state.balanceKey].value /
-                  this.props.totalSupply) *
-                100
-              ).toFixed(2)}
-              % CAP
+              {((balance / this.props.totalSupply) * 100).toFixed(2)}% CAP
             </div>
           </div>
         </StyledBalance>
