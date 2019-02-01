@@ -49,7 +49,7 @@ docker pull ethereum/solc:0.4.24
 yarn initialize
 
 # Start ganache cli with necessary parameters
-yarn start-ganache
+yarn start:blockchain:client
 
 # Compile smart contracts
 yarn deploy-contracts

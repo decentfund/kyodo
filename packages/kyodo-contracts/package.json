@@ -29,7 +29,6 @@
     "deploy-contracts-rinkeby": "./scripts/deploy_kyodo.sh rinkeby",
     "deploy-contracts-ropsten": "./scripts/deploy_colony.sh ropsten && ./scripts/deploy_kyodo.sh ropsten",
     "initialize": "sh scripts/initialize.sh",
-    "start-ganache": "sh scripts/start_ganache.sh",
     "start-trufflepig": "sh scripts/start_trufflepig.sh",
     "start:blockchain:client": "bash ./scripts/start-blockchain-client.sh",
     "deploy:colony": "bash ./scripts/deploy_colony.sh",
