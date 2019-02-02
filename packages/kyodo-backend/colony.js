@@ -1,9 +1,10 @@
 import { Colony } from './db.js';
 
 export const createColony = async colonyAddress => {
+  const coloniesCount = await Colony.count();
   const colony = new Colony({
     colonyName: 'Test colony',
-    colonyId: 0,
+    colonyId: coloniesCount,
     colonyAddress: colonyAddress,
     creationDate: Date.now(),
   });
