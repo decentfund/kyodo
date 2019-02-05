@@ -30,6 +30,8 @@ const StyledTaskId = styled.div`
 const StyledAssignee = styled.div`
   margin-right: 20px;
   width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const StyledDomainCode = styled.div`
