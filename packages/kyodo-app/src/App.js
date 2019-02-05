@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import difference from 'lodash/difference';
-import { Route } from 'react-router';
-import { ConnectedRouter } from 'connected-react-router';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled, { injectGlobal } from 'styled-components';
@@ -330,7 +329,7 @@ class App extends Component {
       return <div />;
 
     return (
-      <ConnectedRouter history={this.props.history}>
+      <Router>
         <div className="App">
           <Header userAddress={userAddress} />
           <StyledMainInfoContainer>
@@ -404,7 +403,7 @@ class App extends Component {
             <Route exact path="/" render={props => <MultisigBalance />} />
           </StyledMainInfoContainer>
         </div>
-      </ConnectedRouter>
+      </Router>
     );
   }
 }

@@ -8,14 +8,14 @@ import * as serviceWorker from './serviceWorker';
 import { DrizzleContext } from 'drizzle-react';
 import Metamask from './components/Metamask';
 
-import { history, drizzle } from './store';
+import { drizzle } from './store';
 
 ReactDOM.render(
   <DrizzleContext.Provider drizzle={drizzle}>
     <Provider store={drizzle.store}>
       <IntlProvider locale="en">
         <Metamask requiredNetwork={['rinkeby', 'private', 'development']}>
-          <App history={history} />
+          <App />
         </Metamask>
       </IntlProvider>
     </Provider>
