@@ -1,6 +1,7 @@
 import truffleAssert from 'truffle-assertions';
 import { shouldFail } from 'openzeppelin-test-helpers';
 import { getTokenArgs } from '../lib/colonyNetwork/helpers/test-helper';
+import { addNecessaryDomains, getDomainBalance } from '../helpers/test-helper';
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -25,15 +26,6 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
   let periods;
   let members;
   let colony;
-
-  const domainBalance = async (id, tokenAddress, colony) => {
-    const { potId: domainPotId } = await colony.getDomain.call(id);
-    const domainBalance = await colony.getPotBalance.call(
-      domainPotId,
-      tokenAddress,
-    );
-    return domainBalance.toNumber();
-  };
 
   before(async () => {
     const etherRouter = await EtherRouter.deployed();
@@ -182,11 +174,8 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
   });
   describe('starts new period', function() {
     it('for new colony', async function() {
-      // We have to add these domains due to hardcoded distribution by now
-      const domainNames = ['FIRST', 'SECOND', 'THIRD', 'FOURTH'];
-      for (var i = 0; i < 4; i++) {
-        await kyodo.addDomain(domainNames[i]);
-      }
+      // adding necessary domains
+      await addNecessaryDomains(kyodo);
 
       const ownerRole = 0;
       let currentBlock = (await web3.eth.getBlock('latest')).number;
@@ -196,7 +185,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
       assert(tokenOwner === colony.address, `${owner} is not token owner`);
       assert(hasRole, `${kyodo.address} does not have owner role`);
 
-      let parentPotBalance = await domainBalance(1, token.address, colony);
+      let parentPotBalance = await getDomainBalance(1, token.address, colony);
       assert.equal(parentPotBalance, 0, 'parent domain pot is not empty');
 
       await kyodo.setPeriodDaysLength(1);
@@ -223,14 +212,18 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
       totalSupply = await token.totalSupply();
       assert.equal(totalSupply.toNumber(), 1050);
 
-      parentPotBalance = await domainBalance(1, token.address, colony);
+      parentPotBalance = await getDomainBalance(1, token.address, colony);
       assert.equal(
         parentPotBalance,
         2,
         'parent domain pot is not empty after token distribution',
       );
 
-      let firstDomainPotBalance = await domainBalance(2, token.address, colony);
+      let firstDomainPotBalance = await getDomainBalance(
+        2,
+        token.address,
+        colony,
+      );
       assert.equal(
         firstDomainPotBalance,
         12,
@@ -441,7 +434,7 @@ contract('KyodoDAO', function([owner, anotherAccount]) {
   });
 });
 
-contract('KyodoDAO_V1', function([owner]) {
+contract('KyodoDAO_V1', function([owner, anotherAccount]) {
   let colonyNetwork;
   let token;
   let kyodo;
@@ -502,5 +495,46 @@ contract('KyodoDAO_V1', function([owner]) {
       3,
       'Second created domain potId is wrong',
     );
+  });
+
+  it('create task', async () => {
+    // adding domain
+    await addNecessaryDomains(kyodo);
+
+    let totalSupply = await token.totalSupply();
+    assert.equal(totalSupply.toNumber(), 1000);
+
+    await kyodo.startNewPeriod();
+
+    totalSupply = await token.totalSupply();
+    assert.equal(totalSupply.toNumber(), 1050);
+
+    // creating task
+    await kyodo.createTask(
+      2,
+      '0x017dfd85d4f6cb4dcd715a88101f7b1f06cd1e009b2327a0809d01eb9c91f231',
+      10,
+    );
+
+    // checking tasks count
+    const taskCount = await colony.getTaskCount();
+    assert.equal(taskCount.toNumber(), 1, 'Task not added');
+
+    // checking domain pot balance
+    const domainBalance = await getDomainBalance(2, token.address, colony);
+    assert.equal(domainBalance, 2, 'Domain balance has not changed');
+
+    // get task
+    const taskId = taskCount - 1;
+    const task = await colony.getTask(taskId);
+    // get task pot id
+    const taskPotId = task.potId;
+
+    // checking task pot balance
+    const taskBalance = await colony.getPotBalance.call(
+      taskPotId,
+      token.address,
+    );
+    assert.equal(taskBalance, 10, 'Task pot was not funded');
   });
 });

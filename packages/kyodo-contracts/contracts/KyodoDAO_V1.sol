@@ -36,6 +36,26 @@ contract KyodoDAO_V1 is KyodoDAO {
     IColony(colony).setAdminRole(_address);
   }
 
+  function createTask(uint domainId, bytes32 hash, uint amount) external onlyOwner {
+    // create task
+    // FIXME: Check specified domainId and amount
+    // TODO: Check if potId is equal to domainId
+    IColony(colony).makeTask(hash, domainId, 0, 0);
+
+    // total tasks count
+    uint256 taskCount = IColony(colony).getTaskCount();
+
+    // get task id
+    // FIXME: Check it is reliable number
+    uint256 taskId = taskCount - 1;
+    
+    // get task pot id
+    (, , , , , , uint256 taskPotId, , ) = IColony(colony).getTask(taskId);
+
+    // move funds
+    IColony(colony).moveFundsBetweenPots(domainId, taskPotId, amount, token);
+  }
+
   function setName(string _name) public onlyOwner {
     name = _name;
   }
