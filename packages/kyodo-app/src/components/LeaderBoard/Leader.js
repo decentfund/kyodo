@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Blockies from 'react-blockies';
@@ -75,7 +75,7 @@ const Earning = styled.div`
   font-size: 12px;
 `;
 
-class Leader extends Component {
+class Leader extends PureComponent {
   render() {
     const {
       width,
