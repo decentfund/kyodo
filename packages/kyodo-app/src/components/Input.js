@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { FramedDiv } from '../styles/common';
 
-const StyledContainer = FramedDiv.extend`
+const StyledContainer = styled(FramedDiv)`
   width: ${props => props.width};
 `;
 

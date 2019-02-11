@@ -3,7 +3,7 @@ import difference from 'lodash/difference';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import styled, { injectGlobal } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import Header from './components/Header';
 import KyodoDAO from '@kyodo/contracts/build/contracts/KyodoDAO_V1.json';
 import AddRiotID from './components/AddRiotID';
@@ -37,7 +37,7 @@ import {
   generateContractConfigFromName,
 } from './helpers/contracts';
 
-injectGlobal`
+createGlobalStyle`
 html,
 body {
   margin: 0;

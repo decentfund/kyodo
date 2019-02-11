@@ -28,7 +28,7 @@ const StyledDiv = styled.div`
 const GRAY = 'rgba(0, 0, 0, 0.2)';
 const BLACK = 'rgb(0, 0, 0)';
 
-const StyledAlias = StyledDiv.extend`
+const StyledAlias = styled(StyledDiv)`
   width: 170px;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -43,7 +43,7 @@ const StyledValue = styled.div`
   margin: 0 0 0 20px;
 `;
 
-const StyledShare = StyledValue.extend`
+const StyledShare = styled(StyledValue)`
   text-align: right;
 `;
 
