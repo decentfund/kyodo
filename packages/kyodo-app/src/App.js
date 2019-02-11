@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { hot } from 'react-hot-loader/root';
 import difference from 'lodash/difference';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -429,13 +430,15 @@ App.contextTypes = {
   drizzle: PropTypes.object,
 };
 
-export default connect(
-  mapStateToProps,
-  {
-    getColony,
-    getColonyNetworkClient,
-    loadMultiSigBalance,
-    loadPeriodTasks,
-    loadRate,
-  },
-)(App);
+export default hot(
+  connect(
+    mapStateToProps,
+    {
+      getColony,
+      getColonyNetworkClient,
+      loadMultiSigBalance,
+      loadPeriodTasks,
+      loadRate,
+    },
+  )(App),
+);

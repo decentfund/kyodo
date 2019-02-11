@@ -64,6 +64,7 @@
     "react-blockies": "^1.4.0",
     "react-dev-utils": "^7.0.1",
     "react-dom": "^16.7.0",
+    "react-hot-loader": "^4.6.5",
     "react-intl": "^2.6.0",
     "react-redux": "^6.0.0",
     "react-router": "^4.3.1",
