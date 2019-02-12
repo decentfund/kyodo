@@ -45,10 +45,10 @@ const StyledLabel = styled.label`
   margin-left: 14px;
 `;
 
-const Input = ({ label, width, ...props }) => (
+const Input = ({ label, width, asComponent, ...props }) => (
   <StyledContainer width={width}>
     <StyledLabel for={props.id}>{label}</StyledLabel>
-    <StyledInput as="input" type="input" {...props} />
+    <StyledInput as={asComponent || 'input'} type="input" {...props} />
   </StyledContainer>
 );
 
