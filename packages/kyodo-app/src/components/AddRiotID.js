@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import Input from './Input';
 import Button from './Button';
 import FormattedAddress from './FormattedAddress';
+import { Header } from './Page';
 
 import { getContract } from '../reducers';
 import drizzleConnect from '../utils/drizzleConnect';
@@ -13,15 +14,6 @@ import drizzleConnect from '../utils/drizzleConnect';
 const StyledContainer = styled.div`
   position: relative;
   width: 430px;
-`;
-
-const StyledHeader = styled.div`
-  font-family: Roboto Mono;
-  font-style: normal;
-  font-weight: 300;
-  line-height: normal;
-  font-size: 24px;
-  margin-bottom: 30px;
 `;
 
 const StyledAddressBox = styled.div`
@@ -91,7 +83,7 @@ class AddRiotID extends Component {
     const { account: address } = this.props;
     return (
       <div>
-        <StyledHeader>Attach a riot alias to your address</StyledHeader>
+        <Header>Attach a riot alias to your address</Header>
         <StyledContainer>
           <StyledAddressBox>
             <FormattedAddress>{address}</FormattedAddress>

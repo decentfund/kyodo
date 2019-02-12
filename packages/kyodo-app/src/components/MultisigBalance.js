@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { StyledHeader } from './StyledSharedComponents';
+import { Header } from './Page';
 import TokenBalance from './TokenBalance';
 import Charts from './Charts';
 import { getBalances, getFundBaseBalance } from '../reducers';
@@ -16,7 +16,7 @@ const StyledContainer = styled.div`
 
 const MultisigBalance = ({ balances, totalBalance }) => (
   <div>
-    <StyledHeader>Fund stats</StyledHeader>
+    <Header>Fund stats</Header>
     <StyledContainer>
       <StyledTokenBalances>
         {balances

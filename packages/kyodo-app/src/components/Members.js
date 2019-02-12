@@ -7,7 +7,7 @@ import FormButton from './FormButton';
 import Input from './Input';
 import MembersHeaderIcons from './MembersHeaderIcons';
 import WhitelistedAddress from './WhitelistedAddress';
-import { StyledHeader } from './StyledSharedComponents';
+import { Header } from './Page';
 
 import { isValidAddress } from '../helpers';
 import drizzleConnect from '../utils/drizzleConnect';
@@ -50,7 +50,7 @@ class Members extends Component {
     const { canAdd, whitelistedAddresses } = this.props;
     return (
       <div>
-        <StyledHeader>Colony Members</StyledHeader>
+        <Header>Colony Members</Header>
         <MembersHeaderIcons />
         {whitelistedAddresses.map(address => (
           <WhitelistedAddress value={address} key={address} />

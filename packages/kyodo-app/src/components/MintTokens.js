@@ -5,17 +5,10 @@ import styled from 'styled-components';
 
 import Input from './Input';
 import FormButton from './FormButton';
+import { Header } from './Page';
 
 import { isValidAddress } from '../helpers';
 import drizzleConnect from '../utils/drizzleConnect';
-
-const StyledHeader = styled.header`
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 300;
-  line-height: normal;
-  margin-bottom: 34px;
-`;
 
 const StyledFormContainer = styled.div`
   margin-top: 20px;
@@ -59,7 +52,7 @@ class Members extends Component {
     console.log(this.tx);
     return (
       <div>
-        <StyledHeader>Mint tokens</StyledHeader>
+        <Header>Mint tokens</Header>
         <StyledFormContainer>
           <StyledInputContainer>
             <Input

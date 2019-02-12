@@ -1,9 +1,10 @@
 import styled from 'styled-components';
 
-export const StyledHeader = styled.header`
-  font-size: 24px;
+export const Header = styled.h2`
+  font-family: Roboto Mono;
   font-style: normal;
   font-weight: 300;
   line-height: normal;
-  margin-bottom: 20px;
+  font-size: 24px;
+  margin-bottom: 30px;
 `;
