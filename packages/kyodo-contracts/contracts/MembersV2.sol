@@ -10,12 +10,23 @@ contract MembersV2 is MembersV1 {
     external
   {
     require(nickNameNotExist(_value));
+    
+    bool isAliasEmpty = _value.toSlice().empty();
+
     string storage prevValue = whitelist[msg.sender].alias;
+
+    if (isAliasEmpty) {
+      require(!prevValue.toSlice().empty());
+    }
+
     int prevIndex = getNickNameIndex(prevValue);
+
     whitelist[msg.sender].alias = _value;
 
     // update used aliases
-    usedAliases.push(_value);
+    if (!isAliasEmpty) {
+      usedAliases.push(_value);
+    }
 
     // delete previous nickname
     if (prevIndex >= 0) {
