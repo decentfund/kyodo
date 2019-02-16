@@ -21,6 +21,7 @@ import TasksList from './components/TasksList';
 import PeriodPointsDistribution from './components/PeriodPointsDistribution';
 import PeriodDistributionSummary from './components/PeriodDistributionSummary';
 import LeaderBoard from './components/LeaderBoard';
+import CreateTask from './components/CreateTask/CreateTask';
 import {
   getContract,
   getOwner,
@@ -385,6 +386,7 @@ class App extends Component {
               render={props => (
                 <div style={{ marginBottom: 50 }}>
                   <BountyDistribution contractName="Token" />
+                  {owner === userAddress ? <CreateTask /> : null}
                 </div>
               )}
             />
