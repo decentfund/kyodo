@@ -55,7 +55,7 @@ class UserBalance extends Component {
   }
 
   componentDidMount() {
-    const contract = this.contracts.Token;
+    const contract = this.contracts[this.props.contractName];
 
     const balanceKey = contract.methods.balanceOf.cacheCall(this.props.account);
 
@@ -111,12 +111,12 @@ class UserBalance extends Component {
   }
 }
 
-const mapStateToProps = (state, { account }) => ({
+const mapStateToProps = (state, { account, contractName }) => ({
   tokenPriceEUR: getRate(state, 'DF', 'EUR'),
   tokenPriceETH: getRate(state, 'DF', 'ETH'),
-  Token: getContract('Token')(state),
-  totalSupply: getTotalSupply(getContract('Token')(state)),
-  decimals: getDecimals(getContract('Token')(state)),
+  Token: getContract(contractName)(state),
+  totalSupply: getTotalSupply(getContract(contractName)(state)),
+  decimals: getDecimals(getContract(contractName)(state)),
 });
 
 export default compose(
