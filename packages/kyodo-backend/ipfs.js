@@ -8,11 +8,11 @@ export const initiateIpfs = async () => {
 };
 
 export const generateIpfsHash = async spec => {
-  const data = Buffer.from(JSON.stringify(spec));
-  const files = await ipfs.files.add(data);
+  const data = ipfs.types.Buffer.from(JSON.stringify(spec));
+  const files = await ipfs.add(data);
   const { hash } = files[0];
   console.log('>>>>>>HASH<<<<<<', hash);
-  await this.getTaskSpecification(hash);
+
   return hash;
 };
 
