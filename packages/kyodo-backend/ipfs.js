@@ -1,5 +1,5 @@
 import IPFS from 'ipfs';
-import { Buffer } from 'buffer';
+import bs58 from 'bs58';
 
 let ipfs;
 
@@ -13,7 +13,11 @@ export const generateIpfsHash = async spec => {
   const { hash } = files[0];
   console.log('>>>>>>HASH<<<<<<', hash);
 
-  return hash;
+  const convertedHash = `0x${bs58
+    .decode(hash)
+    .slice(2)
+    .toString('hex')}`;
+  return convertedHash;
 };
 
 export const getTaskSpecification = async hash => {
