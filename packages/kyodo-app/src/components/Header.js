@@ -150,6 +150,10 @@ class Header extends Component {
               <NavLink to="/stats/leaderboard" exact>
                 Leaderboard
               </NavLink>
+              {` 🞄 `}
+              <NavLink to="/stats/misc" exact>
+                Misc
+              </NavLink>
             </Subnav>
           )}
         />

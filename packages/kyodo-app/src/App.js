@@ -16,6 +16,7 @@ import FundStatistics from './components/FundStatistics';
 import CurrentPeriodStatus from './components/CurrentPeriodStatus';
 import TotalSupplyChange from './components/TotalSupplyChange';
 import Earnings from './components/Earnings';
+import BountyDistribution from './components/BountyDistribution';
 import TasksList from './components/TasksList';
 import PeriodPointsDistribution from './components/PeriodPointsDistribution';
 import PeriodDistributionSummary from './components/PeriodDistributionSummary';
@@ -376,6 +377,14 @@ class App extends Component {
               render={props => (
                 <div style={{ marginBottom: 50 }}>
                   <LeaderBoard members={whitelistedAddresses} />
+                </div>
+              )}
+            />
+            <Route
+              path="/stats/misc"
+              render={props => (
+                <div style={{ marginBottom: 50 }}>
+                  <BountyDistribution contractName="Token" />
                 </div>
               )}
             />
