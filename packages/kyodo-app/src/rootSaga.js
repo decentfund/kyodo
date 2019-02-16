@@ -1,6 +1,7 @@
 import axios from 'axios';
 import moment from 'moment';
 import orderBy from 'lodash/orderBy';
+import { drizzle } from './store';
 import {
   all,
   fork,
@@ -32,6 +33,8 @@ import {
   GET_DOMAINS_BALANCES_REQUEST,
   GET_DOMAINS_REQUEST,
   GET_DOMAINS_SUCCESS,
+  CREATE_TASK_REQUEST,
+  CREATE_TASK_SUCCESS,
 } from './constants';
 import { BASE_CURRENCY } from './constants';
 import * as fromActions from './actions';
@@ -310,6 +313,33 @@ function* watchGetDomains() {
   yield takeLatest(GET_DOMAINS_REQUEST, getDomains);
 }
 
+
+function* createTask({ payload }) {
+  const apiURI = `${BACKEND_URI}/task/hash`;
+  const { data: ipfsHash } = yield call(axios.post, apiURI, payload);
+  const state = yield select();
+  const key = yield call(
+    drizzle.contracts.KyodoDAO.methods.createTask.cacheSend,
+    payload.domain,
+    ipfsHash,
+    payload.amount,
+    { from: state.accounts[0] },
+  );
+
+  // FIXME: Should subscribe to new blocks to wait till transaction resolves
+  // Currently just storing transaction key in state
+
+  // FIXME: What if user rejected transaction?
+  yield put({
+    type: CREATE_TASK_SUCCESS,
+    payload: key,
+  });
+}
+
+function* watchCreateTask() {
+  yield takeLatest(CREATE_TASK_REQUEST, createTask);
+}
+
 export default function* root() {
   yield all([
     ...drizzleSagas.map(saga => fork(saga)),
@@ -323,5 +353,6 @@ export default function* root() {
     watchGetPotBalance(),
     watchGetDomainsBalances(),
     watchGetDomains(),
+    watchCreateTask(),
   ]);
 }

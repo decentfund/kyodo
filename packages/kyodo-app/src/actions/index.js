@@ -57,3 +57,10 @@ export function getDomains() {
     type: types.GET_DOMAINS_REQUEST,
   };
 }
+
+export function createTask(payload) {
+  return {
+    type: types.CREATE_TASK_REQUEST,
+    payload,
+  };
+}

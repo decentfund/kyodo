@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from 'react';
+import React, { useReducer } from 'react';
 import { connect } from 'react-redux';
 import { DrizzleContext } from 'drizzle-react';
 import DomainSelector from './DomainSelector';
@@ -6,6 +6,7 @@ import { Header } from '../Page';
 import { FormInput, FormTextArea } from '../Form';
 import Button from '../Button';
 import NumberInput from '../NumberInput';
+import { createTask } from '../../actions';
 
 function reducer(state, action) {
   switch (action.type) {
@@ -35,6 +36,16 @@ const initialState = {
   amount: {
     changed: false,
   },
+};
+
+const cleanState = state => {
+  return Object.keys(state).reduce(
+    (memo, value) => ({
+      ...memo,
+      [value]: state[value].value,
+    }),
+    {},
+  );
 };
 
 const CreateTask = ({
@@ -88,7 +99,7 @@ const CreateTask = ({
       <div style={{ marginTop: '34px' }}>
         <Button
           active={title.value && domain.value}
-          onClick={() => handleClick(state)}
+          onClick={() => handleClick(cleanState(state))}
         >
           Submit
         </Button>
@@ -97,44 +108,27 @@ const CreateTask = ({
   );
 };
 
-function DrizzleCreateTask(props) {
+function DrizzleCreateTask({ createTask, task, ...props }) {
   // TODO: Try to use drizzle-react hooks
-  const [taskKey, setTask] = useState();
   let transactionStatus;
 
   return (
     <DrizzleContext.Consumer>
       {drizzleContext => {
-        const { drizzle, drizzleState } = drizzleContext;
-        const handleClick = state => {
-          // TODO: Upload ipfs description and get hash
-          const ipfsHash =
-            '0x017dfd85d4f6cb4dcd715a88101f7b1f06cd1e009b2327a0809d01eb9c91f231';
-          console.log(state);
-          console.log(drizzleState);
-          console.log(drizzle.contracts.KyodoDAO);
-          console.log(drizzleState.accounts[0]);
-          const key = drizzle.contracts.KyodoDAO.methods.createTask.cacheSend(
-            state.domain.value,
-            ipfsHash,
-            state.amount.value,
-            { from: drizzleState.accounts[0] },
-          );
-          setTask(key);
-        };
+        const { drizzleState } = drizzleContext;
 
-        if (drizzleState.transactionStack[taskKey]) {
-          const txHash = drizzleState.transactionStack[taskKey];
+        if (
+          task.transactionKey &&
+          drizzleState.transactionStack[task.transactionKey]
+        ) {
+          const txHash = drizzleState.transactionStack[task.transactionKey];
           transactionStatus = drizzleState.transactions[txHash].status;
+          // TODO: If status changed fetch tasks another time
         }
-
-        // TODO: If successfully saved store task on the backend or ipfs is enough?? or try to fetch data from parsed event on the backend
-
-        // TODO: And possibility assign user
 
         return (
           <CreateTask
-            handleClick={handleClick}
+            handleClick={createTask}
             transactionStatus={transactionStatus}
             {...props}
           />
@@ -144,13 +138,12 @@ function DrizzleCreateTask(props) {
   );
 }
 
-// TODO: Those would be absolute after state handling in DrizzleCreateTask
-const mapStateToProps = state => {
-  console.log(state);
-  return {
-    task: state.task,
-    domains: state.colony.domains,
-  };
-};
+const mapStateToProps = state => ({
+  task: state.task,
+  domains: state.colony.domains,
+});
 
-export default connect(mapStateToProps)(DrizzleCreateTask);
+export default connect(
+  mapStateToProps,
+  { createTask },
+)(DrizzleCreateTask);

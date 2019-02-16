@@ -5,13 +5,14 @@ import { drizzleReducers } from 'drizzle';
 import { createSelector } from 'reselect';
 import get from 'lodash/get';
 import groupBy from 'lodash/groupBy';
-import rates, * as fromRates from './rates';
 import balances from './balances';
-import users from './users';
-import tips from './tips';
 import colony from './colony';
 import historical, * as fromHistorical from './historical';
 import periods from './periods';
+import rates, * as fromRates from './rates';
+import task from './task';
+import tips from './tips';
+import users from './users';
 import { BASE_CURRENCY } from '../constants';
 import { formatTipsPerDomain } from '@kyodo/shared/tips';
 
@@ -285,12 +286,13 @@ export const getPointPrice = createSelector(
 export const getCurrentPeriodInfo = state => state.periods.currentPeriod;
 
 export default combineReducers({
-  rates,
   balances,
+  colony,
   historical,
+  periods,
+  rates,
+  task,
   tips,
   users,
-  periods,
-  colony,
   ...drizzleReducers,
 });
