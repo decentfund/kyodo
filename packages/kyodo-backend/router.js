@@ -4,6 +4,7 @@ import { createTask, modifyTask, getTasks } from './task';
 import { getAllTips } from './tip';
 import { getAllDomains, getDomainById } from './domain';
 import { addUser, getAllUsers } from './user';
+import * as ipfs from './ipfs';
 
 import {
   initiateNewPeriod,
@@ -57,6 +58,10 @@ router
   })
   .get('/users', (req, res) => {
     getAllUsers(req, res);
+  })
+  .post('/task/hash', async (req, res) => {
+    const specificationHash = await ipfs.generateIpfsHash(req.body);
+    return res.status(200).send(specificationHash);
   });
 
 module.exports = router;
