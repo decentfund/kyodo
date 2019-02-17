@@ -1,6 +1,7 @@
 import axios from 'axios';
 import moment from 'moment';
 import orderBy from 'lodash/orderBy';
+import { convertAmount } from '@kyodo/shared/token';
 import { drizzle } from './store';
 import {
   all,
@@ -317,12 +318,22 @@ function* watchGetDomains() {
 function* createTask({ payload }) {
   const apiURI = `${BACKEND_URI}/task/hash`;
   const { data: ipfsHash } = yield call(axios.post, apiURI, payload);
+
+  // destructuring payload
+  const { domain, amount } = payload;
+
+  // get tokn decimals
   const state = yield select();
+  const decimals = getDecimals(getContract('Token')(state));
+
+  // get BN number for amount
+  const convertedAmount = convertAmount(amount, decimals);
+
   const key = yield call(
     drizzle.contracts.KyodoDAO.methods.createTask.cacheSend,
-    payload.domain,
+    domain,
     ipfsHash,
-    payload.amount,
+    convertedAmount,
     { from: state.accounts[0] },
   );
 
