@@ -3,6 +3,7 @@ import moment from 'moment';
 import orderBy from 'lodash/orderBy';
 import { convertAmount } from '@kyodo/shared/token';
 import { drizzle } from './store';
+import { getDecimals, getContract } from './reducers';
 import {
   all,
   fork,
@@ -35,6 +36,7 @@ import {
   GET_DOMAINS_REQUEST,
   GET_DOMAINS_SUCCESS,
   CREATE_TASK_REQUEST,
+  CREATE_TASK_STARTED,
   CREATE_TASK_SUCCESS,
 } from './constants';
 import { BASE_CURRENCY } from './constants';
@@ -342,13 +344,21 @@ function* createTask({ payload }) {
 
   // FIXME: What if user rejected transaction?
   yield put({
-    type: CREATE_TASK_SUCCESS,
+    type: CREATE_TASK_STARTED,
     payload: key,
   });
 }
 
 function* watchCreateTask() {
   yield takeLatest(CREATE_TASK_REQUEST, createTask);
+}
+
+function* createTaskSuccess() {
+  yield put(fromActions.getTasks());
+}
+
+function* watchCreateTaskSuccess() {
+  yield takeLatest(CREATE_TASK_SUCCESS, createTaskSuccess);
 }
 
 export default function* root() {
@@ -365,5 +375,6 @@ export default function* root() {
     watchGetDomainsBalances(),
     watchGetDomains(),
     watchCreateTask(),
+    watchCreateTaskSuccess(),
   ]);
 }

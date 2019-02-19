@@ -64,3 +64,9 @@ export function createTask(payload) {
     payload,
   };
 }
+
+export function createTaskSuccess() {
+  return {
+    type: types.CREATE_TASK_SUCCESS,
+  };
+}

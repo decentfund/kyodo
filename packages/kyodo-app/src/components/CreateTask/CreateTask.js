@@ -6,22 +6,8 @@ import { Header } from '../Page';
 import { FormInput, FormTextArea } from '../Form';
 import Button from '../Button';
 import NumberInput from '../NumberInput';
-import { createTask } from '../../actions';
-
-function reducer(state, action) {
-  switch (action.type) {
-    case 'handleChange':
-      return {
-        ...state,
-        [action.id]: {
-          value: action.value,
-          changed: true,
-        },
-      };
-    default:
-      return state;
-  }
-}
+import { createTask, createTaskSuccess } from '../../actions';
+import { usePrevious } from '../../utils/hooks';
 
 const initialState = {
   title: {
@@ -38,6 +24,21 @@ const initialState = {
   },
 };
 
+function reducer(state, action) {
+  switch (action.type) {
+    case 'handleChange':
+      return {
+        ...state,
+        [action.id]: {
+          value: action.value,
+          changed: true,
+        },
+      };
+    default:
+      return state;
+  }
+}
+
 const cleanState = state => {
   return Object.keys(state).reduce(
     (memo, value) => ({
@@ -53,6 +54,7 @@ const CreateTask = ({
   domains,
   task = initialState,
   transactionStatus,
+  createTaskSuccess,
 }) => {
   const [state, dispatch] = useReducer(reducer, task);
   const { amount, title, description, domain } = state;
@@ -62,6 +64,18 @@ const CreateTask = ({
 
     dispatch({ type: 'handleChange', id, value });
   };
+
+  const prevTransactionStatus = usePrevious(transactionStatus);
+
+  if (
+    prevTransactionStatus !== transactionStatus &&
+    transactionStatus === 'success'
+  ) {
+    // TODO: Move listener to related saga
+    // calling reload tasks
+    createTaskSuccess();
+  }
+
   return (
     <div>
       <Header>Submit a task</Header>
@@ -118,12 +132,14 @@ function DrizzleCreateTask({ createTask, task, ...props }) {
         const { drizzleState } = drizzleContext;
 
         if (
-          task.transactionKey &&
+          task.transactionKey !== undefined &&
           drizzleState.transactionStack[task.transactionKey]
         ) {
           const txHash = drizzleState.transactionStack[task.transactionKey];
           transactionStatus = drizzleState.transactions[txHash].status;
-          // TODO: If status changed fetch tasks another time
+          // TODO: If status changed fetch tasks another time and reset form
+        } else {
+          transactionStatus = undefined;
         }
 
         return (
@@ -145,5 +161,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { createTask },
+  { createTask, createTaskSuccess },
 )(DrizzleCreateTask);

@@ -1,4 +1,4 @@
-import { GET_TASKS_COUNT_SUCCESS, GET_TASK_SUCCESS } from '../constants';
+import { CREATE_TASK_SUCCESS, CREATE_TASK_STARTED } from '../constants';
 
 export default (
   state = {
@@ -7,10 +7,15 @@ export default (
   action,
 ) => {
   switch (action.type) {
-    case GET_TASK_SUCCESS:
+    case CREATE_TASK_STARTED:
       return {
         ...state,
         transactionKey: action.payload,
+      };
+    case CREATE_TASK_SUCCESS:
+      return {
+        ...state,
+        transactionKey: undefined,
       };
     default:
       return state;
