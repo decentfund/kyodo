@@ -38,6 +38,12 @@ import {
   CREATE_TASK_REQUEST,
   CREATE_TASK_STARTED,
   CREATE_TASK_SUCCESS,
+  GET_TASKS_REQUEST,
+  GET_TASKS_SUCCESS,
+  GET_TASKS_COUNT_REQUEST,
+  GET_TASKS_COUNT_SUCCESS,
+  GET_TASK_REQUEST,
+  GET_TASK_SUCCESS,
 } from './constants';
 import { BASE_CURRENCY } from './constants';
 import * as fromActions from './actions';
@@ -237,6 +243,7 @@ function* getColony({ payload: address }) {
     });
 
     yield put(fromActions.getDomains());
+    yield put(fromActions.getTasks());
   } catch (e) {
     console.log(e);
   }
@@ -305,6 +312,7 @@ function* getDomains() {
     payload: data.map(domain => ({
       name: domain.domainTitle,
       potId: domain.potId,
+      id: domain.domainId,
     })),
   });
 
@@ -316,6 +324,76 @@ function* watchGetDomains() {
   yield takeLatest(GET_DOMAINS_REQUEST, getDomains);
 }
 
+function* getTasks() {
+  const {
+    colony: { client },
+  } = yield select();
+
+  try {
+    // Getting task count
+    const { count } = yield call([
+      client.getTaskCount,
+      client.getTaskCount.call,
+    ]);
+
+    console.log('tasks count');
+    console.log(count);
+
+    yield put({
+      type: GET_TASKS_COUNT_SUCCESS,
+      payload: count,
+    });
+
+    for (let i = 1; i <= count; i++) {
+      yield put({
+        type: GET_TASK_REQUEST,
+        payload: i,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+function* watchGetTasks() {
+  yield takeEvery(GET_TASKS_REQUEST, getTasks);
+}
+
+function* getTask({ payload: taskId }) {
+  const {
+    colony: { client },
+  } = yield select();
+
+  try {
+    const colonyDetails = yield call([client.getTask, client.getTask.call], {
+      taskId,
+    });
+
+    const specificationHashURI = `${BACKEND_URI}/task/${
+      colonyDetails.specificationHash
+    }`;
+    const { data: specificationDetails } = yield call(
+      axios.get,
+      specificationHashURI,
+    );
+
+    const details = {
+      ...colonyDetails,
+      ...specificationDetails,
+    };
+
+    yield put({
+      type: GET_TASK_SUCCESS,
+      payload: details,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+function* watchGetTask() {
+  yield takeEvery(GET_TASK_REQUEST, getTask);
+}
 
 function* createTask({ payload }) {
   const apiURI = `${BACKEND_URI}/task/hash`;
@@ -374,6 +452,8 @@ export default function* root() {
     watchGetPotBalance(),
     watchGetDomainsBalances(),
     watchGetDomains(),
+    watchGetTasks(),
+    watchGetTask(),
     watchCreateTask(),
     watchCreateTaskSuccess(),
   ]);

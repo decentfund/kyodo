@@ -59,6 +59,10 @@ router
   .get('/users', (req, res) => {
     getAllUsers(req, res);
   })
+  .get('/task/:hash', async (req, res) => {
+    const specification = await ipfs.getTaskSpecification(req.params.hash);
+    return res.status(200).send(specification);
+  })
   .post('/task/hash', async (req, res) => {
     const specificationHash = await ipfs.generateIpfsHash(req.body);
     return res.status(200).send(specificationHash);

@@ -11,6 +11,7 @@ import historical, * as fromHistorical from './historical';
 import periods from './periods';
 import rates, * as fromRates from './rates';
 import task from './task';
+import tasks from './tasks';
 import tips from './tips';
 import users from './users';
 import { BASE_CURRENCY } from '../constants';
@@ -292,6 +293,7 @@ export default combineReducers({
   periods,
   rates,
   task,
+  tasks,
   tips,
   users,
   ...drizzleReducers,

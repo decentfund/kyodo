@@ -20,8 +20,8 @@ export const generateIpfsHash = async spec => {
   return convertedHash;
 };
 
-export const getTaskSpecification = async hash => {
-  const buf = await ipfs.files.cat(`/ipfs/${hash}`);
+export const getTaskSpecification = async value => {
+  const buf = await ipfs.cat(`/ipfs/${value}`);
   let spec;
   try {
     spec = JSON.parse(buf.toString());

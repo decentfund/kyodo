@@ -58,6 +58,12 @@ export function getDomains() {
   };
 }
 
+export function getTasks() {
+  return {
+    type: types.GET_TASKS_REQUEST,
+  };
+}
+
 export function createTask(payload) {
   return {
     type: types.CREATE_TASK_REQUEST,
