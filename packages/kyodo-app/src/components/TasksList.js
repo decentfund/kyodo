@@ -2,17 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
-
-const StyledHeader = styled.div`
-  display: flex;
-  font-family: Roboto Mono;
-  font-style: normal;
-  font-weight: 200;
-  line-height: normal;
-  font-size: 16px;
-  width: 100%;
-  margin-bottom: 15px;
-`;
+import { Header } from './Table';
 
 const StyledTaskTitle = styled.div`
   margin-right: 20px;
@@ -58,13 +48,13 @@ class TasksList extends Component {
   render() {
     return (
       <div>
-        <StyledHeader>
+        <Header>
           <StyledTaskTitle>task</StyledTaskTitle>
           <StyledTaskId>id</StyledTaskId>
           <StyledAssignee>assignee</StyledAssignee>
           <StyledDomainCode>domain</StyledDomainCode>
           <StyledTips>tips</StyledTips>
-        </StyledHeader>
+        </Header>
         {this.props.tips.map(tip => (
           <StyledTip key={tip.id}>
             <StyledTaskTitle>{tip.title}</StyledTaskTitle>
