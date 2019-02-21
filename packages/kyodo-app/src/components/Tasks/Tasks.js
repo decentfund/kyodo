@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
-import { Header } from './Page';
-import { Header as TableHeader } from './Table';
-import { getTasks } from '../actions';
+import { Header } from '../Page';
+import { Header as TableHeader } from '../Table';
+import Task from './Task';
+import { getTasks } from '../../actions';
 
 const StyledTaskTitle = styled.div`
   margin-right: 20px;
@@ -28,16 +29,6 @@ const StyledTips = styled.div`
   text-align: right;
 `;
 
-const StyledTask = styled.div`
-  display: flex;
-  font-family: Roboto Mono;
-  font-style: normal;
-  font-weight: normal;
-  line-height: normal;
-  font-size: 16px;
-  margin-bottom: 15px;
-`;
-
 class Tasks extends PureComponent {
   render() {
     const { count, items = [], domains = [] } = this.props;
@@ -46,6 +37,8 @@ class Tasks extends PureComponent {
       if (soughtDomain) return soughtDomain.name;
       return null;
     };
+
+    // TODO: Can apply
     return (
       <div>
         <Header>Tasks</Header>
@@ -56,19 +49,8 @@ class Tasks extends PureComponent {
             <StyledDomainCode>domain</StyledDomainCode>
             <StyledTips>amount</StyledTips>
           </TableHeader>
-          {items.map(item => (
-            <StyledTask key={item.id}>
-              <StyledTaskTitle>
-                {item.title}
-                <br />
-                {item.description}
-              </StyledTaskTitle>
-              <StyledAssignee>-</StyledAssignee>
-              <StyledDomainCode>
-                {getDomainName(item.domainId)}
-              </StyledDomainCode>
-              <StyledTips>{item.amount}</StyledTips>
-            </StyledTask>
+          {items.map(({ domainId, ...props }) => (
+            <Task domain={getDomainName(domainId)} {...props} />
           ))}
         </div>
         <div>Task count: {count}</div>
