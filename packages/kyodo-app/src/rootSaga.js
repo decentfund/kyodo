@@ -450,6 +450,7 @@ function* watchCreateTask() {
 
 function* createTaskSuccess() {
   yield put(fromActions.getTasks());
+  yield getDomainsBalances();
 }
 
 function* watchCreateTaskSuccess() {
