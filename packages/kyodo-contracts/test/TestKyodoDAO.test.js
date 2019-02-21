@@ -2,11 +2,13 @@ import truffleAssert from 'truffle-assertions';
 import { shouldFail } from 'openzeppelin-test-helpers';
 import { getTokenArgs } from '../lib/colonyNetwork/helpers/test-helper';
 import { addNecessaryDomains, getDomainBalance } from '../helpers/test-helper';
+var getColonyClient = require('./getColonyClient');
 
 require('chai')
   .use(require('chai-as-promised'))
   .should();
 
+const Registry = artifacts.require('Registry');
 const KyodoDAO = artifacts.require('KyodoDAO');
 const KyodoDAO_V1 = artifacts.require('KyodoDAO_V1');
 const DomainsV1 = artifacts.require('DomainsV1');
@@ -536,5 +538,39 @@ contract('KyodoDAO_V1', function([owner, anotherAccount]) {
       token.address,
     );
     assert.equal(taskBalance, 10, 'Task pot was not funded');
+  });
+
+  describe('after migrations', () => {
+    it('sets kyodo owner as colony admin', async () => {
+      // Get Kyodo Proxy contract
+      const registryDeployed = await Registry.deployed();
+      const kyodoProxyAddress = await registryDeployed.getVersion('1.0');
+
+      // Get Kyodo DAO V1 instance
+      const kyodoInstance = await KyodoDAO_V1.at(kyodoProxyAddress);
+
+      // Get colony address
+      const colonyAddress = await kyodoInstance.colony();
+
+      // Get colony client
+      const colonyNetworkClient = getColonyClient('development', [
+        owner,
+        anotherAccount,
+      ]);
+      await colonyNetworkClient.init();
+      const colonyClient = await colonyNetworkClient.getColonyClientByAddress(
+        colonyAddress,
+      );
+
+      const hasAdminRole = colonyClient.hasUserRole({
+        user: owner,
+        role: 'ADMIN',
+      });
+      assert.equal(
+        hasAdminRole,
+        true,
+        'Should set kyodo owner as colony admin',
+      );
+    });
   });
 });
