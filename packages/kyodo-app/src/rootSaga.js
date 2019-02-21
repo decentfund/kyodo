@@ -13,6 +13,7 @@ import {
   takeLatest,
   select,
   apply,
+  take,
 } from 'redux-saga/effects';
 import { drizzleSagas } from 'drizzle';
 import {
@@ -324,25 +325,34 @@ function* watchGetDomains() {
   yield takeLatest(GET_DOMAINS_REQUEST, getDomains);
 }
 
-function* getTasks() {
-  const {
-    colony: { client },
-  } = yield select();
-
+function* getTaskCount(client) {
   try {
-    // Getting task count
     const { count } = yield call([
       client.getTaskCount,
       client.getTaskCount.call,
     ]);
 
-    console.log('tasks count');
-    console.log(count);
+    return count;
+  } catch (e) {
+    console.log(e);
+  }
+}
 
+function* watchGetTasks() {
+  while (true) {
+    yield take(GET_TASKS_REQUEST);
+
+    const {
+      colony: { client },
+    } = yield select();
+
+    const count = yield getTaskCount(client);
     yield put({
       type: GET_TASKS_COUNT_SUCCESS,
       payload: count,
     });
+
+    yield takeEvery(GET_TASK_REQUEST, getTask);
 
     for (let i = 1; i <= count; i++) {
       yield put({
@@ -350,13 +360,7 @@ function* getTasks() {
         payload: i,
       });
     }
-  } catch (e) {
-    console.log(e);
   }
-}
-
-function* watchGetTasks() {
-  yield takeEvery(GET_TASKS_REQUEST, getTasks);
 }
 
 function* getTask({ payload: taskId }) {
@@ -389,10 +393,6 @@ function* getTask({ payload: taskId }) {
   } catch (e) {
     console.log(e);
   }
-}
-
-function* watchGetTask() {
-  yield takeEvery(GET_TASK_REQUEST, getTask);
 }
 
 function* createTask({ payload }) {
@@ -453,7 +453,6 @@ export default function* root() {
     watchGetDomainsBalances(),
     watchGetDomains(),
     watchGetTasks(),
-    watchGetTask(),
     watchCreateTask(),
     watchCreateTaskSuccess(),
   ]);
