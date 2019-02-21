@@ -45,6 +45,8 @@ import {
   GET_TASKS_COUNT_SUCCESS,
   GET_TASK_REQUEST,
   GET_TASK_SUCCESS,
+  GET_TASK_MANAGER_REQUEST,
+  GET_TASK_MANAGER_SUCCESS,
 } from './constants';
 import { BASE_CURRENCY } from './constants';
 import * as fromActions from './actions';
@@ -389,6 +391,21 @@ function* getTask({ payload: taskId }) {
     yield put({
       type: GET_TASK_SUCCESS,
       payload: details,
+    });
+
+    yield put({
+      type: GET_TASK_MANAGER_REQUEST,
+      payload: { taskId },
+    });
+
+    const manager = yield call([client.getTaskRole, client.getTaskRole.call], {
+      taskId,
+      role: 'MANAGER',
+    });
+
+    yield put({
+      type: GET_TASK_MANAGER_SUCCESS,
+      payload: { ...manager, taskId },
     });
   } catch (e) {
     console.log(e);

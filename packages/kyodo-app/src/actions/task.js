@@ -13,3 +13,9 @@ export function createTaskSuccess() {
   };
 }
 
+export function getTaskManager(taskId) {
+  return {
+    type: types.GET_TASK_MANAGER_REQUEST,
+    payload: taskId,
+  };
+}
