@@ -17,6 +17,7 @@ import CurrentPeriodStatus from './components/CurrentPeriodStatus';
 import TotalSupplyChange from './components/TotalSupplyChange';
 import Earnings from './components/Earnings';
 import BountyDistribution from './components/BountyDistribution';
+import Tasks from './components/Tasks';
 import TasksList from './components/TasksList';
 import PeriodPointsDistribution from './components/PeriodPointsDistribution';
 import PeriodDistributionSummary from './components/PeriodDistributionSummary';
@@ -386,6 +387,7 @@ class App extends Component {
               render={props => (
                 <div style={{ marginBottom: 50 }}>
                   <BountyDistribution contractName="Token" />
+                  <Tasks />
                   {owner === userAddress ? <CreateTask /> : null}
                 </div>
               )}
