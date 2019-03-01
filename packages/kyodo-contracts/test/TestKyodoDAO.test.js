@@ -2,7 +2,7 @@ import truffleAssert from 'truffle-assertions';
 import { shouldFail } from 'openzeppelin-test-helpers';
 import { getTokenArgs } from '../lib/colonyNetwork/helpers/test-helper';
 import { addNecessaryDomains, getDomainBalance } from '../helpers/test-helper';
-var getColonyClient = require('./getColonyClient');
+import getColonyClient from '../migrations/getColonyClient';
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -562,7 +562,7 @@ contract('KyodoDAO_V1', function([owner, anotherAccount]) {
         colonyAddress,
       );
 
-      const hasAdminRole = colonyClient.hasUserRole({
+      const { hasRole: hasAdminRole } = await colonyClient.hasUserRole.call({
         user: owner,
         role: 'ADMIN',
       });
