@@ -2,7 +2,6 @@ import axios from 'axios';
 import moment from 'moment';
 import orderBy from 'lodash/orderBy';
 import { convertAmount } from '@kyodo/shared/token';
-import { drizzle } from './store';
 import { getDecimals, getContract } from './reducers';
 import {
   all,
@@ -429,7 +428,6 @@ function* createTask({ payload }) {
     amount: convertedAmount,
     ipfsHash,
   });
-
 }
 
 function* watchCreateTask() {
