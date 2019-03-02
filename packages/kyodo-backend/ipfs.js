@@ -17,7 +17,10 @@ export const generateIpfsHash = async spec => {
     .decode(hash)
     .slice(2)
     .toString('hex')}`;
-  return convertedHash;
+  return {
+    hash,
+    convertedHash,
+  };
 };
 
 export const getTaskSpecification = async value => {

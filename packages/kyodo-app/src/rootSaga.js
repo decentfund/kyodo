@@ -17,6 +17,7 @@ import {
 } from 'redux-saga/effects';
 import { drizzleSagas } from 'drizzle';
 import {
+  BACKEND_URI,
   LOAD_RATE_REQUEST,
   LOAD_RATE_SUCCESS,
   LOAD_PERIOD_TASKS_REQUEST,
@@ -51,9 +52,7 @@ import {
 import { BASE_CURRENCY } from './constants';
 import * as fromActions from './actions';
 import * as fromNetworkHelpers from './helpers/network';
-
-const BACKEND_URI =
-  process.env.REACT_APP_BACKEND_URI || 'http://kyodo.decent.fund:3666';
+import { getTaskIpfsHash } from './sagas/task';
 
 function* loadRate({ currency }) {
   try {
@@ -413,8 +412,7 @@ function* getTask({ payload: taskId }) {
 }
 
 function* createTask({ payload }) {
-  const apiURI = `${BACKEND_URI}/task/hash`;
-  const { data: ipfsHash } = yield call(axios.post, apiURI, payload);
+  const ipfsHash = yield call(getTaskIpfsHash, payload);
 
   // destructuring payload
   const { domain, amount } = payload;
