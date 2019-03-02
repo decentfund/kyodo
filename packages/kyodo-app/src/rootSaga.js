@@ -52,7 +52,7 @@ import {
 import { BASE_CURRENCY } from './constants';
 import * as fromActions from './actions';
 import * as fromNetworkHelpers from './helpers/network';
-import { getTaskIpfsHash } from './sagas/task';
+import * as fromTaskSagas from './sagas/task';
 
 function* loadRate({ currency }) {
   try {
@@ -412,7 +412,7 @@ function* getTask({ payload: taskId }) {
 }
 
 function* createTask({ payload }) {
-  const ipfsHash = yield call(getTaskIpfsHash, payload);
+  const ipfsHash = yield call(fromTaskSagas.getTaskIpfsHash, payload);
 
   // destructuring payload
   const { domain, amount } = payload;
@@ -424,22 +424,12 @@ function* createTask({ payload }) {
   // get BN number for amount
   const convertedAmount = convertAmount(amount, decimals);
 
-  const key = yield call(
-    drizzle.contracts.KyodoDAO.methods.createTask.cacheSend,
+  yield call(fromTaskSagas.createTask, {
     domain,
+    amount: convertedAmount,
     ipfsHash,
-    convertedAmount,
-    { from: state.accounts[0] },
-  );
-
-  // FIXME: Should subscribe to new blocks to wait till transaction resolves
-  // Currently just storing transaction key in state
-
-  // FIXME: What if user rejected transaction?
-  yield put({
-    type: CREATE_TASK_STARTED,
-    payload: key,
   });
+
 }
 
 function* watchCreateTask() {
