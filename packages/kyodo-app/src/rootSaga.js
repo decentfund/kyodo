@@ -422,6 +422,13 @@ function* getTask({ payload: taskId }) {
       type: GET_TASK_OPERATION_SUCCESS,
       payload: { ...operation, taskId },
     });
+
+    if (colonyDetails.potId) {
+      yield put({
+        type: GET_POT_BALANCE_REQUEST,
+        payload: colonyDetails.potId,
+      });
+    }
   } catch (e) {
     console.log(e);
   }

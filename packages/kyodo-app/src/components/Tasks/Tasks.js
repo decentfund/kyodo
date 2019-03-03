@@ -5,6 +5,8 @@ import { Header } from '../Page';
 import { Header as TableHeader } from '../Table';
 import Task from './Task';
 import { getTasks } from '../../actions';
+import { getPots } from '../../reducers';
+import { formatCurrency, formatDecimals } from '../../helpers/format';
 
 const StyledTaskTitle = styled.div`
   margin-right: 20px;
@@ -31,7 +33,7 @@ const StyledTips = styled.div`
 
 class Tasks extends PureComponent {
   render() {
-    const { count, items = [], domains = [] } = this.props;
+    const { count, items = [], domains = [], pots } = this.props;
     const getDomainName = id => {
       const soughtDomain = domains.find(d => d.potId === id);
       if (soughtDomain) return soughtDomain.name;
@@ -47,10 +49,20 @@ class Tasks extends PureComponent {
             <StyledTaskTitle>task</StyledTaskTitle>
             <StyledAssignee>assignee</StyledAssignee>
             <StyledDomainCode>domain</StyledDomainCode>
-            <StyledTips>amount</StyledTips>
+            <StyledTips>amount, DF</StyledTips>
           </TableHeader>
           {Object.keys(items).map(id => (
-            <Task {...items[id]} domain={getDomainName(items[id].domainId)} />
+            <Task
+              {...items[id]}
+              domain={getDomainName(items[id].domainId)}
+              amount={
+                pots[items[id].potId] &&
+                formatCurrency(
+                  formatDecimals(pots[items[id].potId].balance, 18),
+                  'DF',
+                )
+              }
+            />
           ))}
         </div>
         <div>Task count: {count}</div>
@@ -63,6 +75,7 @@ const mapStateToProps = state => ({
   count: state.tasks.count,
   items: state.tasks.items,
   domains: state.colony.domains,
+  pots: getPots(state),
 });
 
 export default connect(
