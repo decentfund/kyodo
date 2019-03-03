@@ -36,6 +36,21 @@ const StyledTask = styled.div`
   margin-bottom: 15px;
 `;
 
+const formatAssigneeAddress = assignee => {
+  const status = [];
+  if (assignee.address) {
+    status.push(assignee.accepted ? '✅' : '⏰');
+  }
+  if (assignee.loaded && assignee.address) {
+    status.push(assignee.address);
+  } else if (assignee.loading) {
+    status.push('loading...');
+  } else {
+    status.push('-');
+  }
+  return status.join(' ');
+};
+
 function Task({
   id,
   title,
@@ -59,7 +74,7 @@ function Task({
           {description}
         </StyledTaskTitle>
         <StyledAssignee>
-          {assignee.loading ? 'loading...' : assignee.address || '-'}{' '}
+          {formatAssigneeAddress(assignee)}{' '}
           {assignee.loaded && !assignee.address ? (
             <button onClick={() => toggleAssign(!isAssigning)}>Change</button>
           ) : null}
