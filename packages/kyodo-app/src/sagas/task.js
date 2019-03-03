@@ -3,10 +3,12 @@ import { call, select, put, apply } from 'redux-saga/effects';
 import { BACKEND_URI, CREATE_TASK_SUCCESS } from '../constants';
 
 export function* getTaskIpfsHash(payload) {
+  // Get title, description and amount to get ipfs hash
+  const { amount, title, description } = payload;
   const apiURI = `${BACKEND_URI}/task/hash`;
   const {
     data: { hash: ipfsHash },
-  } = yield call(axios.post, apiURI, payload);
+  } = yield call(axios.post, apiURI, { amount, title, description });
 
   return ipfsHash;
 }
