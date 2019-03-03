@@ -178,7 +178,7 @@ export const setTaskRole = async (colonyClient, taskId, role, user) => {
   return taskId;
 };
 
-export function* createTask({ domain, ipfsHash, amount }) {
+export function* createTask({ domain, ipfsHash, amount, assignee }) {
   // TODO: On every step we need to reflect status in store to further display what's happening in the UI
   const {
     colony: { client },
