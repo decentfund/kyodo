@@ -50,7 +50,7 @@ class Tasks extends PureComponent {
             <StyledTips>amount</StyledTips>
           </TableHeader>
           {Object.keys(items).map(id => (
-            <Task domain={getDomainName(items[id].domainId)} {...items[id]} />
+            <Task {...items[id]} domain={getDomainName(items[id].domainId)} />
           ))}
         </div>
         <div>Task count: {count}</div>

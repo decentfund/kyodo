@@ -42,6 +42,7 @@ function Task({
   description,
   domain,
   amount,
+  assignee,
   // TODO: Temporary compare if manager is either kyodo either current user
   // manager,
   userAddress,
@@ -58,7 +59,10 @@ function Task({
           {description}
         </StyledTaskTitle>
         <StyledAssignee>
-          - <button onClick={() => toggleAssign(!isAssigning)}>Change</button>
+          {assignee.loading ? 'loading...' : assignee.address || '-'}{' '}
+          {assignee.loaded && !assignee.address ? (
+            <button onClick={() => toggleAssign(!isAssigning)}>Change</button>
+          ) : null}
         </StyledAssignee>
         <StyledDomainCode>{domain}</StyledDomainCode>
         <StyledTips>{amount}</StyledTips>

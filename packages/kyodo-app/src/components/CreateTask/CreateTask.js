@@ -22,6 +22,9 @@ const initialState = {
   amount: {
     changed: false,
   },
+  assignee: {
+    changed: false,
+  },
 };
 
 function reducer(state, action) {
@@ -57,7 +60,7 @@ const CreateTask = ({
   createTaskSuccess,
 }) => {
   const [state, dispatch] = useReducer(reducer, task);
-  const { amount, title, description, domain } = state;
+  const { amount, title, description, domain, assignee } = state;
 
   const handleChange = event => {
     const { id, value } = event.target;
@@ -97,6 +100,15 @@ const CreateTask = ({
         width="100%"
         focusable
         height="238px"
+      />
+      <FormInput
+        id="assignee"
+        onChange={handleChange}
+        type="text"
+        label="assignee:"
+        value={assignee.value}
+        width="100%"
+        focusable
       />
       <DomainSelector
         id="domain"

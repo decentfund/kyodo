@@ -47,6 +47,8 @@ import {
   GET_TASK_SUCCESS,
   GET_TASK_MANAGER_REQUEST,
   GET_TASK_MANAGER_SUCCESS,
+  GET_TASK_OPERATION_REQUEST,
+  GET_TASK_OPERATION_SUCCESS,
 } from './constants';
 import { BASE_CURRENCY } from './constants';
 import * as fromActions from './actions';
@@ -404,6 +406,21 @@ function* getTask({ payload: taskId }) {
     yield put({
       type: GET_TASK_MANAGER_SUCCESS,
       payload: { ...manager, taskId },
+    });
+
+    yield put({
+      type: GET_TASK_OPERATION_REQUEST,
+      payload: { taskId },
+    });
+
+    const { data: operation } = yield call(
+      axios.get,
+      `${BACKEND_URI}/task/${taskId}/worker/operation`,
+    );
+
+    yield put({
+      type: GET_TASK_OPERATION_SUCCESS,
+      payload: { ...operation, taskId },
     });
   } catch (e) {
     console.log(e);
