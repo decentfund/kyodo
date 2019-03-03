@@ -14,6 +14,7 @@ import task from './task';
 import tasks from './tasks';
 import tips from './tips';
 import users from './users';
+import pots from './pots';
 import { BASE_CURRENCY } from '../constants';
 import { formatTipsPerDomain } from '@kyodo/shared/tips';
 
@@ -262,7 +263,7 @@ export const getLeaderboardData = createSelector(
 );
 
 export const getDomains = state => state.colony.domains;
-export const getPots = state => state.colony.pots;
+export const getPots = state => state.pots;
 
 export const decimals = state =>
   parseInt(state.contracts.Token.decimals['0x0'].value, 10);
@@ -296,5 +297,6 @@ export default combineReducers({
   tasks,
   tips,
   users,
+  pots,
   ...drizzleReducers,
 });

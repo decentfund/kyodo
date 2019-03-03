@@ -3,13 +3,11 @@ import { connect } from 'react-redux';
 import { Header } from './Page';
 import ContractData from './ContractData';
 import { formatDecimals } from '../helpers/format';
-import { getContract, getDecimals } from '../reducers';
+import { getContract, getDecimals, getPots } from '../reducers';
 
 class BountyDistribution extends PureComponent {
   render() {
     const { domains = [], pots, contractName, decimals } = this.props;
-    console.log('decimals');
-    console.log(decimals);
     return (
       <div>
         <Header>Bounty distribution</Header>
@@ -29,7 +27,7 @@ class BountyDistribution extends PureComponent {
 
 const mapStateToProps = (state, { contractName }) => ({
   domains: state.colony.domains,
-  pots: state.colony.pots,
+  pots: getPots(state),
   decimals: getDecimals(getContract(contractName)(state)),
 });
 
