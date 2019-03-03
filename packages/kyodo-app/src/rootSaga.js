@@ -431,7 +431,7 @@ function* createTask({ payload }) {
   const ipfsHash = yield call(fromTaskSagas.getTaskIpfsHash, payload);
 
   // destructuring payload
-  const { domain, amount } = payload;
+  const { domain, amount, assignee } = payload;
 
   // get tokn decimals
   const state = yield select();
@@ -444,6 +444,7 @@ function* createTask({ payload }) {
     domain,
     amount: convertedAmount,
     ipfsHash,
+    assignee,
   });
 }
 
