@@ -49,6 +49,7 @@ import {
   GET_TASK_MANAGER_SUCCESS,
   GET_TASK_OPERATION_REQUEST,
   GET_TASK_OPERATION_SUCCESS,
+  GET_TASK_DETAILS_SUCCESS,
 } from './constants';
 import { BASE_CURRENCY } from './constants';
 import * as fromActions from './actions';
@@ -421,6 +422,14 @@ function* getTask({ payload: taskId }) {
     yield put({
       type: GET_TASK_OPERATION_SUCCESS,
       payload: { ...operation, taskId },
+    });
+
+    // All details to display tosks are loaded
+    yield put({
+      type: GET_TASK_DETAILS_SUCCESS,
+      payload: {
+        id: taskId,
+      },
     });
 
     if (colonyDetails.potId) {

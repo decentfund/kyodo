@@ -6,6 +6,7 @@ import { createSelector } from 'reselect';
 import get from 'lodash/get';
 import groupBy from 'lodash/groupBy';
 import pickBy from 'lodash/pickBy';
+import every from 'lodash/every';
 import balances from './balances';
 import colony from './colony';
 import historical, * as fromHistorical from './historical';
@@ -303,6 +304,8 @@ export const getRelevantTasks = createSelector(
           item.manager.address.toLowerCase() === userAddress),
     ),
 );
+
+export const tasksLoaded = state => every(getTasks(state), task => task.loaded);
 
 export default combineReducers({
   balances,

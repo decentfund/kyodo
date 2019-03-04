@@ -5,7 +5,7 @@ import { Header } from '../Page';
 import { Header as TableHeader } from '../Table';
 import Task from './Task';
 import { getTasks } from '../../actions';
-import { getPots, getRelevantTasks } from '../../reducers';
+import { getPots, getRelevantTasks, tasksLoaded } from '../../reducers';
 import { formatCurrency, formatDecimals } from '../../helpers/format';
 
 const StyledTaskTitle = styled.div`
@@ -33,7 +33,7 @@ const StyledTips = styled.div`
 
 class Tasks extends PureComponent {
   render() {
-    const { items = {}, domains = [], pots } = this.props;
+    const { items = {}, domains = [], pots, tasksLoaded } = this.props;
     const getDomainName = id => {
       const soughtDomain = domains.find(d => d.potId === id);
       if (soughtDomain) return soughtDomain.name;
@@ -50,20 +50,22 @@ class Tasks extends PureComponent {
             <StyledDomainCode>domain</StyledDomainCode>
             <StyledTips>amount, DF</StyledTips>
           </TableHeader>
-          {Object.keys(items).map(id => (
-            <Task
-              {...items[id]}
-              domain={getDomainName(items[id].domainId)}
-              key={id}
-              amount={
-                pots[items[id].potId] &&
-                formatCurrency(
-                  formatDecimals(pots[items[id].potId].balance, 18),
-                  'DF',
-                )
-              }
-            />
-          ))}
+          {!tasksLoaded
+            ? 'loading...'
+            : Object.keys(items).map(id => (
+                <Task
+                  {...items[id]}
+                  domain={getDomainName(items[id].domainId)}
+                  key={id}
+                  amount={
+                    pots[items[id].potId] &&
+                    formatCurrency(
+                      formatDecimals(pots[items[id].potId].balance, 18),
+                      'DF',
+                    )
+                  }
+                />
+              ))}
         </div>
         <div>Task count: {Object.keys(items).length}</div>
       </div>
@@ -75,6 +77,7 @@ const mapStateToProps = state => ({
   items: getRelevantTasks(state),
   domains: state.colony.domains,
   pots: getPots(state),
+  tasksLoaded: tasksLoaded(state),
 });
 
 export default connect(

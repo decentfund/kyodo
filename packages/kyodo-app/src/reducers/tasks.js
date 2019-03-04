@@ -6,6 +6,7 @@ import {
   GET_TASK_MANAGER_SUCCESS,
   GET_TASK_OPERATION_REQUEST,
   GET_TASK_OPERATION_SUCCESS,
+  GET_TASK_DETAILS_SUCCESS,
 } from '../constants';
 
 const assignee = (action, state) => {
@@ -86,6 +87,16 @@ export default (
           [action.payload.id]: {
             ...state.items[action.payload.id],
             ...action.payload,
+          },
+        },
+      };
+    case GET_TASK_DETAILS_SUCCESS:
+      return {
+        ...state,
+        items: {
+          ...state.items,
+          [action.payload.id]: {
+            ...state.items[action.payload.id],
             loading: false,
             loaded: true,
           },
