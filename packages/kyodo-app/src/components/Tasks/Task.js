@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
-import { getContract, getOwner } from '../../reducers';
+import { getCurrentUserAddress } from '../../reducers';
 
 const StyledTaskTitle = styled.div`
   margin-right: 20px;
@@ -58,13 +58,9 @@ function Task({
   domain,
   amount,
   assignee,
-  // TODO: Temporary compare if manager is either kyodo either current user
-  // manager,
   userAddress,
-  owner,
 }) {
   const [isAssigning, toggleAssign] = useState(false);
-  if (owner !== userAddress) return null;
   return (
     <div>
       <StyledTask key={id}>
@@ -88,8 +84,7 @@ function Task({
 }
 
 const mapStateToProps = state => ({
-  userAddress: state.accounts[0],
-  owner: getOwner(getContract('KyodoDAO')(state)),
+  userAddress: getCurrentUserAddress(state),
 });
 
 export default connect(mapStateToProps)(React.memo(Task));

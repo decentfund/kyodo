@@ -50,6 +50,8 @@ const manager = (action, state) => {
   }
 };
 
+export const getTasks = state => state.items;
+
 export default (
   state = {
     count: 0,

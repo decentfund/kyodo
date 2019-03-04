@@ -5,7 +5,7 @@ import { Header } from '../Page';
 import { Header as TableHeader } from '../Table';
 import Task from './Task';
 import { getTasks } from '../../actions';
-import { getPots } from '../../reducers';
+import { getPots, getRelevantTasks } from '../../reducers';
 import { formatCurrency, formatDecimals } from '../../helpers/format';
 
 const StyledTaskTitle = styled.div`
@@ -33,14 +33,13 @@ const StyledTips = styled.div`
 
 class Tasks extends PureComponent {
   render() {
-    const { count, items = [], domains = [], pots } = this.props;
+    const { items = {}, domains = [], pots } = this.props;
     const getDomainName = id => {
       const soughtDomain = domains.find(d => d.potId === id);
       if (soughtDomain) return soughtDomain.name;
       return null;
     };
 
-    // TODO: Can apply
     return (
       <div>
         <Header>Tasks</Header>
@@ -55,6 +54,7 @@ class Tasks extends PureComponent {
             <Task
               {...items[id]}
               domain={getDomainName(items[id].domainId)}
+              key={id}
               amount={
                 pots[items[id].potId] &&
                 formatCurrency(
@@ -65,15 +65,14 @@ class Tasks extends PureComponent {
             />
           ))}
         </div>
-        <div>Task count: {count}</div>
+        <div>Task count: {Object.keys(items).length}</div>
       </div>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  count: state.tasks.count,
-  items: state.tasks.items,
+  items: getRelevantTasks(state),
   domains: state.colony.domains,
   pots: getPots(state),
 });
