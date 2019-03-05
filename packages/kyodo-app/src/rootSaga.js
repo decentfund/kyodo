@@ -1,4 +1,5 @@
 import axios from 'axios';
+import web3 from 'web3';
 import moment from 'moment';
 import orderBy from 'lodash/orderBy';
 import { convertAmount } from '@kyodo/shared/token';
@@ -463,6 +464,7 @@ function* acceptTask({ payload: taskId }) {
     tasks: { items: tasks },
   } = yield select();
   const operationJSON = tasks[taskId].assignee.operationJSON;
+  const specificationHash = tasks[taskId].specificationHash;
 
   yield call(
     fromTaskSagas.signSetTaskWorkerRole,
@@ -472,6 +474,29 @@ function* acceptTask({ payload: taskId }) {
     taskId,
   );
   yield call(fromTaskSagas.loadWorker, taskId);
+
+  // Set salt value
+  const salt = web3.utils.sha3('secret');
+
+  const { secret } = yield call(
+    [client.generateSecret, client.generateSecret.call],
+    {
+      salt,
+      value: 3,
+    },
+  );
+  yield apply(
+    client.submitTaskDeliverableAndRating,
+    client.submitTaskDeliverableAndRating.send,
+    [
+      {
+        taskId,
+        deliverableHash: specificationHash,
+        secret,
+      },
+      { gasLimit: 400000 },
+    ],
+  );
 }
 
 function* watchAcceptTask() {
