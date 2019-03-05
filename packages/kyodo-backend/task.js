@@ -34,6 +34,10 @@ export const getAssignmentOperation = async params => {
   return await RoleAssignment.get(params);
 };
 
+export const acceptAssignmentOperation = async params => {
+  return await RoleAssignment.accept(params);
+};
+
 export const getTasks = async (req, res) => {
   let tasks = await Task.find((err, tasks) => {
     if (err) return console.error(err);

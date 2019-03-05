@@ -19,6 +19,16 @@ roleAssignmentSchema.statics.get = async ({ role, taskId }) => {
   return assignment;
 };
 
+roleAssignmentSchema.statics.accept = async ({ role, taskId }) => {
+  const assignment = await RoleAssignment.findOne({
+    taskId,
+    role,
+  });
+  assignment.accepted = true;
+  await assignment.save();
+  return assignment;
+};
+
 const RoleAssignment = mongoose.model('RoleAssignment', roleAssignmentSchema);
 
 export default RoleAssignment;

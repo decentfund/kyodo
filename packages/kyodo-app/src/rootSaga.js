@@ -50,6 +50,8 @@ import {
   GET_TASK_WORKER_REQUEST,
   GET_TASK_WORKER_SUCCESS,
   GET_TASK_DETAILS_SUCCESS,
+  ACCEPT_TASK_REQUEST,
+  ACCEPT_TASK_SUCCESS,
 } from './constants';
 import { BASE_CURRENCY } from './constants';
 import * as fromActions from './actions';
@@ -455,6 +457,27 @@ function* watchCreateTask() {
   yield takeLatest(CREATE_TASK_REQUEST, createTask);
 }
 
+function* acceptTask({ payload: taskId }) {
+  const {
+    colony: { client },
+    tasks: { items: tasks },
+  } = yield select();
+  const operationJSON = tasks[taskId].assignee.operationJSON;
+
+  yield call(
+    fromTaskSagas.signSetTaskWorkerRole,
+    client,
+    operationJSON,
+    client.adapter.wallet._address.toLowerCase(),
+    taskId,
+  );
+  yield call(fromTaskSagas.loadWorker, taskId);
+}
+
+function* watchAcceptTask() {
+  yield takeLatest(ACCEPT_TASK_REQUEST, acceptTask);
+}
+
 function* createTaskSuccess() {
   yield put(fromActions.getTasks());
   yield getDomainsBalances();
@@ -480,6 +503,7 @@ export default function* root() {
     watchGetTasks(),
     watchCreateTask(),
     watchCreateTaskSuccess(),
+    watchAcceptTask(),
     fromTaskSagas.watchAssignWorker(),
   ]);
 }

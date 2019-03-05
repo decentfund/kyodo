@@ -45,10 +45,11 @@ export const signSetTaskWorkerRole = async (
   // check for missing signees
   if (setTaskWorkerRoleOperation.missingSignees.length === 0) {
     // send set task worker role operation
-    const tx = await setTaskWorkerRoleOperation.send();
+    const tx = await setTaskWorkerRoleOperation.send({ gasLimit: 400000 });
 
     // mark task on backend
-    localStorage.removeItem('setTaskWorkerRoleOperationJSON');
+    const apiURI = `${BACKEND_URI}/task/${taskId}/worker/accept`;
+    await axios.post(apiURI);
 
     // check unsuccessful
     if (!tx.successful) {

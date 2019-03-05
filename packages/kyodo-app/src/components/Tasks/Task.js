@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { getCurrentUserAddress } from '../../reducers';
-import { assignWorker } from '../../actions';
+import { acceptTask, assignWorker } from '../../actions';
 
 const StyledTaskTitle = styled.div`
   margin-right: 20px;
@@ -61,6 +61,7 @@ function Task({
   assignee,
   manager,
   userAddress,
+  acceptTask,
   assignWorker,
 }) {
   const [isAssigning, toggleAssign] = useState(false);
@@ -77,6 +78,11 @@ function Task({
           {formatAssigneeAddress(assignee)}{' '}
           {assignee.loaded && userAddress === manager.address.toLowerCase() ? (
             <button onClick={() => toggleAssign(!isAssigning)}>Change</button>
+          ) : null}
+          {assignee.loaded &&
+          userAddress === assignee.address &&
+          !assignee.accepted ? (
+            <button onClick={() => acceptTask(id)}>Accept</button>
           ) : null}
         </StyledAssignee>
         <StyledDomainCode>{domain}</StyledDomainCode>
@@ -104,4 +110,7 @@ const mapStateToProps = state => ({
   userAddress: getCurrentUserAddress(state),
 });
 
-export default connect(mapStateToProps, { assignWorker })(React.memo(Task));
+export default connect(
+  mapStateToProps,
+  { acceptTask, assignWorker },
+)(React.memo(Task));

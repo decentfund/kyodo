@@ -6,6 +6,7 @@ import {
   getTasks,
   storeAssignmentOperation,
   getAssignmentOperation,
+  acceptAssignmentOperation,
 } from './task';
 import { getAllTips } from './tip';
 import { getAllDomains, getDomainById } from './domain';
@@ -44,6 +45,18 @@ router
       await storeAssignmentOperation({
         operationJSON,
         address,
+        role: role.toUpperCase(),
+        taskId: id,
+      });
+      return res.status(200).send();
+    } catch (err) {
+      return res.status(400).send(err);
+    }
+  })
+  .post('/task/:id/:role/accept', async (req, res) => {
+    try {
+      const { id, role } = req.params;
+      await acceptAssignmentOperation({
         role: role.toUpperCase(),
         taskId: id,
       });

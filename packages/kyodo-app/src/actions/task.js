@@ -20,6 +20,13 @@ export function getTaskManager(taskId) {
   };
 }
 
+export function acceptTask(taskId) {
+  return {
+    type: types.ACCEPT_TASK_REQUEST,
+    payload: taskId,
+  };
+}
+
 export function assignWorker({ taskId, address }) {
   return {
     type: types.ASSIGN_WORKER_REQUEST,
