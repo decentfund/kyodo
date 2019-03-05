@@ -47,8 +47,8 @@ import {
   GET_TASK_SUCCESS,
   GET_TASK_MANAGER_REQUEST,
   GET_TASK_MANAGER_SUCCESS,
-  GET_TASK_OPERATION_REQUEST,
-  GET_TASK_OPERATION_SUCCESS,
+  GET_TASK_WORKER_REQUEST,
+  GET_TASK_WORKER_SUCCESS,
   GET_TASK_DETAILS_SUCCESS,
 } from './constants';
 import { BASE_CURRENCY } from './constants';
@@ -409,20 +409,7 @@ function* getTask({ payload: taskId }) {
       payload: { ...manager, taskId },
     });
 
-    yield put({
-      type: GET_TASK_OPERATION_REQUEST,
-      payload: { taskId },
-    });
-
-    const { data: operation } = yield call(
-      axios.get,
-      `${BACKEND_URI}/task/${taskId}/worker/operation`,
-    );
-
-    yield put({
-      type: GET_TASK_OPERATION_SUCCESS,
-      payload: { ...operation, taskId },
-    });
+    yield call(fromTaskSagas.loadWorker, taskId);
 
     // All details to display tosks are loaded
     yield put({

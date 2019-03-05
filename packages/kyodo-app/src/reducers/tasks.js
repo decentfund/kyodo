@@ -4,21 +4,21 @@ import {
   GET_TASK_SUCCESS,
   GET_TASK_MANAGER_REQUEST,
   GET_TASK_MANAGER_SUCCESS,
-  GET_TASK_OPERATION_REQUEST,
-  GET_TASK_OPERATION_SUCCESS,
+  GET_TASK_WORKER_REQUEST,
+  GET_TASK_WORKER_SUCCESS,
   GET_TASK_DETAILS_SUCCESS,
 } from '../constants';
 
 const assignee = (action, state) => {
   switch (action.type) {
-    case GET_TASK_OPERATION_SUCCESS:
+    case GET_TASK_WORKER_SUCCESS:
       return {
         ...state,
         ...action.payload,
         loading: false,
         loaded: true,
       };
-    case GET_TASK_OPERATION_REQUEST:
+    case GET_TASK_WORKER_REQUEST:
       return {
         ...state,
         ...action.payload,
@@ -117,8 +117,8 @@ export default (
           },
         },
       };
-    case GET_TASK_OPERATION_REQUEST:
-    case GET_TASK_OPERATION_SUCCESS:
+    case GET_TASK_WORKER_REQUEST:
+    case GET_TASK_WORKER_SUCCESS:
       return {
         ...state,
         items: {

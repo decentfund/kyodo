@@ -1,6 +1,11 @@
 import axios from 'axios';
 import { call, select, put, apply } from 'redux-saga/effects';
-import { BACKEND_URI, CREATE_TASK_SUCCESS } from '../constants';
+import {
+  BACKEND_URI,
+  CREATE_TASK_SUCCESS,
+  GET_TASK_WORKER_REQUEST,
+  GET_TASK_WORKER_SUCCESS,
+} from '../constants';
 
 export function* getTaskIpfsHash(payload) {
   // Get title, description and amount to get ipfs hash
@@ -269,4 +274,40 @@ export async function signTask(colonyClient, taskId) {
 
   // return id
   return taskId;
+}
+
+export function* loadWorker(taskId) {
+  const {
+    colony: { client },
+  } = yield select();
+
+  yield put({
+    type: GET_TASK_WORKER_REQUEST,
+    payload: { taskId },
+  });
+
+  let worker = yield call([client.getTaskRole, client.getTaskRole.call], {
+    taskId,
+    role: 'WORKER',
+  });
+
+  let workerPayload = {};
+
+  if (!worker.address) {
+    const { data } = yield call(
+      axios.get,
+      `${BACKEND_URI}/task/${taskId}/worker/operation`,
+    );
+    workerPayload = data;
+  } else {
+    workerPayload = {
+      ...worker,
+      accepted: true,
+    };
+  }
+
+  yield put({
+    type: GET_TASK_WORKER_SUCCESS,
+    payload: { ...workerPayload, taskId },
+  });
 }
