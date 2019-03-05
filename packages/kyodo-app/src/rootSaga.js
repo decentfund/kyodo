@@ -480,5 +480,6 @@ export default function* root() {
     watchGetTasks(),
     watchCreateTask(),
     watchCreateTaskSuccess(),
+    fromTaskSagas.watchAssignWorker(),
   ]);
 }

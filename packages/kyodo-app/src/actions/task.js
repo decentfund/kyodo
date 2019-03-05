@@ -19,3 +19,10 @@ export function getTaskManager(taskId) {
     payload: taskId,
   };
 }
+
+export function assignWorker({ taskId, address }) {
+  return {
+    type: types.ASSIGN_WORKER_REQUEST,
+    payload: { taskId, address },
+  };
+}

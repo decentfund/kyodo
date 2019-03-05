@@ -1,10 +1,12 @@
 import axios from 'axios';
-import { call, select, put, apply } from 'redux-saga/effects';
+import { call, select, put, apply, takeEvery } from 'redux-saga/effects';
 import {
   BACKEND_URI,
   CREATE_TASK_SUCCESS,
   GET_TASK_WORKER_REQUEST,
   GET_TASK_WORKER_SUCCESS,
+  ASSIGN_WORKER_REQUEST,
+  ASSIGN_WORKER_SUCCESS,
 } from '../constants';
 
 export function* getTaskIpfsHash(payload) {
@@ -60,10 +62,8 @@ export const signSetTaskWorkerRole = async (
     // save operation to backend
     const apiURI = `${BACKEND_URI}/task/${taskId}/worker/assign`;
     await axios.post(apiURI, {
-      role: 'WORKER',
       operationJSON: setTaskWorkerRoleOperationJSON.toString(),
       address,
-      taskId,
     });
   }
 
@@ -213,7 +213,7 @@ export function* createTask({ domain, ipfsHash, amount, assignee }) {
     ]);
 
     if (assignee) {
-      yield call(setTaskRole, client, taskId, 'WORKER', assignee);
+      yield call(assignWorker, { taskId, address: assignee });
     }
 
     yield put({
@@ -310,4 +310,17 @@ export function* loadWorker(taskId) {
     type: GET_TASK_WORKER_SUCCESS,
     payload: { ...workerPayload, taskId },
   });
+}
+
+function* assignWorker({ payload: { taskId, address } }) {
+  const {
+    colony: { client },
+  } = yield select();
+
+  yield call(setTaskRole, client, taskId, 'WORKER', address);
+  yield call(loadWorker, taskId);
+}
+
+export function* watchAssignWorker() {
+  yield takeEvery(ASSIGN_WORKER_REQUEST, assignWorker);
 }

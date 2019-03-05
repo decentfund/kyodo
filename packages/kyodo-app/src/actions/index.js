@@ -64,4 +64,8 @@ export function getTasks() {
   };
 }
 
-export { createTask, createTaskSuccess } from './task';
+export {
+  createTask,
+  createTaskSuccess,
+  assignWorker,
+} from './task';

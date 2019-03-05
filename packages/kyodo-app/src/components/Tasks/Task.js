@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { getCurrentUserAddress } from '../../reducers';
+import { assignWorker } from '../../actions';
 
 const StyledTaskTitle = styled.div`
   margin-right: 20px;
@@ -58,9 +59,12 @@ function Task({
   domain,
   amount,
   assignee,
+  manager,
   userAddress,
+  assignWorker,
 }) {
   const [isAssigning, toggleAssign] = useState(false);
+  const [stateAssignee, handleChange] = useState(undefined);
   return (
     <div>
       <StyledTask key={id}>
@@ -71,14 +75,27 @@ function Task({
         </StyledTaskTitle>
         <StyledAssignee>
           {formatAssigneeAddress(assignee)}{' '}
-          {assignee.loaded && !assignee.address ? (
+          {assignee.loaded && userAddress === manager.address.toLowerCase() ? (
             <button onClick={() => toggleAssign(!isAssigning)}>Change</button>
           ) : null}
         </StyledAssignee>
         <StyledDomainCode>{domain}</StyledDomainCode>
         <StyledTips>{amount}</StyledTips>
       </StyledTask>
-      {isAssigning ? <input type="text" /> : null}{' '}
+      {isAssigning ? (
+        <div>
+          <input
+            type="text"
+            value={stateAssignee || assignee}
+            onChange={e => handleChange(e.target.value)}
+          />
+          <button
+            onClick={() => assignWorker({ address: stateAssignee, taskId: id })}
+          >
+            Submit
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -87,4 +104,4 @@ const mapStateToProps = state => ({
   userAddress: getCurrentUserAddress(state),
 });
 
-export default connect(mapStateToProps)(React.memo(Task));
+export default connect(mapStateToProps, { assignWorker })(React.memo(Task));
