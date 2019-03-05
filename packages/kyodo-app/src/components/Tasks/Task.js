@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { getCurrentUserAddress } from '../../reducers';
-import { acceptTask, assignWorker } from '../../actions';
+import { acceptTask, assignWorker, submitTaskWorkRating } from '../../actions';
 
 const StyledTaskTitle = styled.div`
   margin-right: 20px;
@@ -63,6 +63,8 @@ function Task({
   userAddress,
   acceptTask,
   assignWorker,
+  ratingsCount,
+  submitTaskWorkRating,
 }) {
   const [isAssigning, toggleAssign] = useState(false);
   const [stateAssignee, handleChange] = useState(undefined);
@@ -102,6 +104,17 @@ function Task({
           </button>
         </div>
       ) : null}
+      {ratingsCount > 0 &&
+      ratingsCount < 2 &&
+      userAddress === manager.address.toLowerCase() ? (
+        <button
+          onClick={() =>
+            submitTaskWorkRating({ taskId: id, rating: 3, role: 'WORKER' })
+          }
+        >
+          Set top rating
+        </button>
+      ) : null}
     </div>
   );
 }
@@ -112,5 +125,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { acceptTask, assignWorker },
+  { acceptTask, assignWorker, submitTaskWorkRating },
 )(React.memo(Task));

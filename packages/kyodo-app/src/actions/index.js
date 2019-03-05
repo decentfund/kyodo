@@ -69,4 +69,5 @@ export {
   createTaskSuccess,
   acceptTask,
   assignWorker,
+  submitTaskWorkRating,
 } from './task';

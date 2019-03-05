@@ -7,6 +7,7 @@ import {
   GET_TASK_WORKER_REQUEST,
   GET_TASK_WORKER_SUCCESS,
   GET_TASK_DETAILS_SUCCESS,
+  GET_TASK_RATINGS_COUNT_SUCCESS,
 } from '../constants';
 
 const assignee = (action, state) => {
@@ -129,6 +130,17 @@ export default (
               action,
               state.items[action.payload.taskId].assignee,
             ),
+          },
+        },
+      };
+    case GET_TASK_RATINGS_COUNT_SUCCESS:
+      return {
+        ...state,
+        items: {
+          ...state.items,
+          [action.payload.taskId]: {
+            ...state.items[action.payload.taskId],
+            ratingsCount: action.payload.count,
           },
         },
       };

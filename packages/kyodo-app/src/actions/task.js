@@ -33,3 +33,10 @@ export function assignWorker({ taskId, address }) {
     payload: { taskId, address },
   };
 }
+
+export function submitTaskWorkRating(payload) {
+  return {
+    type: types.SUBMIT_TASK_WORK_RATING_REQUEST,
+    payload,
+  };
+}

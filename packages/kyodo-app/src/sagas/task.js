@@ -1,12 +1,25 @@
 import axios from 'axios';
-import { call, select, put, apply, takeEvery } from 'redux-saga/effects';
+import web3 from 'web3';
 import {
+  call,
+  select,
+  put,
+  apply,
+  takeEvery,
+  takeLatest,
+} from 'redux-saga/effects';
+import {
+  ACCEPT_TASK_REQUEST,
+  ACCEPT_TASK_SUCCESS,
+  ASSIGN_WORKER_REQUEST,
+  ASSIGN_WORKER_SUCCESS,
   BACKEND_URI,
   CREATE_TASK_SUCCESS,
   GET_TASK_WORKER_REQUEST,
   GET_TASK_WORKER_SUCCESS,
-  ASSIGN_WORKER_REQUEST,
-  ASSIGN_WORKER_SUCCESS,
+  SUBMIT_TASK_WORK_RATING_REQUEST,
+  SUBMIT_TASK_WORK_RATING_SUCCESS,
+  GET_TASK_RATINGS_COUNT_SUCCESS,
 } from '../constants';
 
 export function* getTaskIpfsHash(payload) {
@@ -326,4 +339,93 @@ function* assignWorker({ payload: { taskId, address } }) {
 
 export function* watchAssignWorker() {
   yield takeEvery(ASSIGN_WORKER_REQUEST, assignWorker);
+}
+
+function* submitTaskWorkRating({ payload: { rating, taskId, role } }) {
+  const {
+    colony: { client },
+  } = yield select();
+
+  const secret = yield call(generateSecret, rating);
+
+  yield apply(client.submitTaskWorkRating, client.submitTaskWorkRating.send, [
+    {
+      taskId,
+      role,
+      secret,
+    },
+    { gasLimit: 400000 },
+  ]);
+
+  const { count } = yield call(
+    [client.getTaskWorkRatings, client.getTaskWorkRatings.call],
+    {
+      taskId,
+    },
+  );
+
+  yield put({
+    type: GET_TASK_RATINGS_COUNT_SUCCESS,
+    payload: { count, taskId },
+  });
+}
+
+export function* watchSubmitTaskWorkRating() {
+  yield takeEvery(SUBMIT_TASK_WORK_RATING_REQUEST, submitTaskWorkRating);
+}
+
+function* generateSecret(value) {
+  const {
+    colony: { client },
+  } = yield select();
+
+  // Set salt value
+  const salt = web3.utils.sha3('secret');
+
+  const { secret } = yield call(
+    [client.generateSecret, client.generateSecret.call],
+    {
+      salt,
+      value,
+    },
+  );
+
+  return secret;
+}
+
+function* acceptTask({ payload: taskId }) {
+  const {
+    colony: { client },
+    tasks: { items: tasks },
+  } = yield select();
+  const operationJSON = tasks[taskId].assignee.operationJSON;
+  const specificationHash = tasks[taskId].specificationHash;
+
+  yield call(
+    signSetTaskWorkerRole,
+    client,
+    operationJSON,
+    client.adapter.wallet._address.toLowerCase(),
+    taskId,
+  );
+  yield call(loadWorker, taskId);
+
+  const secret = yield call(generateSecret, 3);
+
+  yield apply(
+    client.submitTaskDeliverableAndRating,
+    client.submitTaskDeliverableAndRating.send,
+    [
+      {
+        taskId,
+        deliverableHash: specificationHash,
+        secret,
+      },
+      { gasLimit: 400000 },
+    ],
+  );
+}
+
+export function* watchAcceptTask() {
+  yield takeLatest(ACCEPT_TASK_REQUEST, acceptTask);
 }

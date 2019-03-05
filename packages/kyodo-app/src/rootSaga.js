@@ -1,5 +1,4 @@
 import axios from 'axios';
-import web3 from 'web3';
 import moment from 'moment';
 import orderBy from 'lodash/orderBy';
 import { convertAmount } from '@kyodo/shared/token';
@@ -51,8 +50,8 @@ import {
   GET_TASK_WORKER_REQUEST,
   GET_TASK_WORKER_SUCCESS,
   GET_TASK_DETAILS_SUCCESS,
-  ACCEPT_TASK_REQUEST,
-  ACCEPT_TASK_SUCCESS,
+  GET_TASK_RATINGS_COUNT_SUCCESS,
+  GET_TASK_RATINGS_COUNT_REQUEST,
 } from './constants';
 import { BASE_CURRENCY } from './constants';
 import * as fromActions from './actions';
@@ -414,6 +413,23 @@ function* getTask({ payload: taskId }) {
 
     yield call(fromTaskSagas.loadWorker, taskId);
 
+    yield put({
+      type: GET_TASK_RATINGS_COUNT_REQUEST,
+      payload: { taskId },
+    });
+
+    const { count } = yield call(
+      [client.getTaskWorkRatings, client.getTaskWorkRatings.call],
+      {
+        taskId,
+      },
+    );
+
+    yield put({
+      type: GET_TASK_RATINGS_COUNT_SUCCESS,
+      payload: { count, taskId },
+    });
+
     // All details to display tosks are loaded
     yield put({
       type: GET_TASK_DETAILS_SUCCESS,
@@ -458,51 +474,6 @@ function* watchCreateTask() {
   yield takeLatest(CREATE_TASK_REQUEST, createTask);
 }
 
-function* acceptTask({ payload: taskId }) {
-  const {
-    colony: { client },
-    tasks: { items: tasks },
-  } = yield select();
-  const operationJSON = tasks[taskId].assignee.operationJSON;
-  const specificationHash = tasks[taskId].specificationHash;
-
-  yield call(
-    fromTaskSagas.signSetTaskWorkerRole,
-    client,
-    operationJSON,
-    client.adapter.wallet._address.toLowerCase(),
-    taskId,
-  );
-  yield call(fromTaskSagas.loadWorker, taskId);
-
-  // Set salt value
-  const salt = web3.utils.sha3('secret');
-
-  const { secret } = yield call(
-    [client.generateSecret, client.generateSecret.call],
-    {
-      salt,
-      value: 3,
-    },
-  );
-  yield apply(
-    client.submitTaskDeliverableAndRating,
-    client.submitTaskDeliverableAndRating.send,
-    [
-      {
-        taskId,
-        deliverableHash: specificationHash,
-        secret,
-      },
-      { gasLimit: 400000 },
-    ],
-  );
-}
-
-function* watchAcceptTask() {
-  yield takeLatest(ACCEPT_TASK_REQUEST, acceptTask);
-}
-
 function* createTaskSuccess() {
   yield put(fromActions.getTasks());
   yield getDomainsBalances();
@@ -528,7 +499,8 @@ export default function* root() {
     watchGetTasks(),
     watchCreateTask(),
     watchCreateTaskSuccess(),
-    watchAcceptTask(),
+    fromTaskSagas.watchAcceptTask(),
     fromTaskSagas.watchAssignWorker(),
+    fromTaskSagas.watchSubmitTaskWorkRating(),
   ]);
 }
