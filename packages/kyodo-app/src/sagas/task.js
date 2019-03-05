@@ -213,9 +213,11 @@ export function* createTask({ domain, ipfsHash, amount, assignee }) {
     ]);
 
     if (assignee) {
-      yield call(assignWorker, { taskId, address: assignee });
+      yield put({
+        type: ASSIGN_WORKER_REQUEST,
+        payload: { taskId, address: assignee },
+      });
     }
-
     yield put({
       type: CREATE_TASK_SUCCESS,
       payload: taskId,
