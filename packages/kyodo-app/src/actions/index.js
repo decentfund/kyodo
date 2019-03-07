@@ -70,4 +70,5 @@ export {
   acceptTask,
   assignWorker,
   submitTaskWorkRating,
+  claimPayout,
 } from './task';

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import BN from 'bn.js';
 import web3 from 'web3';
 import {
   call,
@@ -20,6 +21,8 @@ import {
   SUBMIT_TASK_WORK_RATING_REQUEST,
   SUBMIT_TASK_WORK_RATING_SUCCESS,
   GET_TASK_RATINGS_COUNT_SUCCESS,
+  CLAIM_PAYOUT_REQUEST,
+  GET_TASK_REQUEST,
 } from '../constants';
 
 export function* getTaskIpfsHash(payload) {
@@ -178,9 +181,6 @@ export const setTaskRole = async (colonyClient, taskId, role, user) => {
       },
     );
 
-    console.log('Set Task Worker Role Operation');
-    console.log(setTaskWorkerRoleOperation);
-
     // serialize operation into JSON format
     const setTaskWorkerRoleOperationJSON = setTaskWorkerRoleOperation.toJSON();
 
@@ -239,6 +239,17 @@ export function* createTask({ domain, ipfsHash, amount, assignee }) {
       type: CREATE_TASK_SUCCESS,
       payload: taskId,
     });
+
+    yield apply(client.setAllTaskPayouts, client.setAllTaskPayouts.send, [
+      {
+        taskId,
+        token: client.tokenClient.contract.address,
+        managerAmount: new BN(0),
+        evaluatorAmount: new BN(0),
+        workerAmount: amount,
+      },
+      { gasLimit: 400000 },
+    ]);
   } catch (e) {
     console.log(e);
   }
@@ -349,7 +360,7 @@ function* submitTaskWorkRating({ payload: { rating, taskId, role } }) {
     colony: { client },
   } = yield select();
 
-  const secret = yield call(generateSecret, rating);
+  const { secret, salt } = yield call(generateSecret, rating);
 
   yield apply(client.submitTaskWorkRating, client.submitTaskWorkRating.send, [
     {
@@ -371,6 +382,16 @@ function* submitTaskWorkRating({ payload: { rating, taskId, role } }) {
     type: GET_TASK_RATINGS_COUNT_SUCCESS,
     payload: { count, taskId },
   });
+
+  yield apply(client.revealTaskWorkRating, client.revealTaskWorkRating.send, [
+    {
+      taskId,
+      role,
+      rating,
+      salt,
+    },
+    { gasLimit: 400000 },
+  ]);
 }
 
 export function* watchSubmitTaskWorkRating() {
@@ -393,7 +414,7 @@ function* generateSecret(value) {
     },
   );
 
-  return secret;
+  return { secret, salt };
 }
 
 function* acceptTask({ payload: taskId }) {
@@ -413,7 +434,7 @@ function* acceptTask({ payload: taskId }) {
   );
   yield call(loadWorker, taskId);
 
-  const secret = yield call(generateSecret, 3);
+  const { secret } = yield call(generateSecret, 3);
 
   yield apply(
     client.submitTaskDeliverableAndRating,
@@ -431,4 +452,44 @@ function* acceptTask({ payload: taskId }) {
 
 export function* watchAcceptTask() {
   yield takeLatest(ACCEPT_TASK_REQUEST, acceptTask);
+}
+
+function* claimPayout({ payload: { taskId } }) {
+  const {
+    colony: { client },
+  } = yield select();
+  const salt = web3.utils.sha3('secret');
+
+  yield apply(client.revealTaskWorkRating, client.revealTaskWorkRating.send, [
+    {
+      taskId,
+      role: 'MANAGER',
+      rating: 3,
+      salt,
+    },
+    { gasLimit: 400000 },
+  ]);
+
+  yield apply(client.finalizeTask, client.finalizeTask.send, [
+    {
+      taskId,
+    },
+    { gasLimit: 700000 },
+  ]);
+
+  yield apply(client.claimPayout, client.claimPayout.send, [
+    { taskId, role: 'WORKER', token: client.tokenClient.contract.address },
+    {
+      gasLimit: 400000,
+    },
+  ]);
+
+  yield put({
+    type: GET_TASK_REQUEST,
+    payload: taskId,
+  });
+}
+
+export function* watchClaimPayout() {
+  yield takeLatest(CLAIM_PAYOUT_REQUEST, claimPayout);
 }

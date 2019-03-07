@@ -502,5 +502,6 @@ export default function* root() {
     fromTaskSagas.watchAcceptTask(),
     fromTaskSagas.watchAssignWorker(),
     fromTaskSagas.watchSubmitTaskWorkRating(),
+    fromTaskSagas.watchClaimPayout(),
   ]);
 }

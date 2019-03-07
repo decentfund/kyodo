@@ -40,3 +40,10 @@ export function submitTaskWorkRating(payload) {
     payload,
   };
 }
+
+export function claimPayout(payload) {
+  return {
+    type: types.CLAIM_PAYOUT_REQUEST,
+    payload,
+  };
+}
