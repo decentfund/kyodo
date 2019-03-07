@@ -195,25 +195,38 @@ export const getTotalUserTips = createSelector(
   }),
 );
 
-export const getTipsByDomain = createSelector(getTipsToUser, tips => {
-  return formatTipsPerDomain(tips);
-});
-
-export const getPointsDistribution = createSelector(getTips, tips => {
-  return formatTipsPerDomain(tips);
-});
-
-const getDomainsFromTips = createSelector(getTips, tips =>
-  Object.keys(
-    tips.reduce((memo, { domain }) => ({ ...memo, [domain]: true }), {}),
-  ),
+export const getTipsByDomain = createSelector(
+  getTipsToUser,
+  tips => {
+    return formatTipsPerDomain(tips);
+  },
 );
 
-const getUsersFromTips = createSelector(getTips, tips =>
-  Object.keys(tips.reduce((memo, { to }) => ({ ...memo, [to]: true }), {})),
+export const getPointsDistribution = createSelector(
+  getTips,
+  tips => {
+    return formatTipsPerDomain(tips);
+  },
 );
 
-const getTipsByUser = createSelector(getTips, tips => groupBy(tips, 'to'));
+const getDomainsFromTips = createSelector(
+  getTips,
+  tips =>
+    Object.keys(
+      tips.reduce((memo, { domain }) => ({ ...memo, [domain]: true }), {}),
+    ),
+);
+
+const getUsersFromTips = createSelector(
+  getTips,
+  tips =>
+    Object.keys(tips.reduce((memo, { to }) => ({ ...memo, [to]: true }), {})),
+);
+
+const getTipsByUser = createSelector(
+  getTips,
+  tips => groupBy(tips, 'to'),
+);
 
 // Should return array of users with their names, addresses, points earned per domains,
 // highest earning in domain, total points earned in current period
