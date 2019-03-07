@@ -7,7 +7,7 @@ import ContractData from './ContractData';
 import { FormattedEth, FormattedEur } from './FormattedCurrency';
 import dfToken from './dftoken.svg';
 
-import { formatDecimals } from '../helpers/format';
+import { formatDecimals, formatCurrency } from '../helpers/format';
 import drizzleConnect from '../utils/drizzleConnect';
 import { getRate, getContract, getTotalSupply, getDecimals } from '../reducers';
 
@@ -89,7 +89,7 @@ class UserBalance extends Component {
           <StyledLabel>my balance</StyledLabel>
           <div>
             <StyledAmount>
-              {balance}
+              {formatCurrency(balance, 'DF', 1)}
               &thinsp;
               <ContractData contract={contractName} method="symbol" />
             </StyledAmount>
