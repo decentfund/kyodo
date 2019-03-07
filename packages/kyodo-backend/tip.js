@@ -76,7 +76,7 @@ export const sendNewTip = async ({
 
 export const getColonyCurrentPeriodId = async () => {
   const colony = await getColonyById(0);
-  const currentPeriodId = colony.periodIds[colony.periodIds.length - 1];
+  const currentPeriodId = colony.periodIds.length - 1;
   return currentPeriodId;
 };
 
