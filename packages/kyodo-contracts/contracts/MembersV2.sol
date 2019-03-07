@@ -9,14 +9,14 @@ contract MembersV2 is MembersV1 {
   )
     external
   {
-    require(nickNameNotExist(_value));
+    require(nickNameNotExist(_value), "alias-not-unique");
     
     bool isAliasEmpty = _value.toSlice().empty();
 
     string storage prevValue = whitelist[msg.sender].alias;
 
     if (isAliasEmpty) {
-      require(!prevValue.toSlice().empty());
+      require(!prevValue.toSlice().empty(), "prev-alias-not-set");
     }
 
     int prevIndex = getNickNameIndex(prevValue);
