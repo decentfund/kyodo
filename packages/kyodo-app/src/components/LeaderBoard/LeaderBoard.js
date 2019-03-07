@@ -69,7 +69,7 @@ const mapStateToProps = state => {
   const data = getLeaderboardData(state);
   return {
     users: data.userStats,
-    domains: data.domains,
+    domains: state.colony.domains,
     domainStats: data.domainStats,
     pointPrice: getPointPrice(state),
     tokenPriceEUR: getRate(state, 'DF', 'EUR'),
