@@ -114,7 +114,9 @@ class Leader extends PureComponent {
           <PointsContainer leader={leader}>{total}</PointsContainer>
         </NamePointsContainer>
         <Earnings>
-          <Earning>{formatCurrency(earnedDFTokens, 'DF', 0)}</Earning>
+          <Earning title={earnedDFTokens}>
+            {formatCurrency(earnedDFTokens, 'DF', 0)}
+          </Earning>
           <Earning>
             {formatCurrency(earnedDFTokens * tokenPriceETH, 'ETH', 2)}
           </Earning>
@@ -131,7 +133,9 @@ class Leader extends PureComponent {
             }
             active={sorting === domain}
           >
-            <span>{earnings[domain] || '0'}</span>
+            <span title={earnings[domain] * pointPrice[domain]}>
+              {earnings[domain] || '0'}
+            </span>
           </DomainPointsContainer>
         ))}
       </Container>
