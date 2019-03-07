@@ -210,6 +210,9 @@ export function* createTask({ domain, ipfsHash, amount, assignee }) {
       {
         specificationHash: ipfsHash,
         domainId: parseInt(domain),
+        // We have to explicitly set skill id here otherwise the worker is not able to finalize task
+        // https://github.com/JoinColony/colonyNetwork/issues/473
+        skillId: 1,
       },
       // FIXME: Incorrect gas amount being calculated
       { gasLimit: 400000 },
