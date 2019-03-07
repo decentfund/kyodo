@@ -383,7 +383,7 @@ class App extends Component {
               )}
             />
             <Route
-              path="/stats/misc"
+              path="/stats/payouts"
               render={props => (
                 <div style={{ marginBottom: 50 }}>
                   <BountyDistribution contractName="Token" />

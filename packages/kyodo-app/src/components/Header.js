@@ -153,8 +153,8 @@ class Header extends Component {
                 Leaderboard
               </NavLink>
               {` 🞄 `}
-              <NavLink to="/stats/misc" exact>
-                Misc
+              <NavLink to="/stats/payouts" exact>
+                Payouts
               </NavLink>
             </Subnav>
           )}
