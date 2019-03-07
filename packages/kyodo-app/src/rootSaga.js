@@ -269,7 +269,7 @@ function* getPotBalance({ payload: potId }) {
       [client.getPotBalance, client.getPotBalance.call],
       {
         potId,
-        token: client.token.contract.address,
+        token: client.tokenClient.contract.address,
       },
     );
 

@@ -220,7 +220,7 @@ export function* createTask({ domain, ipfsHash, amount, assignee }) {
         fromPot: parseInt(domain),
         toPot: potId,
         amount,
-        token: client.token.contract.address,
+        token: client.tokenClient.contract.address,
       },
       // FIXME: Incorrect gas amount being calculated
       { gasLimit: 400000 },
