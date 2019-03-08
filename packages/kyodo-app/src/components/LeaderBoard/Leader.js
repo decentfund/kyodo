@@ -92,7 +92,8 @@ class Leader extends PureComponent {
     } = this.props;
     const { total } = earnings;
     const earnedDFTokens = domains.reduce(
-      (memo, domain) => memo + (earnings[domain] || 0) * pointPrice[domain],
+      (memo, domain) =>
+        memo + (earnings[domain.name] || 0) * pointPrice[domain.name],
       0,
     );
     return (
@@ -126,15 +127,16 @@ class Leader extends PureComponent {
         </Earnings>
         {domains.map(domain => (
           <DomainPointsContainer
-            key={domain}
+            key={domain.name}
             leader={
-              domainStats.filter(d => d.domain === domain && d.user === name)
-                .length > 0
+              domainStats.filter(
+                d => d.domain === domain.name && d.user === name,
+              ).length > 0
             }
             active={sorting === domain}
           >
-            <span title={earnings[domain] * pointPrice[domain]}>
-              {earnings[domain] || '0'}
+            <span title={earnings[domain.name] * pointPrice[domain.name]}>
+              {earnings[domain.name] || '0'}
             </span>
           </DomainPointsContainer>
         ))}
