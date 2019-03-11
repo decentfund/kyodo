@@ -48,8 +48,12 @@ const formatAssigneeAddress = assignee => {
   if (assignee.address) {
     status.push(assignee.accepted ? '✅' : '⏰');
   }
-  if (assignee.loaded && assignee.address) {
-    status.push(assignee.address);
+  if (assignee.loaded) {
+    if (assignee.alias) {
+      status.push(assignee.alias);
+    } else if (assignee.address) {
+      status.push(assignee.address);
+    }
   } else if (assignee.loading) {
     status.push('loading...');
   } else {
@@ -93,7 +97,7 @@ function Task({
             <button onClick={() => toggleAssign(!isAssigning)}>Change</button>
           ) : null}
           {assignee.loaded &&
-          userAddress === assignee.address &&
+          userAddress === assignee.address.toLowerCase() &&
           !assignee.accepted ? (
             <button onClick={() => acceptTask(id)}>Accept</button>
           ) : null}
@@ -111,7 +115,7 @@ function Task({
         <div>
           <input
             type="text"
-            value={stateAssignee || assignee}
+            value={stateAssignee || assignee.address}
             onChange={e => handleChange(e.target.value)}
           />
           <button
@@ -132,7 +136,8 @@ function Task({
           Set top rating
         </button>
       ) : null}
-      {userAddress === assignee.address.toLowerCase() &&
+      {assignee.address &&
+      userAddress === assignee.address.toLowerCase() &&
       assignee.rating > 0 &&
       status === 'ACTIVE' ? (
         <button onClick={() => claimPayout({ taskId: id })}>

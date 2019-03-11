@@ -6,7 +6,7 @@ export default (state = { aliases: {} }, action) => {
           ...state,
           aliases: {
             ...state.aliases,
-            [action.args[0]]: action.value,
+            [action.args[0].toLowerCase()]: action.value,
           },
         };
       }

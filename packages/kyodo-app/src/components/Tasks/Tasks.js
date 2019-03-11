@@ -5,8 +5,15 @@ import { Header } from '../Page';
 import { Header as TableHeader } from '../Table';
 import Task from './Task';
 import { getTasks } from '../../actions';
-import { getPots, getRelevantTasks, tasksLoaded } from '../../reducers';
+import {
+  getPots,
+  getRelevantTasks,
+  tasksLoaded,
+  getUserAliases,
+} from '../../reducers';
 import { formatCurrency, formatDecimals } from '../../helpers/format';
+
+const getUserAlias = (users, address) => users[address.toLowerCase()];
 
 const StyledTaskTitle = styled.div`
   margin-right: 20px;
@@ -33,7 +40,13 @@ const StyledTips = styled.div`
 
 class Tasks extends PureComponent {
   render() {
-    const { items = {}, domains = [], pots, tasksLoaded } = this.props;
+    const {
+      items = {},
+      domains = [],
+      pots,
+      tasksLoaded,
+      userAliases,
+    } = this.props;
     const getDomainName = id => {
       const soughtDomain = domains.find(d => d.potId === id);
       if (soughtDomain) return soughtDomain.name;
@@ -57,6 +70,13 @@ class Tasks extends PureComponent {
                   {...items[id]}
                   domain={getDomainName(items[id].domainId)}
                   key={id}
+                  assignee={{
+                    ...items[id].assignee,
+                    alias: getUserAlias(
+                      userAliases,
+                      items[id].assignee.address,
+                    ),
+                  }}
                   amount={
                     pots[items[id].potId] &&
                     formatCurrency(
@@ -75,6 +95,7 @@ class Tasks extends PureComponent {
 
 const mapStateToProps = state => ({
   items: getRelevantTasks(state),
+  userAliases: getUserAliases(state),
   domains: state.colony.domains,
   pots: getPots(state),
   tasksLoaded: tasksLoaded(state),
