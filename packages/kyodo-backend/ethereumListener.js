@@ -7,7 +7,7 @@ const provider = new Web3.providers.WebsocketProvider(
 import TruffleContract from 'truffle-contract';
 import Members from '@kyodo/contracts/build/contracts/MembersV1.json';
 import Domains from '@kyodo/contracts/build/contracts/DomainsV1.json';
-import Periods from '@kyodo/contracts/build/contracts/PeriodsV1.json';
+import Periods from '@kyodo/contracts/build/contracts/PeriodsV2.json';
 import { createColony } from './colony.js';
 import { dbAddUser, setUserAlias } from './user';
 import { initPeriod } from './period';
@@ -45,6 +45,8 @@ const getEventPrevBlock = event => parseInt(event.blockNumber) - 1;
 const parseNewPeriodEvent = event => ({
   prevBlockNumber: getEventPrevBlock(event),
   periodId: event.args._periodId.toNumber(),
+  periodName:
+    (event.args._periodName && event.args._periodName.toString()) || undefined,
 });
 
 const parseNewAliasSetEvent = event => ({
@@ -89,14 +91,21 @@ const startListener = () => {
     pastNewPeriodsEvents
       .map(parseNewPeriodEvent)
       .filter(({ periodId }) => !colony.periodIds.includes(periodId))
-      .forEach(async ({ prevBlockNumber, periodId }) => {
-        await initPeriod(prevBlockNumber, periodId, colony.colonyId);
+      .forEach(async ({ prevBlockNumber, periodId, periodName }) => {
+        await initPeriod(
+          prevBlockNumber,
+          periodId,
+          colony.colonyId,
+          periodName,
+        );
       });
 
     // Subscribe to new period events
     periods.NewPeriodStart().on('data', async event => {
-      const { prevBlockNumber, periodId } = parseNewPeriodEvent(event);
-      await initPeriod(prevBlockNumber, periodId, colony.colonyId);
+      const { prevBlockNumber, periodId, periodName } = parseNewPeriodEvent(
+        event,
+      );
+      await initPeriod(prevBlockNumber, periodId, colony.colonyId, periodName);
     });
 
     // Getting past alias changes
