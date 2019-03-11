@@ -112,7 +112,9 @@ class Header extends Component {
 
     const alias = this.props.Members.getAlias[this.state.userAliasKey].value;
     const kyodoName =
-      this.props.KyodoDAO.name[this.state.kyodoNameKey].value || 'decent.fund';
+      (this.props.KyodoDAO.name[this.state.kyodoNameKey] &&
+        this.props.KyodoDAO.name[this.state.kyodoNameKey].value) ||
+      'decent.fund';
 
     const { userAddress, currentPeriod = {} } = this.props;
     return (
@@ -149,6 +151,10 @@ class Header extends Component {
               {` 🞄 `}
               <NavLink to="/stats/leaderboard" exact>
                 Leaderboard
+              </NavLink>
+              {` 🞄 `}
+              <NavLink to="/stats/payouts" exact>
+                Payouts
               </NavLink>
             </Subnav>
           )}

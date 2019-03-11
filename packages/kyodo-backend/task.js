@@ -1,4 +1,5 @@
 import { Task } from './db.js';
+import RoleAssignment from './models/RoleAssignment';
 
 export const dbCreateTask = async ({ title }) => {
   let task = await new Task({
@@ -23,6 +24,18 @@ export const getTaskByTitle = async title => {
 
 export const modifyTask = (req, res) => {
   //TODO: find the task by id, modify fields, both on chain and in DB??
+};
+
+export const storeAssignmentOperation = async params => {
+  return await RoleAssignment.create(params);
+};
+
+export const getAssignmentOperation = async params => {
+  return await RoleAssignment.get(params);
+};
+
+export const acceptAssignmentOperation = async params => {
+  return await RoleAssignment.accept(params);
 };
 
 export const getTasks = async (req, res) => {

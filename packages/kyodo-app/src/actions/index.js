@@ -57,3 +57,19 @@ export function getDomains() {
     type: types.GET_DOMAINS_REQUEST,
   };
 }
+
+export function getTasks() {
+  return {
+    type: types.GET_TASKS_REQUEST,
+  };
+}
+
+export {
+  createTask,
+  createTaskSuccess,
+  acceptTask,
+  assignWorker,
+  submitTaskWorkRating,
+  claimPayout,
+  submitDeliverable,
+} from './task';

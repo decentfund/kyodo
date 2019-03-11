@@ -4,20 +4,16 @@ import { connect } from 'react-redux';
 import styled from 'styled-components';
 
 import FormButton from './FormButton';
-import Input from './Input';
+import { FormInput } from './Form';
 import MembersHeaderIcons from './MembersHeaderIcons';
 import WhitelistedAddress from './WhitelistedAddress';
-import { StyledHeader } from './StyledSharedComponents';
+import { Header } from './Page';
 
 import { isValidAddress } from '../helpers';
 import drizzleConnect from '../utils/drizzleConnect';
 
 const StyledFormContainer = styled.div`
   margin-top: 20px;
-`;
-
-const StyledInputContainer = styled.div`
-  margin-bottom: 28px;
 `;
 
 class Members extends Component {
@@ -50,22 +46,22 @@ class Members extends Component {
     const { canAdd, whitelistedAddresses } = this.props;
     return (
       <div>
-        <StyledHeader>Colony Members</StyledHeader>
+        <Header>Colony Members</Header>
         <MembersHeaderIcons />
         {whitelistedAddresses.map(address => (
           <WhitelistedAddress value={address} key={address} />
         ))}
         {canAdd ? (
           <StyledFormContainer>
-            <StyledInputContainer>
-              <Input
+            <div>
+              <FormInput
                 label="add new member:"
                 value={address}
                 onChange={this.handleAddressChange}
                 placeholder="0x..."
                 width="488px"
               />
-            </StyledInputContainer>
+            </div>
             <FormButton
               disabled={address.length === 0 || !isValidAddress(address)}
               onClick={this.handleAddToWhitelist}

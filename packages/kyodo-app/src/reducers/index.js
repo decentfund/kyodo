@@ -5,13 +5,18 @@ import { drizzleReducers } from 'drizzle';
 import { createSelector } from 'reselect';
 import get from 'lodash/get';
 import groupBy from 'lodash/groupBy';
-import rates, * as fromRates from './rates';
+import pickBy from 'lodash/pickBy';
+import every from 'lodash/every';
 import balances from './balances';
-import users from './users';
-import tips from './tips';
 import colony from './colony';
 import historical, * as fromHistorical from './historical';
 import periods from './periods';
+import rates, * as fromRates from './rates';
+import task from './task';
+import tasks, * as fromTasks from './tasks';
+import tips from './tips';
+import users from './users';
+import pots from './pots';
 import { BASE_CURRENCY } from '../constants';
 import { formatTipsPerDomain } from '@kyodo/shared/tips';
 
@@ -158,7 +163,7 @@ export const getHistoricalTokenPrice = createSelector(
   },
 );
 
-export const getCurrentUserAddress = state => state.accounts[0];
+export const getCurrentUserAddress = state => state.accounts[0].toLowerCase();
 export const getUserAliases = state => state.users.aliases;
 
 export const getCurrentUserAlias = createSelector(
@@ -190,25 +195,38 @@ export const getTotalUserTips = createSelector(
   }),
 );
 
-export const getTipsByDomain = createSelector(getTipsToUser, tips => {
-  return formatTipsPerDomain(tips);
-});
-
-export const getPointsDistribution = createSelector(getTips, tips => {
-  return formatTipsPerDomain(tips);
-});
-
-const getDomainsFromTips = createSelector(getTips, tips =>
-  Object.keys(
-    tips.reduce((memo, { domain }) => ({ ...memo, [domain]: true }), {}),
-  ),
+export const getTipsByDomain = createSelector(
+  getTipsToUser,
+  tips => {
+    return formatTipsPerDomain(tips);
+  },
 );
 
-const getUsersFromTips = createSelector(getTips, tips =>
-  Object.keys(tips.reduce((memo, { to }) => ({ ...memo, [to]: true }), {})),
+export const getPointsDistribution = createSelector(
+  getTips,
+  tips => {
+    return formatTipsPerDomain(tips);
+  },
 );
 
-const getTipsByUser = createSelector(getTips, tips => groupBy(tips, 'to'));
+const getDomainsFromTips = createSelector(
+  getTips,
+  tips =>
+    Object.keys(
+      tips.reduce((memo, { domain }) => ({ ...memo, [domain]: true }), {}),
+    ),
+);
+
+const getUsersFromTips = createSelector(
+  getTips,
+  tips =>
+    Object.keys(tips.reduce((memo, { to }) => ({ ...memo, [to]: true }), {})),
+);
+
+const getTipsByUser = createSelector(
+  getTips,
+  tips => groupBy(tips, 'to'),
+);
 
 // Should return array of users with their names, addresses, points earned per domains,
 // highest earning in domain, total points earned in current period
@@ -260,7 +278,8 @@ export const getLeaderboardData = createSelector(
 );
 
 export const getDomains = state => state.colony.domains;
-export const getPots = state => state.colony.pots;
+export const getPots = state => state.pots;
+export const getTasks = state => fromTasks.getTasks(state.tasks);
 
 export const decimals = state =>
   parseInt(state.contracts.Token.decimals['0x0'].value, 10);
@@ -283,14 +302,34 @@ export const getPointPrice = createSelector(
 );
 
 export const getCurrentPeriodInfo = state => state.periods.currentPeriod;
+export const getKyodoDAOOwner = state =>
+  getOwner(getContract('KyodoDAO')(state));
+
+export const getRelevantTasks = createSelector(
+  [getTasks, getCurrentUserAddress],
+  (tasks, userAddress) =>
+    pickBy(
+      tasks,
+      item =>
+        (item.assignee.address &&
+          item.assignee.address.toLowerCase() === userAddress) ||
+        (item.manager.address &&
+          item.manager.address.toLowerCase() === userAddress),
+    ),
+);
+
+export const tasksLoaded = state => every(getTasks(state), task => task.loaded);
 
 export default combineReducers({
-  rates,
   balances,
+  colony,
   historical,
+  periods,
+  rates,
+  task,
+  tasks,
   tips,
   users,
-  periods,
-  colony,
+  pots,
   ...drizzleReducers,
 });

@@ -1,6 +1,8 @@
 import axios from 'axios';
 import moment from 'moment';
 import orderBy from 'lodash/orderBy';
+import { convertAmount } from '@kyodo/shared/token';
+import { getDecimals, getContract } from './reducers';
 import {
   all,
   fork,
@@ -10,9 +12,11 @@ import {
   takeLatest,
   select,
   apply,
+  take,
 } from 'redux-saga/effects';
 import { drizzleSagas } from 'drizzle';
 import {
+  BACKEND_URI,
   LOAD_RATE_REQUEST,
   LOAD_RATE_SUCCESS,
   LOAD_PERIOD_TASKS_REQUEST,
@@ -32,13 +36,27 @@ import {
   GET_DOMAINS_BALANCES_REQUEST,
   GET_DOMAINS_REQUEST,
   GET_DOMAINS_SUCCESS,
+  CREATE_TASK_REQUEST,
+  CREATE_TASK_STARTED,
+  CREATE_TASK_SUCCESS,
+  GET_TASKS_REQUEST,
+  GET_TASKS_SUCCESS,
+  GET_TASKS_COUNT_REQUEST,
+  GET_TASKS_COUNT_SUCCESS,
+  GET_TASK_REQUEST,
+  GET_TASK_SUCCESS,
+  GET_TASK_MANAGER_REQUEST,
+  GET_TASK_MANAGER_SUCCESS,
+  GET_TASK_WORKER_REQUEST,
+  GET_TASK_WORKER_SUCCESS,
+  GET_TASK_DETAILS_SUCCESS,
+  GET_TASK_RATINGS_COUNT_SUCCESS,
+  GET_TASK_RATINGS_COUNT_REQUEST,
 } from './constants';
 import { BASE_CURRENCY } from './constants';
 import * as fromActions from './actions';
 import * as fromNetworkHelpers from './helpers/network';
-
-const BACKEND_URI =
-  process.env.REACT_APP_BACKEND_URI || 'http://kyodo.decent.fund:3666';
+import * as fromTaskSagas from './sagas/task';
 
 function* loadRate({ currency }) {
   try {
@@ -231,6 +249,7 @@ function* getColony({ payload: address }) {
     });
 
     yield put(fromActions.getDomains());
+    yield put(fromActions.getTasks());
   } catch (e) {
     console.log(e);
   }
@@ -250,7 +269,7 @@ function* getPotBalance({ payload: potId }) {
       [client.getPotBalance, client.getPotBalance.call],
       {
         potId,
-        token: client.token.contract.address,
+        token: client.tokenClient.contract.address,
       },
     );
 
@@ -299,6 +318,7 @@ function* getDomains() {
     payload: data.map(domain => ({
       name: domain.domainTitle,
       potId: domain.potId,
+      id: domain.domainId,
     })),
   });
 
@@ -308,6 +328,159 @@ function* getDomains() {
 
 function* watchGetDomains() {
   yield takeLatest(GET_DOMAINS_REQUEST, getDomains);
+}
+
+function* getTaskCount(client) {
+  try {
+    const { count } = yield call([
+      client.getTaskCount,
+      client.getTaskCount.call,
+    ]);
+
+    return count;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+function* watchGetTasks() {
+  while (true) {
+    yield take(GET_TASKS_REQUEST);
+
+    const {
+      colony: { client },
+    } = yield select();
+
+    const count = yield getTaskCount(client);
+    yield put({
+      type: GET_TASKS_COUNT_SUCCESS,
+      payload: count,
+    });
+
+    yield takeEvery(GET_TASK_REQUEST, getTask);
+
+    for (let i = 1; i <= count; i++) {
+      yield put({
+        type: GET_TASK_REQUEST,
+        payload: i,
+      });
+    }
+  }
+}
+
+function* getTask({ payload: taskId }) {
+  const {
+    colony: { client },
+  } = yield select();
+
+  try {
+    const colonyDetails = yield call([client.getTask, client.getTask.call], {
+      taskId,
+    });
+
+    const specificationHashURI = `${BACKEND_URI}/task/${
+      colonyDetails.specificationHash
+    }`;
+    const { data: specificationDetails } = yield call(
+      axios.get,
+      specificationHashURI,
+    );
+
+    const details = {
+      ...colonyDetails,
+      ...specificationDetails,
+    };
+
+    yield put({
+      type: GET_TASK_SUCCESS,
+      payload: details,
+    });
+
+    yield put({
+      type: GET_TASK_MANAGER_REQUEST,
+      payload: { taskId },
+    });
+
+    const manager = yield call([client.getTaskRole, client.getTaskRole.call], {
+      taskId,
+      role: 'MANAGER',
+    });
+
+    yield put({
+      type: GET_TASK_MANAGER_SUCCESS,
+      payload: { ...manager, taskId },
+    });
+
+    yield call(fromTaskSagas.loadWorker, taskId);
+
+    yield put({
+      type: GET_TASK_RATINGS_COUNT_REQUEST,
+      payload: { taskId },
+    });
+
+    const { count } = yield call(
+      [client.getTaskWorkRatings, client.getTaskWorkRatings.call],
+      {
+        taskId,
+      },
+    );
+
+    yield put({
+      type: GET_TASK_RATINGS_COUNT_SUCCESS,
+      payload: { count, taskId },
+    });
+
+    // All details to display tosks are loaded
+    yield put({
+      type: GET_TASK_DETAILS_SUCCESS,
+      payload: {
+        id: taskId,
+      },
+    });
+
+    if (colonyDetails.potId) {
+      yield put({
+        type: GET_POT_BALANCE_REQUEST,
+        payload: colonyDetails.potId,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+function* createTask({ payload }) {
+  const ipfsHash = yield call(fromTaskSagas.getTaskIpfsHash, payload);
+
+  // destructuring payload
+  const { domain, amount, assignee } = payload;
+
+  // get tokn decimals
+  const state = yield select();
+  const decimals = getDecimals(getContract('Token')(state));
+
+  // get BN number for amount
+  const convertedAmount = convertAmount(amount, decimals);
+
+  yield call(fromTaskSagas.createTask, {
+    domain,
+    amount: convertedAmount,
+    ipfsHash,
+    assignee,
+  });
+}
+
+function* watchCreateTask() {
+  yield takeLatest(CREATE_TASK_REQUEST, createTask);
+}
+
+function* createTaskSuccess() {
+  yield put(fromActions.getTasks());
+  yield getDomainsBalances();
+}
+
+function* watchCreateTaskSuccess() {
+  yield takeLatest(CREATE_TASK_SUCCESS, createTaskSuccess);
 }
 
 export default function* root() {
@@ -323,5 +496,13 @@ export default function* root() {
     watchGetPotBalance(),
     watchGetDomainsBalances(),
     watchGetDomains(),
+    watchGetTasks(),
+    watchCreateTask(),
+    watchCreateTaskSuccess(),
+    fromTaskSagas.watchAcceptTask(),
+    fromTaskSagas.watchAssignWorker(),
+    fromTaskSagas.watchSubmitTaskWorkRating(),
+    fromTaskSagas.watchClaimPayout(),
+    fromTaskSagas.watchSubmitDeliverable(),
   ]);
 }

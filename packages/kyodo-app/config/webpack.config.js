@@ -321,8 +321,9 @@ module.exports = function(webpackEnv) {
                 customize: require.resolve(
                   'babel-preset-react-app/webpack-overrides',
                 ),
-
+                cacheDirectory: true,
                 plugins: [
+                  'react-hot-loader/babel',
                   [
                     require.resolve('babel-plugin-named-asset-import'),
                     {

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import Earnings from './Earnings';
-import { StyledHeader } from './StyledSharedComponents';
+import { Header } from './Page';
 import { loadPeriodTasks } from '../actions';
 import {
   getUserTips,
@@ -100,7 +100,7 @@ class Members extends Component {
     const { userAlias, tips, total } = this.props;
     return (
       <div>
-        <StyledHeader>Token allocation</StyledHeader>
+        <Header>Token allocation</Header>
         <Earnings />
         <StyledTableHeader>
           <StyledTaskTitle>task</StyledTaskTitle>

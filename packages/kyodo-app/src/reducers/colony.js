@@ -33,19 +33,6 @@ export default (
         ...state,
         domains: action.payload,
       };
-    case 'GET_POT_BALANCE_SUCCESS': {
-      const { potId, potBalance: balance } = action.payload;
-      return {
-        ...state,
-        pots: {
-          ...state.pots,
-          [potId]: {
-            ...state.pots[potId],
-            balance,
-          },
-        },
-      };
-    }
     default:
       return state;
   }

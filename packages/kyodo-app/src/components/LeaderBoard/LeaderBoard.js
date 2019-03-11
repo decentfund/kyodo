@@ -34,7 +34,7 @@ class LeaderBoard extends Component {
     } = this.props;
     const { sorting } = this.state;
     const totalLeader = orderBy(users, ['tips.total'], ['desc'])[0];
-    const totalLeaderPoints = totalLeader.tips.total;
+    const totalLeaderPoints = totalLeader ? totalLeader.tips.total : 0;
     const order = `tips.${sorting}`;
     return (
       <div>
@@ -69,7 +69,7 @@ const mapStateToProps = state => {
   const data = getLeaderboardData(state);
   return {
     users: data.userStats,
-    domains: data.domains,
+    domains: state.colony.domains,
     domainStats: data.domainStats,
     pointPrice: getPointPrice(state),
     tokenPriceEUR: getRate(state, 'DF', 'EUR'),

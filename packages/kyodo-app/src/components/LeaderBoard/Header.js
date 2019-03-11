@@ -50,10 +50,10 @@ const Header = ({ domains, sorting = 'total', onSortingChange }) => (
     </Token>
     {domains.map(domain => (
       <DomainTitle>
-        {domain}
+        {domain.name}
         <Arrow
-          active={sorting === domain}
-          onClick={onSortingChange.bind(this, domain)}
+          active={sorting === domain.name}
+          onClick={onSortingChange.bind(this, domain.name)}
         />
       </DomainTitle>
     ))}

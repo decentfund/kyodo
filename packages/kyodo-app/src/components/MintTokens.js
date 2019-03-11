@@ -3,26 +3,15 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 
-import Input from './Input';
+import { FormInput as Input } from './Form';
 import FormButton from './FormButton';
+import { Header } from './Page';
 
 import { isValidAddress } from '../helpers';
 import drizzleConnect from '../utils/drizzleConnect';
 
-const StyledHeader = styled.header`
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 300;
-  line-height: normal;
-  margin-bottom: 34px;
-`;
-
 const StyledFormContainer = styled.div`
   margin-top: 20px;
-`;
-
-const StyledInputContainer = styled.div`
-  margin-bottom: 28px;
 `;
 
 class Members extends Component {
@@ -59,9 +48,9 @@ class Members extends Component {
     console.log(this.tx);
     return (
       <div>
-        <StyledHeader>Mint tokens</StyledHeader>
+        <Header>Mint tokens</Header>
         <StyledFormContainer>
-          <StyledInputContainer>
+          <div>
             <Input
               label="enter ethereum address:"
               value={address}
@@ -69,8 +58,8 @@ class Members extends Component {
               placeholder="0x..."
               width="488px"
             />
-          </StyledInputContainer>
-          <StyledInputContainer>
+          </div>
+          <div>
             <Input
               label="token amount to issue:"
               value={amount}
@@ -78,7 +67,7 @@ class Members extends Component {
               placeholder="1"
               width="488px"
             />
-          </StyledInputContainer>
+          </div>
           <FormButton
             disabled={
               address.length === 0 || !isValidAddress(address) || amount === 0

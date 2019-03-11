@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import { hot } from 'react-hot-loader/root';
 import difference from 'lodash/difference';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import styled, { injectGlobal } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import Header from './components/Header';
 import KyodoDAO from '@kyodo/contracts/build/contracts/KyodoDAO_V1.json';
 import AddRiotID from './components/AddRiotID';
@@ -15,10 +16,13 @@ import FundStatistics from './components/FundStatistics';
 import CurrentPeriodStatus from './components/CurrentPeriodStatus';
 import TotalSupplyChange from './components/TotalSupplyChange';
 import Earnings from './components/Earnings';
+import BountyDistribution from './components/BountyDistribution';
+import Tasks from './components/Tasks';
 import TasksList from './components/TasksList';
 import PeriodPointsDistribution from './components/PeriodPointsDistribution';
 import PeriodDistributionSummary from './components/PeriodDistributionSummary';
 import LeaderBoard from './components/LeaderBoard';
+import CreateTask from './components/CreateTask/CreateTask';
 import {
   getContract,
   getOwner,
@@ -37,7 +41,7 @@ import {
   generateContractConfigFromName,
 } from './helpers/contracts';
 
-injectGlobal`
+createGlobalStyle`
 html,
 body {
   margin: 0;
@@ -379,6 +383,16 @@ class App extends Component {
               )}
             />
             <Route
+              path="/stats/payouts"
+              render={props => (
+                <div style={{ marginBottom: 50 }}>
+                  <BountyDistribution contractName="Token" />
+                  <Tasks />
+                  {owner === userAddress ? <CreateTask /> : null}
+                </div>
+              )}
+            />
+            <Route
               path="/points"
               render={props => <PeriodPointsDistribution />}
             />
@@ -429,13 +443,15 @@ App.contextTypes = {
   drizzle: PropTypes.object,
 };
 
-export default connect(
-  mapStateToProps,
-  {
-    getColony,
-    getColonyNetworkClient,
-    loadMultiSigBalance,
-    loadPeriodTasks,
-    loadRate,
-  },
-)(App);
+export default hot(
+  connect(
+    mapStateToProps,
+    {
+      getColony,
+      getColonyNetworkClient,
+      loadMultiSigBalance,
+      loadPeriodTasks,
+      loadRate,
+    },
+  )(App),
+);

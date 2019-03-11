@@ -1,9 +1,17 @@
 import express from 'express';
 
-import { createTask, modifyTask, getTasks } from './task';
+import {
+  createTask,
+  modifyTask,
+  getTasks,
+  storeAssignmentOperation,
+  getAssignmentOperation,
+  acceptAssignmentOperation,
+} from './task';
 import { getAllTips } from './tip';
 import { getAllDomains, getDomainById } from './domain';
 import { addUser, getAllUsers } from './user';
+import * as ipfs from './ipfs';
 
 import {
   initiateNewPeriod,
@@ -29,6 +37,45 @@ router
   })
   .post('/task', (req, res) => {
     createTask(req, res);
+  })
+  .post('/task/:id/:role/assign', async (req, res) => {
+    try {
+      const { operationJSON, address } = req.body;
+      const { id, role } = req.params;
+      await storeAssignmentOperation({
+        operationJSON,
+        address,
+        role: role.toUpperCase(),
+        taskId: id,
+      });
+      return res.status(200).send();
+    } catch (err) {
+      return res.status(400).send(err);
+    }
+  })
+  .post('/task/:id/:role/accept', async (req, res) => {
+    try {
+      const { id, role } = req.params;
+      await acceptAssignmentOperation({
+        role: role.toUpperCase(),
+        taskId: id,
+      });
+      return res.status(200).send();
+    } catch (err) {
+      return res.status(400).send(err);
+    }
+  })
+  .get('/task/:id/:role/operation', async (req, res) => {
+    try {
+      const { id, role } = req.params;
+      const operation = await getAssignmentOperation({
+        taskId: id,
+        role: role.toUpperCase(),
+      });
+      return res.status(200).send(operation);
+    } catch (err) {
+      return res.status(400).send(err);
+    }
   })
   .get('/tasks', (req, res) => {
     getTasks(req, res);
@@ -57,6 +104,14 @@ router
   })
   .get('/users', (req, res) => {
     getAllUsers(req, res);
+  })
+  .get('/task/:hash', async (req, res) => {
+    const specification = await ipfs.getTaskSpecification(req.params.hash);
+    return res.status(200).send(specification);
+  })
+  .post('/task/hash', async (req, res) => {
+    const specificationHash = await ipfs.generateIpfsHash(req.body);
+    return res.status(200).send(specificationHash);
   });
 
 module.exports = router;

@@ -61,8 +61,4 @@ module.exports = async (deployer, network, accounts) => {
 
   // Restore ownership
   await ownableDomains.transferOwnership(kyodoProxyAddress);
-
-  await kyodoInstance.setColonyAdmin(
-    '0x2304ad70caa2e8d4be0665e4f49ad1ede56f3e8f',
-  );
 };
