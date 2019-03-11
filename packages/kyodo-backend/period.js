@@ -11,7 +11,12 @@ if (process.env.NODE_ENV !== 'test') {
 let currentPeriod = 0;
 console.log('PERIOD', currentPeriod);
 
-export const initPeriod = async (blockNumber, periodId, colonyId) => {
+export const initPeriod = async (
+  blockNumber,
+  periodId,
+  colonyId,
+  periodName,
+) => {
   const colony = await getColonyById(colonyId);
   const users = await dbGetAllUsers();
   currentPeriod = periodId;
@@ -23,6 +28,7 @@ export const initPeriod = async (blockNumber, periodId, colonyId) => {
     await createAndSaveNewUserPeriod({
       address: user.address,
       periodId: currentPeriod,
+      periodName,
       balance, // current user balance
       tips: 0,
       user,
@@ -36,10 +42,11 @@ export const createAndSaveNewUserPeriod = async ({
   balance,
   tips,
   user,
+  periodName,
 }) => {
   let period = new Period({
     // TODO: Period title
-    title: 'My new period',
+    title: periodName,
     address,
     periodId,
     initialBalance: balance, // current user balance
