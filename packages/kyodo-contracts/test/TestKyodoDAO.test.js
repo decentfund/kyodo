@@ -15,6 +15,7 @@ const DomainsV1 = artifacts.require('DomainsV1');
 const DomainsV2 = artifacts.require('DomainsV2');
 const MembersV1 = artifacts.require('MembersV1');
 const PeriodsV1 = artifacts.require('PeriodsV1');
+const PeriodsV2 = artifacts.require('PeriodsV2');
 const Token = artifacts.require('Token');
 const EtherRouter = artifacts.require('EtherRouter');
 const IColonyNetwork = artifacts.require('IColonyNetwork');
@@ -380,7 +381,7 @@ contract('KyodoDAO_V1', function([owner, anotherAccount]) {
     const { colonyAddress } = logs[0].args;
     domains = await DomainsV2.new();
     await domains.initialize(kyodo.address);
-    periods = await PeriodsV1.new();
+    periods = await PeriodsV2.new();
     await periods.initialize(kyodo.address);
     members = await MembersV1.new();
     await members.initialize(kyodo.address);

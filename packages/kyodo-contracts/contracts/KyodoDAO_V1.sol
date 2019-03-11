@@ -3,6 +3,7 @@ pragma solidity 0.4.24;
 import "./Ownable.sol";
 import "./KyodoDAO.sol";
 import "./DomainsV2.sol";
+import "./PeriodsV2.sol";
 import "./OwnedUpgradeabilityProxy.sol";
 import "../lib/colonyNetwork/contracts/IColony.sol";
 
@@ -58,5 +59,19 @@ contract KyodoDAO_V1 is KyodoDAO {
 
   function setName(string _name) public onlyOwner {
     name = _name;
+  }
+
+  function startNewPeriod() public {
+    PeriodsV2(periods).startNewPeriod();
+
+    // Mint tokens
+    uint _totalSupply = ERC20Extended(token).totalSupply();
+    uint _toMint = _totalSupply.mul(inflationRate).div(100);
+    IColony(colony).mintTokens(_toMint);
+
+    // Claim tokens
+    IColony(colony).claimColonyFunds(token);
+
+    DomainsV1(domains).distributeTokens(colony, token, _toMint);
   }
 }

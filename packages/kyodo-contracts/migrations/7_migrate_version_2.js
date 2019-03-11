@@ -6,6 +6,7 @@ const OwnedUpgradeabilityProxy = artifacts.require(
 const Ownable = artifacts.require('./Ownable.sol');
 const DomainsV1 = artifacts.require('DomainsV1');
 const DomainsV2 = artifacts.require('DomainsV2');
+const PeriodsV2 = artifacts.require('PeriodsV2');
 
 module.exports = async (deployer, network, accounts) => {
   // Get Kyodo Proxy contract
@@ -61,4 +62,15 @@ module.exports = async (deployer, network, accounts) => {
 
   // Restore ownership
   await ownableDomains.transferOwnership(kyodoProxyAddress);
+
+  // Upgrading Periods contract
+  // Get periods proxy address
+  const periodsProxyAddress = await kyodoInstance.periods();
+  const periodsProxy = await OwnedUpgradeabilityProxy.at(periodsProxyAddress);
+
+  // deploy periods v2 logic
+  await deployer.deploy(PeriodsV2);
+
+  // upgrade
+  await periodsProxy.upgradeTo(PeriodsV2.address);
 };
