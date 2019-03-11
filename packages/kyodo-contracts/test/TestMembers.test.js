@@ -93,14 +93,30 @@ contract('Members', function([owner, anotherAccount]) {
   });
 });
 
-contract('members V2', function([owner]) {
+contract('members V2', function([owner, anotherAccount]) {
   let members;
   beforeEach(async () => {
     members = await MembersV2.new(owner);
   });
 
+  it('reverts for existing nick', async function() {
+    await members.setAlias('aaa');
+    let usedAliases = await members.getUsedAliasesLength();
+    assert.equal(usedAliases, 1);
+    await members.setAlias('bbb');
+    usedAliases = await members.getUsedAliasesLength();
+    assert.equal(usedAliases, 1);
+    await shouldFail(
+      members.setAlias('bbb', { from: anotherAccount }, 'alias-not-unique'),
+    );
+    usedAliases = await members.getUsedAliasesLength();
+    assert.equal(usedAliases, 1);
+  });
   it('should not allow to set empty alias for new user', async () => {
-    await shouldFail(members.setAlias(''));
+    await shouldFail.reverting.withMessage(
+      members.setAlias(''),
+      'prev-alias-not-set',
+    );
   });
   it('should allow to unset alias', async () => {
     const tx = await members.setAlias('igor');
