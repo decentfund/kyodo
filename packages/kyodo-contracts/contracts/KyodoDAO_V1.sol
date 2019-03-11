@@ -61,6 +61,10 @@ contract KyodoDAO_V1 is KyodoDAO {
     name = _name;
   }
 
+  function setPeriodName(string _name) public onlyOwner {
+    PeriodsV2(periods).setPeriodName(_name);
+  }
+
   function startNewPeriod() public {
     PeriodsV2(periods).startNewPeriod();
 
