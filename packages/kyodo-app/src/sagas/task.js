@@ -23,6 +23,7 @@ import {
   GET_TASK_RATINGS_COUNT_SUCCESS,
   CLAIM_PAYOUT_REQUEST,
   GET_TASK_REQUEST,
+  SUBMIT_DELIVERABLE_REQUEST,
 } from '../constants';
 
 export function* getTaskIpfsHash(payload) {
@@ -423,7 +424,6 @@ function* acceptTask({ payload: taskId }) {
     tasks: { items: tasks },
   } = yield select();
   const operationJSON = tasks[taskId].assignee.operationJSON;
-  const specificationHash = tasks[taskId].specificationHash;
 
   yield call(
     signSetTaskWorkerRole,
@@ -433,6 +433,20 @@ function* acceptTask({ payload: taskId }) {
     taskId,
   );
   yield call(loadWorker, taskId);
+
+  yield call(submitDeliverable, taskId);
+}
+
+export function* watchAcceptTask() {
+  yield takeLatest(ACCEPT_TASK_REQUEST, acceptTask);
+}
+
+function* submitDeliverable({ payload: taskId }) {
+  const {
+    colony: { client },
+    tasks: { items: tasks },
+  } = yield select();
+  const specificationHash = tasks[taskId].specificationHash;
 
   const { secret } = yield call(generateSecret, 3);
 
@@ -448,10 +462,15 @@ function* acceptTask({ payload: taskId }) {
       { gasLimit: 400000 },
     ],
   );
+
+  yield put({
+    type: GET_TASK_REQUEST,
+    payload: taskId,
+  });
 }
 
-export function* watchAcceptTask() {
-  yield takeLatest(ACCEPT_TASK_REQUEST, acceptTask);
+export function* watchSubmitDeliverable() {
+  yield takeLatest(SUBMIT_DELIVERABLE_REQUEST, submitDeliverable);
 }
 
 function* claimPayout({ payload: { taskId } }) {

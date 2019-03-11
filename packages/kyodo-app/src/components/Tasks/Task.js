@@ -7,6 +7,7 @@ import {
   assignWorker,
   claimPayout,
   submitTaskWorkRating,
+  submitDeliverable,
 } from '../../actions';
 
 const StyledTaskTitle = styled.div`
@@ -72,6 +73,8 @@ function Task({
   submitTaskWorkRating,
   claimPayout,
   status,
+  deliverableHash,
+  submitDeliverable,
 }) {
   const [isAssigning, toggleAssign] = useState(false);
   const [stateAssignee, handleChange] = useState(undefined);
@@ -93,6 +96,12 @@ function Task({
           userAddress === assignee.address &&
           !assignee.accepted ? (
             <button onClick={() => acceptTask(id)}>Accept</button>
+          ) : null}
+          {assignee.loaded &&
+          userAddress === assignee.address.toLowerCase() &&
+          assignee.accepted &&
+          !deliverableHash ? (
+            <button onClick={() => submitDeliverable(id)}>Confirm</button>
           ) : null}
         </StyledAssignee>
         <StyledDomainCode>{domain}</StyledDomainCode>
@@ -140,5 +149,11 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { acceptTask, assignWorker, submitTaskWorkRating, claimPayout },
+  {
+    acceptTask,
+    assignWorker,
+    submitTaskWorkRating,
+    claimPayout,
+    submitDeliverable,
+  },
 )(React.memo(Task));

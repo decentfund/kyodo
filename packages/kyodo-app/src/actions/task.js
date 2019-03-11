@@ -47,3 +47,10 @@ export function claimPayout(payload) {
     payload,
   };
 }
+
+export function submitDeliverable(payload) {
+  return {
+    type: types.SUBMIT_DELIVERABLE_REQUEST,
+    payload,
+  };
+}
