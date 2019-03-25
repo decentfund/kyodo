@@ -34,7 +34,4 @@ module.exports = async deployer => {
     // TODO: Transfer to multisig
     await tokenInstance.transfer(kyodoInstance.address, reserve);
   }
-  // Pass ownership to KyodoDAO
-  const colonyAddress = await kyodoInstance.colony();
-  await tokenInstance.setOwner(colonyAddress);
 };

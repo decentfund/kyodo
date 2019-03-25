@@ -2,7 +2,6 @@ pragma solidity ^0.4.23;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../lib/colonyNetwork/contracts/IColony.sol";
-import "../lib/colonyNetwork/contracts/ERC20Extended.sol";
 import "../lib/BokkyPooBahsDateTimeLibrary/contracts/BokkyPooBahsDateTimeLibrary.sol";
 import "./Ownable.sol";
 

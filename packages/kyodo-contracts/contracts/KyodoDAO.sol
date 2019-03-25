@@ -1,9 +1,10 @@
 pragma solidity ^0.4.23;
+pragma experimental ABIEncoderV2;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../lib/BokkyPooBahsDateTimeLibrary/contracts/BokkyPooBahsDateTimeLibrary.sol";
 import "../lib/colonyNetwork/contracts/IColony.sol";
-import "../lib/colonyNetwork/contracts/Token.sol";
+import "../lib/colonyNetwork/lib/colonyToken/contracts/Token.sol";
 import "./strings.sol";
 import "./DomainsV1.sol";
 import "./MembersV1.sol";
@@ -30,7 +31,7 @@ contract KyodoDAO is Ownable {
   event TokenAddressChanged(address _address);
   event NewDomainAdded(string _code, uint _id);
 
-  function addDomain(string _code) external onlyOwner {
+  function addDomain(string _code) public onlyOwner {
     IColony(colony).addDomain(1);
 
     DomainsV1(domains).addDomain(_code);
@@ -41,7 +42,7 @@ contract KyodoDAO is Ownable {
    * @dev Adds list of addresses to whitelist. Not overloaded due to limitations with truffle testing.
    * @param _beneficiaries Addresses to be added to the whitelist
    */
-  function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
+  function addManyToWhitelist(address[] _beneficiaries) public onlyOwner {
     MembersV1(members).addManyToWhitelist(_beneficiaries);
   }
 

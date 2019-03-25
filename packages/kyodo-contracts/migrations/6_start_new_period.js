@@ -17,6 +17,9 @@ module.exports = async (deployer, network, accounts) => {
     colonyAddress,
   );
 
+  // Pass ownership to KyodoDAO
+  await colonyClient.tokenClient.setOwner.send({ owner: colonyAddress });
+
   const domainsAddress = await kyodoInstance.domains();
 
   await colonyClient.setAdminRole.send({

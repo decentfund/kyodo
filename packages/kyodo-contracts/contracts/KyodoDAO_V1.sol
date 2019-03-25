@@ -1,4 +1,5 @@
 pragma solidity 0.4.24;
+pragma experimental ABIEncoderV2;
 
 import "./Ownable.sol";
 import "./KyodoDAO.sol";
@@ -11,33 +12,31 @@ import "../lib/colonyNetwork/contracts/IColony.sol";
 contract KyodoDAO_V1 is KyodoDAO {
   string public name;
 
-  function addDomain(string _code) external onlyOwner {
+  function addDomain(string _code) public onlyOwner {
     IColony(colony).addDomain(1);
     uint256 domainCount = IColony(colony).getDomainCount();
-    uint256 skillId;
-    uint256 potId;
-    (skillId, potId) = IColony(colony).getDomain(domainCount);
+    ColonyDataTypes.Domain memory domain = IColony(colony).getDomain(domainCount);
 
-    DomainsV2(domains).addDomain(_code, potId);
+    DomainsV2(domains).addDomain(_code, domain.fundingPotId);
   }
 
-  function changeDomainsProxyOwner(address _owner) external onlyOwner {
+  function changeDomainsProxyOwner(address _owner) public onlyOwner {
     Ownable(domains).transferOwnership(_owner);
   }
 
-  function changeMembersProxyOwner(address _owner) external onlyOwner {
+  function changeMembersProxyOwner(address _owner) public onlyOwner {
     Ownable(members).transferOwnership(_owner);
   }
 
-  function changePeriodsProxyOwner(address _owner) external onlyOwner {
+  function changePeriodsProxyOwner(address _owner) public onlyOwner {
     Ownable(periods).transferOwnership(_owner);
   }
 
-  function setColonyAdmin(address _address) external onlyOwner {
+  function setColonyAdmin(address _address) public onlyOwner {
     IColony(colony).setAdminRole(_address);
   }
 
-  function createTask(uint domainId, bytes32 hash, uint amount) external onlyOwner {
+  function createTask(uint domainId, bytes32 hash, uint amount) public onlyOwner {
     // create task
     // FIXME: Check specified domainId and amount
     // TODO: Check if potId is equal to domainId
